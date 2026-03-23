@@ -13,10 +13,11 @@
 ---
 
 ## Contratos travados (Domain)
-- [ ] LotStatus + transitions
-- [ ] AuctionStatus + bid rules
-- [ ] Order + pickup status
-- [ ] Zod schemas (server+client)
+- [x] LotStatus + transitions
+- [x] AuctionStatus + bid rules
+- [x] Order + pickup status
+- [x] Zod schemas (server+client)
+- [x] PickupStatus + pickup flow
 
 ---
 
