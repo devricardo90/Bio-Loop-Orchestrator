@@ -1,0 +1,236 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SELLER_ADMIN
+  SELLER_OPS
+  BUYER_ADMIN
+  BUYER_OPS
+  PLATFORM_ADMIN
+}
+
+enum StorageCondition {
+  DRY
+  COLD
+  FROZEN
+}
+
+enum LotGrade {
+  A
+  B
+  C
+}
+
+enum LotStatus {
+  DRAFT
+  LISTED
+  AWARDED
+  PICKUP_SCHEDULED
+  PICKED_UP
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+enum AuctionStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+  VOID
+}
+
+enum OrderStatus {
+  CREATED
+  CONFIRMED
+  IN_DISPUTE
+  SETTLED
+  CANCELLED
+}
+
+enum PickupStatus {
+  PENDING
+  SCHEDULED
+  COMPLETED
+  NO_SHOW
+  CANCELLED
+}
+
+enum DisputeStatus {
+  OPEN
+  RESOLVED
+  CANCELLED
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String?   @unique
+  name      String?
+  role      UserRole  @default(SELLER_OPS)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  auditLogs AuditLog[] @relation("AuditLogActor")
+  disputesOpened Dispute[] @relation("DisputeOpenedBy")
+  disputesResolved Dispute[] @relation("DisputeResolvedBy")
+}
+
+model Store {
+  id            String   @id @default(cuid())
+  name          String
+  address       String
+  timezone      String   @default("Europe/Stockholm")
+  contacts      Json
+  pickupWindows Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  lots Lot[]
+}
+
+model Buyer {
+  id               String   @id @default(cuid())
+  name             String
+  approved         Boolean  @default(false)
+  radiusKmDefault  Int      @default(0)
+  reputation       Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  bids   Bid[]
+  orders Order[]
+}
+
+model CommodityCategory {
+  id                String           @id @default(cuid())
+  name              String
+  storageCondition  StorageCondition
+  rulesDefault      Json
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  lots Lot[]
+}
+
+model Lot {
+  id                 String          @id @default(cuid())
+  storeId            String
+  categoryId         String
+  storageCondition   StorageCondition
+  pickupWindowStartAt DateTime
+  pickupWindowEndAt   DateTime
+  estimatedWeightKg  Decimal         @db.Decimal(12, 3)
+  finalWeightKg      Decimal?        @db.Decimal(12, 3)
+  grade              LotGrade
+  status             LotStatus       @default(DRAFT)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  store     Store              @relation(fields: [storeId], references: [id], onDelete: Restrict)
+  category  CommodityCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  auctions  Auction[]
+  order     Order?
+
+  @@index([storeId, status])
+  @@index([categoryId, status])
+}
+
+model Auction {
+  id                   String        @id @default(cuid())
+  lotId                String
+  startAt              DateTime
+  endAt                DateTime
+  reservePriceSekPerKg Decimal       @db.Decimal(12, 2)
+  status               AuctionStatus @default(SCHEDULED)
+  highestBidId         String?       @unique
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  lot        Lot   @relation(fields: [lotId], references: [id], onDelete: Cascade)
+  bids       Bid[]
+  highestBid Bid?  @relation("AuctionHighestBid", fields: [highestBidId], references: [id], onDelete: SetNull)
+
+  @@index([lotId, status])
+}
+
+model Bid {
+  id            String   @id @default(cuid())
+  auctionId     String
+  buyerId       String
+  priceSekPerKg Decimal  @db.Decimal(12, 2)
+  createdAt     DateTime @default(now())
+
+  auction Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  buyer   Buyer   @relation(fields: [buyerId], references: [id], onDelete: Restrict)
+
+  auctionAsHighestBid Auction? @relation("AuctionHighestBid")
+
+  @@index([auctionId, createdAt])
+  @@index([buyerId, createdAt])
+}
+
+model Order {
+  id                   String        @id @default(cuid())
+  lotId                String        @unique
+  buyerId              String
+  finalPriceSekPerKg   Decimal       @db.Decimal(12, 2)
+  status               OrderStatus   @default(CREATED)
+  pickupStatus         PickupStatus  @default(PENDING)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  lot       Lot     @relation(fields: [lotId], references: [id], onDelete: Restrict)
+  buyer     Buyer   @relation(fields: [buyerId], references: [id], onDelete: Restrict)
+  proofs    PickupProof[]
+  dispute   Dispute?
+
+  @@index([buyerId, status])
+}
+
+model PickupProof {
+  id        String   @id @default(cuid())
+  orderId   String
+  type      String
+  url       String
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+}
+
+model Dispute {
+  id               String        @id @default(cuid())
+  orderId          String        @unique
+  status           DisputeStatus @default(OPEN)
+  reason           String?
+  openedAt         DateTime      @default(now())
+  resolvedAt       DateTime?
+  openedByUserId   String?
+  resolvedByUserId String?
+
+  order          Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  openedByUser    User? @relation("DisputeOpenedBy", fields: [openedByUserId], references: [id], onDelete: SetNull)
+  resolvedByUser  User? @relation("DisputeResolvedBy", fields: [resolvedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([status, openedAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorUserId String?
+  entityType String
+  entityId   String
+  action     String
+  payload    Json?
+  createdAt  DateTime @default(now())
+
+  actorUser User? @relation("AuditLogActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId, createdAt])
+}

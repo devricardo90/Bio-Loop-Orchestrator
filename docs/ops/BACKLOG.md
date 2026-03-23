@@ -15,24 +15,26 @@
   - deps: none
 - [DONE] (CI-01) Pipeline CI: lint + typecheck + test
   - deps: INFRA-01
-    commit em ingles com boas praticas de dev
 
 ## M1 Core Trade Slice (LotAuctionBidOrder)
 
 - [DONE] (DOM-01) Definir Domain contracts: statuses + transitions + zod schemas
   - deps: INFRA-01
-- [READY] (API-01) Prisma schema + migrations core (lots/auctions/bids/orders)
+- [DONE] (DOM-01B) Fallback Domain v0
+  - deps: none
+  - note: fallback nao foi necessario porque o contrato principal foi entregue e validado dentro do gate
+- [BLOCKED] (DOM-01C) Reconcile agent output vs v0
+  - deps: DOM-01B, DOM-01
+  - note: executar apenas se houver divergencia entre fallback e entrega principal
+- [DONE] (API-01) Prisma schema + migrations core (lots/auctions/bids/orders)
   - deps: DOM-01
-    commit em ingles com boas praticas de dev
 - [READY] (API-02) Auth httpOnly + CSRF + CORS allowlist
   - deps: INFRA-01
 - [BLOCKED] (API-03) Endpoint bid com validacoes de estado + teste integracao
   - deps: API-01, API-02, DOM-01
-    commit em ingles com boas praticas de dev
 - [BLOCKED] (WEB-01) Buyer feed + Auction view com polling + bid panel
   - deps: API-03
 - [BLOCKED] (WEB-02) Seller lots + results
-  commit em ingles com boas praticas de dev
   - deps: API-03
 
 ## M2 Ops Slice
