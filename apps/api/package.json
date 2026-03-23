@@ -1,0 +1,25 @@
+{
+  "name": "@bio-loop/api",
+  "private": true,
+  "scripts": {
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node test/smoke.test.mjs",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@bio-loop/domain": "workspace:*",
+    "@bio-loop/shared": "workspace:*",
+    "@nestjs/common": "^11.1.6",
+    "@nestjs/core": "^11.1.6",
+    "@nestjs/platform-express": "^11.1.6",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.16",
+    "@types/node": "^24.1.0"
+  }
+}
