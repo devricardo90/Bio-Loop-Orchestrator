@@ -1,0 +1,6 @@
+store_external_id,store_name,brand_name,legal_entity_name,country,city,full_address,postal_code,timezone,latitude,longitude,default_currency,active
+ica-maxi-solna,ICA Maxi Solna,ICA,ICA Maxi Stormarknad Solna AB,SE,Solna,Solna Business Park,17145,Europe/Stockholm,59.3601,17.9754,SEK,true
+willys-sollentuna,Willys Sollentuna,Willys,Willys AB,SE,Sollentuna,Sollentuna Centrum,19147,Europe/Stockholm,59.4285,17.9485,SEK,true
+coop-odenplan,Coop Odenplan,Coop,Konsum Stockholm,SE,Stockholm,Odengatan 71,11322,Europe/Stockholm,59.3430,18.0498,SEK,true
+hemkop-ostermalm,Hemkop Ostermalmstorg,Hemkop,Axfood AB,SE,Stockholm,Ostermalmstorg 1,11442,Europe/Stockholm,59.3361,18.0792,SEK,true
+lidl-sveavagen,Lidl Sveavagen,Lidl,Lidl Sverige KB,SE,Stockholm,Sveavagen 57,11359,Europe/Stockholm,59.3396,18.0617,SEK,true

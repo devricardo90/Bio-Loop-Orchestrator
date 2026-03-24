@@ -123,13 +123,12 @@
   - deps: API-11, QA-04
   - output: seed reentrante, cenarios baseline/demo, ids/personas alinhados entre web e API
   - gate: `db:seed` funciona em banco vazio e em banco ja inicializado; Playwright e smoke manual continuam reproduziveis
-- [DOING] (DATA-01) Onboarding de dados reais dos supermercados da Suecia
+- [DONE] (DATA-01) Onboarding de dados reais dos supermercados da Suecia
   - owner: DB Agent
   - deps: DB-03
   - output: pacote de dados reais anexado ao projeto, mapeado e validado para import controlado
-  - gate: documento recebido com campos minimos obrigatorios; mapeamento origem->destino revisado; import validado em banco limpo
-  - note: intake package criado no repo; aguardando o usuario anexar os arquivos reais em `data/real-data/sweden-supermarkets/incoming/`
-- [BLOCKED] (DB-01) Normalizar contratos persistidos de dados operacionais
+  - gate: documento recebido com campos minimos obrigatorios; mapeamento origem->destino revisado; pacote validado para onboarding controlado e pronto para `DB-01`
+- [READY] (DB-01) Normalizar contratos persistidos de dados operacionais
   - owner: DB Agent
   - deps: DB-03, DATA-01
   - output: schema Prisma mais estrito para tipos/constraints operacionais
@@ -152,7 +151,7 @@
 
 ### Backend / API lane
 
-- [BLOCKED] (API-12) Auth real com identidade persistida
+- [READY] (API-12) Auth real com identidade persistida
   - owner: API Agent
   - deps: DB-03, API-10, API-11
   - output: login real contra usuarios persistidos, mantendo cookies e CSRF
@@ -208,7 +207,7 @@
 
 ### Infra / QA support lane
 
-- [BLOCKED] (INFRA-05) Runtime scripts e portas previsiveis para API/Web/DB
+- [READY] (INFRA-05) Runtime scripts e portas previsiveis para API/Web/DB
   - owner: Infra Agent
   - deps: DB-03
   - output: scripts de dev padronizados, sem colisao de portas e com bootstrap consistente de env

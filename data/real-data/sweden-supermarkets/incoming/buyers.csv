@@ -1,0 +1,6 @@
+buyer_id,buyer_name,type,location_city,interested_categories
+sthlm-craft-brew,Stockholm Craft Brewery,Brewery,Stockholm,bakery_surplus
+uppsala-farm-co,Uppsala Animal Feed,Farm,Uppsala,bakery_surplus;produce_veggies
+eco-gas-sweden,EcoGas AB,Biofuel,Sodertalje,produce_veggies;dairy_short_date
+stadsmissionen,Stockholms Stadsmission,NGO,Stockholm,bakery_surplus;dry_goods_damaged
+dog-treats-ltd,Happy Paws Treats,PetFood,Solna,meat_near_exp

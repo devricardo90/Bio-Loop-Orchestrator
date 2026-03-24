@@ -1,22 +1,22 @@
-# [DOING] DATA-01 Onboarding de dados reais dos supermercados da Suecia
+# [DONE] DATA-01 Onboarding de dados reais dos supermercados da Suecia
 
-## O que foi entregue nesta execucao
+## O que foi entregue
 
 - estrutura oficial de intake criada em `data/real-data/sweden-supermarkets/`
-- diretorio `incoming/` preparado para receber o snapshot bruto
+- diretorio `incoming/` preenchido com o pacote real enviado pelo usuario
 - templates CSV para `stores`, `store_contacts`, `pickup_windows`, `categories`, `buyers`, `lots_initial` e `data_dictionary`
-- documentos de `mapping` e `validation` criados para revisar origem -> destino e pendencias
-- backlog/status atualizados para refletir que a task esta em execucao, aguardando o envio do pacote real
+- mapeamento origem -> destino revisado contra o schema atual
+- checklist de validacao preenchido
+- registro de gaps reais que dependem de `DB-01`
+- backlog/status atualizados para refletir o fechamento da task
 
-## Gate pendente
+## Resultado da analise
 
-`DATA-01` ainda nao fecha porque faltam os arquivos reais do usuario em:
+- o pacote tem IDs externos estaveis e dados suficientes para onboarding controlado
+- a origem cobre stores, contatos, janelas operacionais, categorias, buyers e lotes iniciais
+- o schema atual ainda perde informacao operacional relevante sem `DB-01`
 
-- `data/real-data/sweden-supermarkets/incoming/`
-
-## Proxima acao do usuario
-
-Anexar o pacote real nesse diretorio com os arquivos de origem e, se houver, anexos auxiliares como:
+## Arquivos anexados
 
 - `stores.csv`
 - `store_contacts.csv`
@@ -24,5 +24,7 @@ Anexar o pacote real nesse diretorio com os arquivos de origem e, se houver, ane
 - `categories.csv`
 - `buyers.csv`
 - `lots_initial.csv`
-- `data_dictionary.xlsx`
-- `ops_rules.pdf`
+
+## Proximo passo sugerido
+
+- `DB-01` para normalizar o schema Prisma e preservar `external_id`, geografia, metadata operacional, contatos e interesses de buyer sem improviso

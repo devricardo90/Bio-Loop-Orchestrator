@@ -1,0 +1,6 @@
+lot_id,store_external_id,category_id,weight_kg,price_sek,expiry_timestamp
+LOT-001,ica-maxi-solna,bakery_surplus,45.5,50.00,2026-03-25T10:00:00Z
+LOT-002,coop-odenplan,produce_veggies,120.0,0.00,2026-03-24T22:00:00Z
+LOT-003,willys-sollentuna,bakery_surplus,30.0,35.00,2026-03-25T08:00:00Z
+LOT-004,hemkop-ostermalm,meat_near_exp,12.5,150.00,2026-03-24T18:00:00Z
+LOT-005,lidl-sveavagen,dairy_short_date,80.0,40.00,2026-03-24T20:00:00Z

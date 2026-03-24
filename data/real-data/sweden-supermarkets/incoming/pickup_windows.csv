@@ -1,0 +1,6 @@
+store_external_id,day_of_week,start_time,end_time,window_type
+ica-maxi-solna,Monday,06:00,08:00,standard
+ica-maxi-solna,Wednesday,06:00,08:00,standard
+willys-sollentuna,Tuesday,07:00,09:00,express
+coop-odenplan,Daily,21:00,22:00,night_pickup
+hemkop-ostermalm,Friday,06:00,08:30,standard
