@@ -15,6 +15,10 @@ import {
   normalizeSchedulePickupInput
 } from "./trades.validators";
 import type {
+  BuyerAuctionDetailResult,
+  BuyerFeedResult,
+  BuyerWorkspaceAuctionRecordDto,
+  BuyerWorkspaceBuyerDto,
   DisputeDto,
   EndAuctionResult,
   PickupProofDto,
@@ -27,6 +31,46 @@ import type {
 } from "./trades.types";
 
 const ACTIVE_AUCTION_STATUSES = new Set(["SCHEDULED", "LIVE"]);
+const STOCKHOLM_REFERENCE = {
+  latitude: 59.3293,
+  longitude: 18.0686
+} as const;
+
+type BuyerWorkspaceBuyerRecord = {
+  id: string;
+  name: string;
+  approved: boolean;
+  reputation: number;
+  city: string | null;
+  metadata: Prisma.JsonValue | null;
+};
+
+type BuyerWorkspaceAuctionRecord = Prisma.AuctionGetPayload<{
+  include: {
+    bids: {
+      orderBy: {
+        createdAt: "asc";
+      };
+    };
+    highestBid: true;
+    lot: {
+      include: {
+        store: true;
+        category: true;
+        order: {
+          include: {
+            dispute: true;
+            proofs: {
+              orderBy: {
+                createdAt: "desc";
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+}>;
 
 function toNumber(value: Prisma.Decimal | number | string | null | undefined): number {
   if (value === null || value === undefined) {
@@ -112,9 +156,199 @@ function disputeToDto(dispute: PrismaDispute): DisputeDto {
   };
 }
 
+function getJsonStringField(value: Prisma.JsonValue | null | undefined, key: string): string | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  return typeof record[key] === "string" ? record[key] : null;
+}
+
+function toRadians(value: number) {
+  return (value * Math.PI) / 180;
+}
+
+function approximateDistanceKm(latitude: Prisma.Decimal | number | string | null, longitude: Prisma.Decimal | number | string | null) {
+  const lat = toNumber(latitude);
+  const lon = toNumber(longitude);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat === 0 || lon === 0) {
+    return 0;
+  }
+
+  const earthRadiusKm = 6371;
+  const dLat = toRadians(lat - STOCKHOLM_REFERENCE.latitude);
+  const dLon = toRadians(lon - STOCKHOLM_REFERENCE.longitude);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(STOCKHOLM_REFERENCE.latitude)) *
+      Math.cos(toRadians(lat)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return Number((earthRadiusKm * c).toFixed(1));
+}
+
+function workspaceBuyerToDto(buyer: BuyerWorkspaceBuyerRecord): BuyerWorkspaceBuyerDto {
+  return {
+    id: buyer.id,
+    name: buyer.name,
+    approved: buyer.approved,
+    reputation: buyer.reputation,
+    note:
+      getJsonStringField(buyer.metadata, "riskLabel") ??
+      (buyer.approved ? "Approved for live bidding" : "Pending approval for live bidding")
+  };
+}
+
+function workspaceOrderToDto(
+  order: (PrismaOrder & { dispute: PrismaDispute | null; proofs: PrismaPickupProof[] }) | null | undefined
+) {
+  if (!order) {
+    return undefined;
+  }
+
+  const latestProof = order.proofs[0] ?? null;
+  const pickupWindowStartAt = toDateValue((order as PrismaOrder & { pickupWindowStartAt?: Date | string | null }).pickupWindowStartAt);
+  const pickupWindowEndAt = toDateValue((order as PrismaOrder & { pickupWindowEndAt?: Date | string | null }).pickupWindowEndAt);
+  const pickupScheduledAt = toDateValue((order as PrismaOrder & { pickupScheduledAt?: Date | string | null }).pickupScheduledAt);
+  const pickupCompletedAt = toDateValue((order as PrismaOrder & { pickupCompletedAt?: Date | string | null }).pickupCompletedAt);
+
+  return {
+    ...orderToDto(order),
+    pickupWindow:
+      pickupWindowStartAt && pickupWindowEndAt
+        ? {
+            startAt: toIsoString(pickupWindowStartAt),
+            endAt: toIsoString(pickupWindowEndAt)
+          }
+        : null,
+    pickupScheduledAt: pickupScheduledAt ? toIsoString(pickupScheduledAt) : null,
+    pickupCompletedAt: pickupCompletedAt ? toIsoString(pickupCompletedAt) : null,
+    pickupProof: latestProof ? pickupProofToDto(latestProof) : null,
+    dispute: order.dispute ? disputeToDto(order.dispute) : null
+  };
+}
+
+function buildAuctionSummary(record: BuyerWorkspaceAuctionRecord) {
+  const categorySummary = getJsonStringField(record.lot.category.rulesDefault, "notes");
+  if (categorySummary) {
+    return categorySummary;
+  }
+
+  if (record.status === "LIVE") {
+    return "Live auction ready for bids from approved industrial buyers.";
+  }
+
+  if (record.status === "SCHEDULED") {
+    return "Scheduled auction waiting for its runtime window.";
+  }
+
+  if (record.status === "VOID") {
+    return "Void auction retained for edge-state validation.";
+  }
+
+  return "Awarded or completed scenario kept for downstream pickup and billing flows.";
+}
+
+function buildAuctionTags(record: BuyerWorkspaceAuctionRecord) {
+  const tags = new Set<string>();
+  tags.add(record.status);
+  tags.add(record.lot.storageCondition);
+
+  if (record.lot.order?.pickupStatus === "SCHEDULED") {
+    tags.add("PICKUP SCHEDULED");
+  }
+
+  if (record.lot.order?.pickupStatus === "COMPLETED") {
+    tags.add("COMPLETED");
+  }
+
+  if (record.lot.order?.pickupStatus === "NO_SHOW") {
+    tags.add("NO_SHOW");
+  }
+
+  if (record.lot.status === "EXPIRED") {
+    tags.add("EXPIRED");
+  }
+
+  if (record.lot.status === "AWARDED") {
+    tags.add("AWARDED");
+  }
+
+  return [...tags];
+}
+
+function workspaceAuctionRecordToDto(record: BuyerWorkspaceAuctionRecord): BuyerWorkspaceAuctionRecordDto {
+  const pickupWindowStartAt = toDateValue(record.lot.pickupWindowStartAt);
+  const pickupWindowEndAt = toDateValue(record.lot.pickupWindowEndAt);
+  const order = workspaceOrderToDto(record.lot.order);
+
+  return {
+    id: record.id,
+    storeName: record.lot.store.name,
+    categoryName: record.lot.category.name,
+    distanceKm: approximateDistanceKm(record.lot.store.latitude, record.lot.store.longitude),
+    summary: buildAuctionSummary(record),
+    tags: buildAuctionTags(record),
+    lot: {
+      id: record.lot.id,
+      storeId: record.lot.storeId,
+      categoryId: record.lot.categoryId,
+      storageCondition: record.lot.storageCondition,
+      pickupWindow: {
+        startAt: pickupWindowStartAt ? toIsoString(pickupWindowStartAt) : new Date(0).toISOString(),
+        endAt: pickupWindowEndAt ? toIsoString(pickupWindowEndAt) : new Date(0).toISOString()
+      },
+      estimatedWeightKg: toNumber(record.lot.estimatedWeightKg),
+      finalWeightKg: record.lot.finalWeightKg ? toNumber(record.lot.finalWeightKg) : null,
+      grade: record.lot.grade,
+      status: record.lot.status
+    },
+    auction: auctionToDto(record, record.highestBid),
+    bids: record.bids.map((bid) => bidToDto(bid)),
+    ...(order ? { order } : {})
+  };
+}
+
 @Injectable()
 export class TradesService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async listBuyerFeed(): Promise<BuyerFeedResult> {
+    const [buyers, auctions] = await Promise.all([this.loadWorkspaceBuyers(), this.loadWorkspaceAuctions()]);
+    const activeBuyerId = buyers.find((buyer) => buyer.approved)?.id ?? buyers[0]?.id ?? "";
+
+    return {
+      buyers,
+      activeBuyerId,
+      auctions,
+      lastSyncedAt: new Date().toISOString(),
+      source: "api"
+    };
+  }
+
+  async getBuyerAuctionDetail(auctionId: string): Promise<BuyerAuctionDetailResult> {
+    const [buyers, auctions] = await Promise.all([this.loadWorkspaceBuyers(), this.loadWorkspaceAuctions()]);
+    const auction = auctions.find((entry) => entry.id === auctionId);
+
+    if (!auction) {
+      notFoundError("AUCTION_NOT_FOUND", "Auction not found", { auctionId });
+    }
+
+    const activeBuyerId = buyers.find((buyer) => buyer.approved)?.id ?? buyers[0]?.id ?? "";
+
+    return {
+      buyers,
+      activeBuyerId,
+      auction,
+      relatedAuctions: auctions.filter((entry) => entry.id !== auctionId),
+      lastSyncedAt: new Date().toISOString(),
+      source: "api"
+    };
+  }
 
   async startAuction(input: StartAuctionInput) {
     return this.prisma.$transaction(async (tx) => {
@@ -460,5 +694,54 @@ export class TradesService {
       order: orderToDto(updatedOrder),
       dispute: disputeToDto(dispute)
     };
+  }
+
+  private async loadWorkspaceBuyers(): Promise<BuyerWorkspaceBuyerDto[]> {
+    const buyers = await this.prisma.buyer.findMany({
+      orderBy: [{ approved: "desc" }, { reputation: "desc" }, { name: "asc" }]
+    });
+
+    return buyers.map((buyer) =>
+      workspaceBuyerToDto({
+        id: buyer.id,
+        name: buyer.name,
+        approved: buyer.approved,
+        reputation: buyer.reputation,
+        city: buyer.city,
+        metadata: buyer.metadata
+      })
+    );
+  }
+
+  private async loadWorkspaceAuctions(): Promise<BuyerWorkspaceAuctionRecordDto[]> {
+    const auctions = await this.prisma.auction.findMany({
+      include: {
+        bids: {
+          orderBy: {
+            createdAt: "asc"
+          }
+        },
+        highestBid: true,
+        lot: {
+          include: {
+            store: true,
+            category: true,
+            order: {
+              include: {
+                dispute: true,
+                proofs: {
+                  orderBy: {
+                    createdAt: "desc"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      orderBy: [{ endAt: "desc" }, { createdAt: "desc" }]
+    });
+
+    return auctions.map((auction) => workspaceAuctionRecordToDto(auction));
   }
 }

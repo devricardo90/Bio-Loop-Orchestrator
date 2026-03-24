@@ -1,44 +1,201 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { BidPanel } from "./bid-panel";
-import { useAuctionStore } from "./auction-store";
+import { useEffect, useMemo, useState } from "react";
+import { submitBidToApi } from "../lib/bid-api";
+import { fetchBuyerAuctionDetail, fetchBuyerFeed, type BuyerBidSubmitResult } from "../lib/buyer-api";
 import {
   formatCountdown,
-  formatDistance,
   formatSek,
   formatSyncTime,
   formatTimeWindow,
   getAuctionRuntime,
   getFeaturedAuction,
-  type DemoAuctionRecord
+  type DemoAuctionRecord,
+  type DemoBuyer
 } from "../lib/demo-auctions";
+import { BidPanel } from "./bid-panel";
 
 type BuyerDashboardProps = {
   mode: "feed" | "auction";
   auctionId?: string;
 };
 
+type BuyerWorkspaceState = {
+  buyers: DemoBuyer[];
+  activeBuyerId: string;
+  auctions: DemoAuctionRecord[];
+  lastSyncedAt: string;
+};
+
 const filters = ["ALL", "LIVE", "SCHEDULED", "ENDED", "VOID"] as const;
 
 export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
-  const { state, now, activeBuyerId, activeBuyerApproved, setActiveBuyerId, submitBid, hydrated } = useAuctionStore();
+  const [workspace, setWorkspace] = useState<BuyerWorkspaceState | null>(null);
+  const [activeBuyerId, setActiveBuyerId] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [filter, setFilter] = useState<(typeof filters)[number]>("ALL");
+  const now = Date.now();
 
-  const activeBuyer = state.buyers.find((buyer) => buyer.id === activeBuyerId) ?? state.buyers[0];
-  const featuredAuction = getFeaturedAuction(state);
-  const detailAuction = mode === "auction" ? state.auctions.find((auction) => auction.id === auctionId) : undefined;
-  const feedItems = state.auctions.filter((auction) => {
-    if (filter === "ALL") {
-      return true;
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      setError("");
+
+      try {
+        if (mode === "auction" && auctionId) {
+          const result = await fetchBuyerAuctionDetail(auctionId);
+          if (cancelled) {
+            return;
+          }
+
+          setWorkspace({
+            buyers: result.buyers,
+            activeBuyerId: result.activeBuyerId,
+            auctions: [result.auction, ...result.relatedAuctions],
+            lastSyncedAt: result.lastSyncedAt
+          });
+          setActiveBuyerId((current) => current || result.activeBuyerId);
+        } else {
+          const result = await fetchBuyerFeed();
+          if (cancelled) {
+            return;
+          }
+
+          setWorkspace({
+            buyers: result.buyers,
+            activeBuyerId: result.activeBuyerId,
+            auctions: result.auctions,
+            lastSyncedAt: result.lastSyncedAt
+          });
+          setActiveBuyerId((current) => current || result.activeBuyerId);
+        }
+      } catch (nextError) {
+        if (!cancelled) {
+          setError(nextError instanceof Error ? nextError.message : "Unable to load buyer workspace.");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
     }
-    return getAuctionRuntime(auction, now).statusLabel === filter;
-  });
-  const spotlight = detailAuction ?? featuredAuction;
 
-  if (!hydrated) {
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [auctionId, mode]);
+
+  useEffect(() => {
+    if (!workspace) {
+      return;
+    }
+
+    const stillExists = workspace.buyers.some((buyer) => buyer.id === activeBuyerId);
+    if (!stillExists) {
+      setActiveBuyerId(workspace.activeBuyerId);
+    }
+  }, [activeBuyerId, workspace]);
+
+  const activeBuyer = workspace?.buyers.find((buyer) => buyer.id === activeBuyerId) ?? workspace?.buyers[0];
+  const featuredAuction = useMemo(() => {
+    if (!workspace || workspace.auctions.length === 0) {
+      return null;
+    }
+
+    return getFeaturedAuction({
+      buyers: workspace.buyers,
+      activeBuyerId,
+      auctions: workspace.auctions,
+      lastSyncedAt: workspace.lastSyncedAt
+    });
+  }, [activeBuyerId, workspace]);
+  const detailAuction = mode === "auction" ? workspace?.auctions.find((auction) => auction.id === auctionId) : undefined;
+  const feedItems =
+    workspace?.auctions.filter((auction) => {
+      if (filter === "ALL") {
+        return true;
+      }
+
+      return getAuctionRuntime(auction, now).statusLabel === filter;
+    }) ?? [];
+  const spotlight = detailAuction ?? featuredAuction;
+  const activeBuyerApproved = Boolean(activeBuyer?.approved);
+
+  async function reloadWorkspace() {
+    if (mode === "auction" && auctionId) {
+      const result = await fetchBuyerAuctionDetail(auctionId);
+      setWorkspace({
+        buyers: result.buyers,
+        activeBuyerId: result.activeBuyerId,
+        auctions: [result.auction, ...result.relatedAuctions],
+        lastSyncedAt: result.lastSyncedAt
+      });
+      return;
+    }
+
+    const result = await fetchBuyerFeed();
+    setWorkspace({
+      buyers: result.buyers,
+      activeBuyerId: result.activeBuyerId,
+      auctions: result.auctions,
+      lastSyncedAt: result.lastSyncedAt
+    });
+  }
+
+  async function submitBid(priceSekPerKg: number): Promise<BuyerBidSubmitResult> {
+    if (!activeBuyer || !spotlight) {
+      return { ok: false, error: "Buyer workspace is not ready." };
+    }
+
+    try {
+      const response = await submitBidToApi({
+        auctionId: spotlight.id,
+        buyerId: activeBuyer.id,
+        priceSekPerKg
+      });
+
+      await reloadWorkspace();
+      return { ok: true, bid: response.bid, source: "api" };
+    } catch (nextError) {
+      return {
+        ok: false,
+        error: nextError instanceof Error ? nextError.message : "Unable to submit bid."
+      };
+    }
+  }
+
+  if (loading) {
     return <div className="page-shell">Loading buyer workspace...</div>;
+  }
+
+  if (error) {
+    return (
+      <main className="app-shell">
+        <section className="panel empty-state">
+          <p className="eyebrow">Buyer API</p>
+          <h2>Unable to load the buyer workspace.</h2>
+          <p className="muted">{error}</p>
+        </section>
+      </main>
+    );
+  }
+
+  if (!workspace || !activeBuyer || !spotlight) {
+    return (
+      <main className="app-shell">
+        <section className="panel empty-state">
+          <p className="eyebrow">Buyer workspace</p>
+          <h2>No buyer data available.</h2>
+          <p className="muted">The live API returned no buyer workspace records.</p>
+        </section>
+      </main>
+    );
   }
 
   return (
@@ -48,13 +205,14 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
           <p className="eyebrow">Buyer operations</p>
           <h1>{mode === "feed" ? "A feed built for industrial buyers." : "Auction view with contract-safe bidding."}</h1>
           <p className="lead">
-            Polling keeps the feed fresh every few seconds. Bids are disabled until the auction is live and the
-            active buyer is approved.
+            The buyer feed and auction detail are loaded from the live API. Bids stay disabled until the auction is
+            live and the active buyer is approved.
           </p>
           <div className="hero-meta">
-            <span className="chip chip-accent">{formatSyncTime(state.lastSyncedAt)}</span>
-            <span className="chip">{state.auctions.length} auctions tracked</span>
+            <span className="chip chip-accent">{formatSyncTime(workspace.lastSyncedAt)}</span>
+            <span className="chip">{workspace.auctions.length} auctions tracked</span>
             <span className="chip">{activeBuyerApproved ? "Buyer approved" : "Buyer pending"}</span>
+            <span className="chip">source=api</span>
           </div>
           <div className="hero-meta">
             <Link href="/buyer/orders" className="button button-secondary">
@@ -70,7 +228,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
           <div className="panel buyer-switcher">
             <p className="label">Active buyer</p>
             <div className="buyer-list">
-              {state.buyers.map((buyer) => (
+              {workspace.buyers.map((buyer) => (
                 <button
                   key={buyer.id}
                   className={`buyer-pill ${buyer.id === activeBuyerId ? "buyer-pill-active" : ""}`}
@@ -89,13 +247,13 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
 
       <section className="metrics">
         {[
-          ["Live", state.auctions.filter((auction) => getAuctionRuntime(auction, now).statusLabel === "LIVE").length],
+          ["Live", workspace.auctions.filter((auction) => getAuctionRuntime(auction, now).statusLabel === "LIVE").length],
           [
             "Scheduled",
-            state.auctions.filter((auction) => getAuctionRuntime(auction, now).statusLabel === "SCHEDULED").length
+            workspace.auctions.filter((auction) => getAuctionRuntime(auction, now).statusLabel === "SCHEDULED").length
           ],
-          ["Won", state.auctions.filter((auction) => auction.lot.status === "PICKUP_SCHEDULED").length],
-          ["Void", state.auctions.filter((auction) => getAuctionRuntime(auction, now).statusLabel === "VOID").length]
+          ["Won", workspace.auctions.filter((auction) => auction.lot.status === "PICKUP_SCHEDULED").length],
+          ["Void", workspace.auctions.filter((auction) => getAuctionRuntime(auction, now).statusLabel === "VOID").length]
         ].map(([label, value]) => (
           <article key={label as string} className="metric-card">
             <span className="label">{label as string}</span>
@@ -135,119 +293,99 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
 
           <aside className="panel spotlight-panel">
             <p className="eyebrow">Spotlight</p>
-            <h2>{featuredAuction.storeName}</h2>
-            <p className="muted">{featuredAuction.summary}</p>
+            <h2>{featuredAuction?.storeName}</h2>
+            <p className="muted">{featuredAuction?.summary}</p>
             <div className="spotlight-stats">
               <span>
-                <strong>{formatSek(featuredAuction.auction.reservePriceSekPerKg)}</strong>
+                <strong>{featuredAuction ? formatSek(featuredAuction.auction.reservePriceSekPerKg) : "N/A"}</strong>
                 <small>reserve</small>
               </span>
               <span>
-                <strong>{formatDistance(featuredAuction.distanceKm)}</strong>
-                <small>away</small>
+                <strong>{featuredAuction ? `${featuredAuction.distanceKm.toFixed(1)} km` : "N/A"}</strong>
+                <small>from Stockholm</small>
               </span>
               <span>
-                <strong>{featuredAuction.bids.length}</strong>
+                <strong>{featuredAuction?.bids.length ?? 0}</strong>
                 <small>bids</small>
               </span>
             </div>
-            <Link href={`/buyer/auctions/${featuredAuction.id}`} className="button button-secondary">
-              Open live auction
-            </Link>
+            {featuredAuction ? (
+              <Link href={`/buyer/auctions/${featuredAuction.id}`} className="button button-secondary">
+                Open live auction
+              </Link>
+            ) : null}
           </aside>
         </section>
       ) : (
         <section className="detail-layout">
           <div className="panel detail-panel">
-            {spotlight ? (
-              <>
-                <div className="panel-head">
-                  <div>
-                    <p className="eyebrow">Auction view</p>
-                    <h2>{spotlight.categoryName}</h2>
-                  </div>
-                  <span className={`status-badge status-${getAuctionRuntime(spotlight, now).statusTone.toLowerCase()}`}>
-                    {getAuctionRuntime(spotlight, now).statusLabel}
-                  </span>
-                </div>
-
-                <p className="lead compact">{spotlight.summary}</p>
-
-                <div className="detail-grid">
-                  <div>
-                    <span className="label">Store</span>
-                    <strong>{spotlight.storeName}</strong>
-                  </div>
-                  <div>
-                    <span className="label">Storage</span>
-                    <strong>{spotlight.lot.storageCondition}</strong>
-                  </div>
-                  <div>
-                    <span className="label">Pickup window</span>
-                    <strong>{formatTimeWindow(spotlight.lot.pickupWindow.startAt, spotlight.lot.pickupWindow.endAt)}</strong>
-                  </div>
-                  <div>
-                    <span className="label">Estimated weight</span>
-                    <strong>{spotlight.lot.estimatedWeightKg} kg</strong>
-                  </div>
-                </div>
-
-                <div className="timeline">
-                  <div>
-                    <span className="label">Auction end</span>
-                    <strong>{formatCountdown(getAuctionRuntime(spotlight, now).countdownMs)}</strong>
-                  </div>
-                  <div>
-                    <span className="label">Highest bid</span>
-                    <strong>
-                      {spotlight.auction.highestBid ? formatSek(spotlight.auction.highestBid.priceSekPerKg) : "No bids yet"}
-                    </strong>
-                  </div>
-                  <div>
-                    <span className="label">Reserve</span>
-                    <strong>{formatSek(spotlight.auction.reservePriceSekPerKg)}</strong>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="empty-state">
-                <p className="eyebrow">Not found</p>
-                <h2>Auction not found.</h2>
-                <p className="muted">Return to the feed and open a live auction.</p>
-                <Link href="/buyer/feed" className="button button-secondary">
-                  Back to feed
-                </Link>
+            <div className="panel-head">
+              <div>
+                <p className="eyebrow">Auction view</p>
+                <h2>{spotlight.categoryName}</h2>
               </div>
-            )}
-          </div>
+              <span className={`status-badge status-${getAuctionRuntime(spotlight, now).statusTone.toLowerCase()}`}>
+                {getAuctionRuntime(spotlight, now).statusLabel}
+              </span>
+            </div>
 
-          {spotlight ? (
-            <div className="detail-sidebar">
-              <BidPanel
-                auction={spotlight}
-                buyer={activeBuyer}
-                now={now}
-                onSubmit={(price) => submitBid({ auctionId: spotlight.id, priceSekPerKg: price })}
-              />
+            <p className="lead compact">{spotlight.summary}</p>
 
-              <div className="panel">
-                <p className="eyebrow">Other auctions</p>
-                <div className="compact-list">
-                  {state.auctions
-                    .filter((auction) => auction.id !== spotlight.id)
-                    .map((auction) => (
-                      <Link key={auction.id} href={`/buyer/auctions/${auction.id}`} className="compact-row">
-                        <span>
-                          <strong>{auction.categoryName}</strong>
-                          <small>{auction.storeName}</small>
-                        </span>
-                        <span>{getAuctionRuntime(auction, now).statusLabel}</span>
-                      </Link>
-                    ))}
-                </div>
+            <div className="detail-grid">
+              <div>
+                <span className="label">Store</span>
+                <strong>{spotlight.storeName}</strong>
+              </div>
+              <div>
+                <span className="label">Storage</span>
+                <strong>{spotlight.lot.storageCondition}</strong>
+              </div>
+              <div>
+                <span className="label">Pickup window</span>
+                <strong>{formatTimeWindow(spotlight.lot.pickupWindow.startAt, spotlight.lot.pickupWindow.endAt)}</strong>
+              </div>
+              <div>
+                <span className="label">Estimated weight</span>
+                <strong>{spotlight.lot.estimatedWeightKg} kg</strong>
               </div>
             </div>
-          ) : null}
+
+            <div className="timeline">
+              <div>
+                <span className="label">Auction end</span>
+                <strong>{formatCountdown(getAuctionRuntime(spotlight, now).countdownMs)}</strong>
+              </div>
+              <div>
+                <span className="label">Highest bid</span>
+                <strong>{spotlight.auction.highestBid ? formatSek(spotlight.auction.highestBid.priceSekPerKg) : "No bids yet"}</strong>
+              </div>
+              <div>
+                <span className="label">Reserve</span>
+                <strong>{formatSek(spotlight.auction.reservePriceSekPerKg)}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="detail-sidebar">
+            <BidPanel auction={spotlight} buyer={activeBuyer} now={now} onSubmit={submitBid} />
+
+            <div className="panel">
+              <p className="eyebrow">Other auctions</p>
+              <div className="compact-list">
+                {workspace.auctions
+                  .filter((auction) => auction.id !== spotlight.id)
+                  .map((auction) => (
+                    <Link key={auction.id} href={`/buyer/auctions/${auction.id}`} className="compact-row">
+                      <span>
+                        <strong>{auction.categoryName}</strong>
+                        <small>{auction.storeName}</small>
+                      </span>
+                      <span>{getAuctionRuntime(auction, now).statusLabel}</span>
+                    </Link>
+                  ))}
+              </div>
+            </div>
+          </div>
         </section>
       )}
     </main>
@@ -279,7 +417,7 @@ function AuctionCard({ auction, now }: { auction: DemoAuctionRecord; now: number
         </div>
         <div>
           <span className="label">Distance</span>
-          <strong>{formatDistance(auction.distanceKm)}</strong>
+          <strong>{auction.distanceKm.toFixed(1)} km</strong>
         </div>
         <div>
           <span className="label">Bids</span>

@@ -156,7 +156,7 @@
   - deps: DB-03, API-10, API-11
   - output: login real contra usuarios persistidos, mantendo cookies e CSRF
   - gate: credencial invalida falha; usuarios seedados autenticam; e2e admin/seller continuam verdes
-- [READY] (API-13) Read-model real para buyer feed e auction detail
+- [DONE] (API-13) Read-model real para buyer feed e auction detail
   - owner: API Agent
   - deps: DB-03, API-12
   - output: endpoints reais para buyer feed, auction detail e runtime de bids/pickup
@@ -179,7 +179,7 @@
 
 ### Frontend / Web lane
 
-- [BLOCKED] (WEB-09) Buyer workspace real-data convergence
+- [READY] (WEB-09) Buyer workspace real-data convergence
   - owner: Frontend Agent
   - deps: DB-03, API-13
   - output: buyer feed, auction detail e pickup queue ligados ao backend real

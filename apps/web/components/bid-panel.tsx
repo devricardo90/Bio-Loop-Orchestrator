@@ -2,13 +2,13 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { getAuctionRuntime, formatSek, type DemoAuctionRecord, type DemoBuyer } from "../lib/demo-auctions";
-import type { BidSubmitResult } from "./auction-store";
+import type { BuyerBidSubmitResult } from "../lib/buyer-api";
 
 type BidPanelProps = {
   auction: DemoAuctionRecord;
   buyer: DemoBuyer;
   now: number;
-  onSubmit: (priceSekPerKg: number) => Promise<BidSubmitResult>;
+  onSubmit: (priceSekPerKg: number) => Promise<BuyerBidSubmitResult>;
 };
 
 export function BidPanel({ auction, buyer, now, onSubmit }: BidPanelProps) {
@@ -48,11 +48,7 @@ export function BidPanel({ auction, buyer, now, onSubmit }: BidPanelProps) {
     startTransition(() => {
       void onSubmit(numericPrice).then((result) => {
         if (result.ok) {
-          setMessage(
-            result.source === "api"
-              ? `Bid accepted by the API at ${formatSek(result.bid.priceSekPerKg)}.`
-              : `Demo bid stored locally at ${formatSek(result.bid.priceSekPerKg)} while the API is offline.`
-          );
+          setMessage(`Bid accepted by the API at ${formatSek(result.bid.priceSekPerKg)}.`);
           return;
         }
 
@@ -102,9 +98,8 @@ export function BidPanel({ auction, buyer, now, onSubmit }: BidPanelProps) {
       </button>
 
       <p className={`message ${message ? "message-visible" : ""}`} aria-live="polite">
-        {message || disabledReason || "Bids are validated locally before the API call is attempted."}
+        {message || disabledReason || "Bids are validated locally before the API call is sent to the live backend."}
       </p>
     </section>
   );
 }
-
