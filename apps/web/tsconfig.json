@@ -13,7 +13,6 @@
     "noEmit": true,
     "allowJs": false,
     "isolatedModules": true,
-    "incremental": true,
     "types": [
       "node"
     ],
@@ -31,8 +30,7 @@
     "lib/**/*.ts",
     "../../packages/domain/src/**/*.ts",
     "../../packages/shared/src/**/*.ts",
-    "next-env.d.ts",
-    ".next/types/**/*.ts"
+    "next-env.d.ts"
   ],
   "exclude": [
     "node_modules"

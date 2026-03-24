@@ -50,7 +50,7 @@
 
 - [DONE] (INFRA-02) Repository hygiene: commit/ignore generated artifacts, stabilize watch:done tooling, clean workspace policy
   - deps: none
-- [READY] (WEB-04) Login seller/buyer ligado ao auth httpOnly + csrf
+- [DONE] (WEB-04) Login seller/buyer ligado ao auth httpOnly + csrf
   - deps: API-02
 - [READY] (API-05) OpenAPI atualizado + Scalar em /reference para auth/trade/pickup endpoints
   - deps: API-03, API-04

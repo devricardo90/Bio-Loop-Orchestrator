@@ -1,6 +1,8 @@
 import "./globals.css";
 import type { ReactNode } from "react";
 import { AuctionStoreProvider } from "../components/auction-store";
+import { AppHeader } from "../components/app-header";
+import { AuthSessionProvider } from "../components/auth-session";
 
 export const metadata = {
   title: {
@@ -18,7 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuctionStoreProvider>{children}</AuctionStoreProvider>
+        <AuthSessionProvider>
+          <AuctionStoreProvider>
+            <AppHeader />
+            {children}
+          </AuctionStoreProvider>
+        </AuthSessionProvider>
       </body>
     </html>
   );

@@ -41,6 +41,61 @@ a {
   padding: 32px 0 48px;
 }
 
+.app-header {
+  width: min(1240px, calc(100% - 32px));
+  margin: 18px auto 0;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid rgba(26, 29, 31, 0.1);
+  border-radius: 24px;
+  background: rgba(255, 250, 243, 0.82);
+  box-shadow: 0 18px 45px rgba(36, 28, 18, 0.08);
+  backdrop-filter: blur(16px);
+}
+
+.app-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.app-header-brand strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.08rem;
+}
+
+.app-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.app-header-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.app-header-nav a:hover {
+  color: var(--text);
+}
+
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-header-button {
+  min-height: 42px;
+}
+
 .landing-shell {
   min-height: 100vh;
   display: grid;
@@ -412,6 +467,70 @@ h3 {
   min-height: 100vh;
 }
 
+.login-shell {
+  min-height: calc(100vh - 96px);
+  display: grid;
+  align-items: center;
+}
+
+.login-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 24px;
+}
+
+.login-copy {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding: 18px 0;
+}
+
+.persona-stack {
+  display: grid;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.persona-card {
+  display: grid;
+  gap: 6px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  border: 1px solid rgba(26, 29, 31, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.persona-card-active {
+  background: var(--accent-soft);
+  border-color: rgba(15, 93, 75, 0.25);
+}
+
+.persona-card-title {
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.persona-card-subtitle {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.login-notes,
+.login-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.login-panel {
+  display: grid;
+  gap: 18px;
+}
+
 .detail-sidebar {
   display: grid;
   gap: 16px;
@@ -623,6 +742,7 @@ h3 {
 
 @media (max-width: 960px) {
   .hero,
+  .login-grid,
   .feed-layout,
   .detail-layout,
   .seller-layout,
@@ -637,6 +757,11 @@ h3 {
 
   .hero-copy {
     padding: 28px;
+  }
+
+  .app-header {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 

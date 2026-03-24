@@ -9,9 +9,12 @@ export default function HomePage() {
           <h1>Buyer operations with a live auction surface.</h1>
           <p className="lead">
             The buyer workspace is wired for polling, contract-safe bids, and
-            route-level auction detail.
+            route-level auction detail. Login now routes seller and buyer personas through the auth flow.
           </p>
           <div className="hero-meta">
+            <Link href="/login" className="button button-primary">
+              Open login
+            </Link>
             <Link href="/buyer/feed" className="button button-primary">
               Open buyer feed
             </Link>
@@ -35,6 +38,7 @@ export default function HomePage() {
               <li>Live auction detail with bid panel</li>
               <li>Polling every few seconds for runtime status</li>
               <li>Demo state that can sync with the real API</li>
+              <li>Auth page for seller and buyer personas</li>
             </ul>
           </div>
         </div>
