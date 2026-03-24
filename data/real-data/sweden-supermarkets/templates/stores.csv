@@ -1,0 +1,2 @@
+store_external_id,store_name,brand_name,legal_entity_name,country,city,full_address,postal_code,timezone,latitude,longitude,default_currency,active
+example-store-001,Example Store,Example Brand,Example Legal Entity,SE,Stockholm,Examplegatan 1,11122,Europe/Stockholm,59.3293,18.0686,SEK,true

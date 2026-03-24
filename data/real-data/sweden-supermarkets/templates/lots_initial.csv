@@ -1,0 +1,2 @@
+lot_external_id,store_external_id,category_external_id,created_at,pickup_window_start_at,pickup_window_end_at,estimated_weight_kg,final_weight_kg,grade,storage_condition,status,notes
+example-lot-001,example-store-001,example-category-001,2026-03-24T08:00:00+01:00,2026-03-24T09:00:00+01:00,2026-03-24T11:00:00+01:00,120.0,,A,COLD,LISTED,Optional bootstrap row

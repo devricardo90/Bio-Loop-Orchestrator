@@ -1,0 +1,2 @@
+entity,field_name,description,required,example_value
+stores,store_external_id,Stable external store identifier,yes,example-store-001

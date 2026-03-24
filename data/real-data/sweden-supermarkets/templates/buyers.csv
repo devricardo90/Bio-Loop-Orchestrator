@@ -1,0 +1,2 @@
+buyer_external_id,buyer_name,legal_entity_name,country,city,full_address,contact_name,contact_email,contact_phone,approved_status,reputation_or_risk_label
+example-buyer-001,Example Buyer,Example Buyer Legal,SE,Stockholm,Buyer Street 1,Buyer Contact,buyer@example.se,+46-8-000-010,PENDING,Needs review

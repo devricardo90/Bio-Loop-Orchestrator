@@ -179,6 +179,19 @@ Quando o usuario enviar os dados reais, o orquestrador deve abrir uma task dedic
 - checklist de sanitizacao
 - gate de validacao em banco limpo
 
+### Local oficial no repositorio
+
+O pacote deve ser anexado em:
+
+- [data/real-data/sweden-supermarkets/README.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/data/real-data/sweden-supermarkets/README.md)
+
+Estrutura pronta:
+
+- `data/real-data/sweden-supermarkets/incoming/`
+- `data/real-data/sweden-supermarkets/templates/`
+- `data/real-data/sweden-supermarkets/mapping/`
+- `data/real-data/sweden-supermarkets/validation/`
+
 ---
 
 ## Observacao importante

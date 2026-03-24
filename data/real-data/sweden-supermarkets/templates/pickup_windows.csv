@@ -1,0 +1,2 @@
+store_external_id,weekday,window_type,start_time_local,end_time_local,lot_cutoff_time_local,logistics_constraints,notes
+example-store-001,monday,standard,06:00,09:00,05:00,Cold-chain truck required,Main loading dock

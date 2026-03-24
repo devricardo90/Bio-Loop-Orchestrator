@@ -1,0 +1,2 @@
+category_external_id,category_name,material_type,storage_condition,uom,min_weight_kg,max_days_to_pickup,quality_rules,notes
+example-category-001,Leafy Greens,produce_trim,COLD,kg,80,2,"No visible spoilage; cold chain required",Demo template row

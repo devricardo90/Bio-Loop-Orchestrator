@@ -79,5 +79,5 @@
 - O milestone M7 agora fecha com stack local, seed data, docs, UAT manual e browser e2e principal automatizado.
 - A proxima fase correta nao e mais MVP slice; agora o backlog passa a ser orquestrado por especialista (`DB Agent`, `API Agent`, `Frontend Agent`, `Infra Agent`, `QA Agent`) com fila unificada pelo orquestrador.
 - DB-03 fechou o seed v2 com catalogo de cenarios gerenciados, limpeza direcionada de IDs legacy e alinhamento dos cenarios-base com buyer live, seller billing e admin disputes.
-- O primeiro `READY` da fila pos-DB-03 e `DATA-01`, porque agora e o momento correto de anexar os dados reais dos supermercados da Suecia em cima de uma base seedada estavel.
+- `DATA-01` entrou em execucao com o pacote de intake criado no repositorio em `data/real-data/sweden-supermarkets/`, mas o fechamento do gate ainda depende do usuario anexar os arquivos reais em `incoming/`.
 - O momento correto para o usuario enviar os dados reais dos supermercados da Suecia e logo apos `DB-03`; os campos/documentos necessarios ficam em [REAL_DATA_ONBOARDING.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/REAL_DATA_ONBOARDING.md).
