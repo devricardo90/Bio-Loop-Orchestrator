@@ -23,7 +23,7 @@
 
 ## API
 - [x] Core persistence schema + Prisma migration for lots/auctions/bids/orders
-- [ ] Auth cookie httpOnly (login/refresh/logout/csrf)
+- [x] Auth cookie httpOnly (login/refresh/logout/csrf)
 - [ ] Core endpoints M1
 - [ ] OpenAPI atualizado + Scalar em /reference
 - [ ] Jobs: end_auction + no_show (M2)

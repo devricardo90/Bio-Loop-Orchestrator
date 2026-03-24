@@ -28,7 +28,7 @@
   - note: executar apenas se houver divergencia entre fallback e entrega principal
 - [DONE] (API-01) Prisma schema + migrations core (lots/auctions/bids/orders)
   - deps: DOM-01
-- [READY] (API-02) Auth httpOnly + CSRF + CORS allowlist
+- [DONE] (API-02) Auth httpOnly + CSRF + CORS allowlist
   - deps: INFRA-01
 - [BLOCKED] (API-03) Endpoint bid com validacoes de estado + teste integracao
   - deps: API-01, API-02, DOM-01
