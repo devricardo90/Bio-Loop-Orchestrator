@@ -51,9 +51,20 @@
 | `OPEN` | `RESOLVED` | dispute resolved | decision recorded |
 | `OPEN` | `CANCELLED` | dispute withdrawn | buyer/seller retracts before decision |
 
+## Invoice
+
+| From | To | Trigger | Guard |
+| --- | --- | --- | --- |
+| `DRAFT` | `READY` | invoice_ready | billable order data assembled |
+| `READY` | `EXPORTED` | invoice_exported | export payload/file created |
+| `READY` | `CANCELLED` | billing cancelled | order reversed or invalidated |
+| `EXPORTED` | `SETTLED` | invoice_settled | export acknowledged and payment cleared |
+| any active state | `CANCELLED` | billing cancelled | audit log required |
+
 ## Notes
 
 - `Auction` is the source of truth for bids and reserve-price validation.
 - `Lot` mirrors the commercial lifecycle so the UI can render state without inferring it from auction data.
 - `Order` owns payment and pickup settlement, while `PickupStatus` tracks the operational pickup subflow.
 - `Dispute` is the minimal operational wrapper around `IN_DISPUTE` orders and exists to support no-show handling and manual resolution.
+- `Invoice` is a post-settlement billing artifact and is independent from the auction lifecycle once created.

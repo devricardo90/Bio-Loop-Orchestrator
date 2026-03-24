@@ -1,10 +1,13 @@
 import { z } from "zod";
 import {
   AUCTION_STATUSES,
+  EXPORT_FORMATS,
   DISPUTE_REASONS,
   DISPUTE_STATUSES,
+  FEE_TYPES,
   LOT_GRADES,
   LOT_STATUSES,
+  INVOICE_STATUSES,
   ORDER_STATUSES,
   PICKUP_STATUSES,
   STORAGE_CONDITIONS
@@ -18,6 +21,9 @@ export const orderStatusSchema = z.enum(ORDER_STATUSES);
 export const pickupStatusSchema = z.enum(PICKUP_STATUSES);
 export const disputeStatusSchema = z.enum(DISPUTE_STATUSES);
 export const disputeReasonSchema = z.enum(DISPUTE_REASONS);
+export const invoiceStatusSchema = z.enum(INVOICE_STATUSES);
+export const feeTypeSchema = z.enum(FEE_TYPES);
+export const exportFormatSchema = z.enum(EXPORT_FORMATS);
 
 export const pickupWindowSchema = z
   .object({
@@ -120,6 +126,75 @@ export const disputeSchema = z
     status: disputeStatusSchema,
     openedAt: z.string().datetime(),
     resolvedAt: z.string().datetime().nullable()
+  })
+  .strict();
+
+export const feeLineItemSchema = z
+  .object({
+    id: z.string().min(1),
+    type: feeTypeSchema,
+    label: z.string().min(1),
+    amountSek: z.number()
+  })
+  .strict();
+
+export const invoiceLineItemSchema = z
+  .object({
+    id: z.string().min(1),
+    label: z.string().min(1),
+    quantityKg: z.number().positive(),
+    unitPriceSekPerKg: z.number().nonnegative(),
+    amountSek: z.number().nonnegative()
+  })
+  .strict();
+
+export const invoiceSchema = z
+  .object({
+    id: z.string().min(1),
+    orderId: z.string().min(1),
+    sellerId: z.string().min(1),
+    buyerId: z.string().min(1),
+    currency: z.literal("SEK"),
+    status: invoiceStatusSchema,
+    billedWeightKg: z.number().positive(),
+    subtotalSek: z.number().nonnegative(),
+    feeTotalSek: z.number().nonnegative(),
+    totalSek: z.number().nonnegative(),
+    issuedAt: z.string().datetime(),
+    exportedAt: z.string().datetime().nullable(),
+    lineItems: z.array(invoiceLineItemSchema),
+    fees: z.array(feeLineItemSchema)
+  })
+  .strict();
+
+export const invoiceDtoSchema = invoiceSchema;
+
+export const billingReportSchema = z
+  .object({
+    fromAt: z.string().datetime(),
+    toAt: z.string().datetime(),
+    currency: z.literal("SEK"),
+    invoiceCount: z.number().int().nonnegative(),
+    subtotalSek: z.number().nonnegative(),
+    feeTotalSek: z.number().nonnegative(),
+    totalSek: z.number().nonnegative()
+  })
+  .strict();
+
+export const invoiceExportRequestSchema = z
+  .object({
+    fromAt: z.string().datetime(),
+    toAt: z.string().datetime(),
+    format: exportFormatSchema
+  })
+  .strict();
+
+export const invoiceExportResponseSchema = z
+  .object({
+    format: exportFormatSchema,
+    downloadName: z.string().min(1),
+    invoiceCount: z.number().int().nonnegative(),
+    report: billingReportSchema
   })
   .strict();
 

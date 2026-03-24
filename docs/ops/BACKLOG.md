@@ -61,7 +61,7 @@
 
 ## M3 Billing Slice
 
-- [BLOCKED] (DOM-03) Contratos de invoice, fees e export basico
+- [DONE] (DOM-03) Contratos de invoice, fees e export basico
   - deps: DOM-02
 - [BLOCKED] (API-07) Invoice export + fee calculation + reports basicos
   - deps: DOM-03, API-04

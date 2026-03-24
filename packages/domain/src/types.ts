@@ -48,6 +48,26 @@ export type DisputeStatus = (typeof DISPUTE_STATUSES)[number];
 export const DISPUTE_REASONS = ["NO_SHOW", "QUALITY_ISSUE"] as const;
 export type DisputeReason = (typeof DISPUTE_REASONS)[number];
 
+export const INVOICE_STATUSES = [
+  "DRAFT",
+  "READY",
+  "EXPORTED",
+  "SETTLED",
+  "CANCELLED"
+] as const;
+export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
+
+export const FEE_TYPES = [
+  "PLATFORM_PERCENT",
+  "PICKUP_FLAT",
+  "DISPUTE_FLAT",
+  "ADJUSTMENT"
+] as const;
+export type FeeType = (typeof FEE_TYPES)[number];
+
+export const EXPORT_FORMATS = ["CSV", "JSON"] as const;
+export type ExportFormat = (typeof EXPORT_FORMATS)[number];
+
 export const DOMAIN_EVENTS = [
   "inventory_snapshot_ingested",
   "rule_threshold_met",
@@ -147,6 +167,76 @@ export interface Dispute {
   status: DisputeStatus;
   openedAt: string;
   resolvedAt: string | null;
+}
+
+export interface FeeLineItem {
+  id: string;
+  type: FeeType;
+  label: string;
+  amountSek: number;
+}
+
+export interface InvoiceLineItem {
+  id: string;
+  label: string;
+  quantityKg: number;
+  unitPriceSekPerKg: number;
+  amountSek: number;
+}
+
+export interface Invoice {
+  id: string;
+  orderId: string;
+  sellerId: string;
+  buyerId: string;
+  currency: "SEK";
+  status: InvoiceStatus;
+  billedWeightKg: number;
+  subtotalSek: number;
+  feeTotalSek: number;
+  totalSek: number;
+  issuedAt: string;
+  exportedAt: string | null;
+}
+
+export interface InvoiceDto {
+  id: string;
+  orderId: string;
+  sellerId: string;
+  buyerId: string;
+  currency: "SEK";
+  status: InvoiceStatus;
+  billedWeightKg: number;
+  subtotalSek: number;
+  feeTotalSek: number;
+  totalSek: number;
+  issuedAt: string;
+  exportedAt: string | null;
+  lineItems: InvoiceLineItem[];
+  fees: FeeLineItem[];
+}
+
+export interface BillingReport {
+  fromAt: string;
+  toAt: string;
+  currency: "SEK";
+  invoiceCount: number;
+  subtotalSek: number;
+  feeTotalSek: number;
+  totalSek: number;
+}
+
+export interface InvoiceExportRequest {
+  fromAt: string;
+  toAt: string;
+  format: ExportFormat;
+}
+
+export interface InvoiceExportResponse {
+  format: ExportFormat;
+  downloadName: string;
+  invoiceCount: number;
+  report: BillingReport;
 }
 
 export interface LotDto {
