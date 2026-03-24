@@ -74,5 +74,5 @@
   - deps: DOM-02
 - [DONE] (API-08) Buyer approval + disputes API
   - deps: DOM-04, API-04
-- [READY] (WEB-06) Admin buyers + disputes screens
+- [DONE] (WEB-06) Admin buyers + disputes screens
   - deps: API-08

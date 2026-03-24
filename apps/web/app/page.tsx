@@ -27,6 +27,9 @@ export default function HomePage() {
             <Link href="/seller" className="button button-secondary">
               Open seller hub
             </Link>
+            <Link href="/admin" className="button button-secondary">
+              Open admin cockpit
+            </Link>
           </div>
         </div>
 
@@ -39,6 +42,7 @@ export default function HomePage() {
               <li>Polling every few seconds for runtime status</li>
               <li>Demo state that can sync with the real API</li>
               <li>Auth page for seller and buyer personas</li>
+              <li>Admin cockpit for buyers and disputes</li>
             </ul>
           </div>
         </div>

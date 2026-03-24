@@ -23,6 +23,12 @@ const personaActions: Array<{
     title: "Seller workspace",
     subtitle: "Lots, auction results, and pickup status",
     route: "/seller"
+  },
+  {
+    persona: "admin",
+    title: "Admin workspace",
+    subtitle: "Buyer approvals and dispute resolution",
+    route: "/admin"
   }
 ];
 
@@ -59,7 +65,13 @@ export function LoginPanel() {
                 className={`persona-card ${persona === action.persona ? "persona-card-active" : ""}`}
                 onClick={() => {
                   setPersona(action.persona);
-                  setEmail(action.persona === "buyer" ? "buyer.admin@bioloop.dev" : "seller.admin@bioloop.dev");
+                  setEmail(
+                    action.persona === "buyer"
+                      ? "buyer.admin@bioloop.dev"
+                      : action.persona === "seller"
+                        ? "seller.admin@bioloop.dev"
+                        : "platform.admin@bioloop.dev"
+                  );
                   setMessage("");
                 }}
               >

@@ -1,7 +1,7 @@
 const apiBaseUrl = process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:4000";
 
-export type WebAuthPersona = "buyer" | "seller";
-export type WebAuthRole = "BUYER_ADMIN" | "SELLER_ADMIN";
+export type WebAuthPersona = "buyer" | "seller" | "admin";
+export type WebAuthRole = "BUYER_ADMIN" | "SELLER_ADMIN" | "PLATFORM_ADMIN";
 
 export type LoginResponse = {
   user: {
@@ -23,11 +23,27 @@ export type WebSession = {
 };
 
 function mapPersonaToRole(persona: WebAuthPersona): WebAuthRole {
-  return persona === "buyer" ? "BUYER_ADMIN" : "SELLER_ADMIN";
+  if (persona === "buyer") {
+    return "BUYER_ADMIN";
+  }
+
+  if (persona === "seller") {
+    return "SELLER_ADMIN";
+  }
+
+  return "PLATFORM_ADMIN";
 }
 
 function mapRoleToPersona(role: WebAuthRole): WebAuthPersona {
-  return role.startsWith("BUYER") ? "buyer" : "seller";
+  if (role.startsWith("BUYER")) {
+    return "buyer";
+  }
+
+  if (role.startsWith("SELLER")) {
+    return "seller";
+  }
+
+  return "admin";
 }
 
 export async function fetchAuthCsrfToken() {

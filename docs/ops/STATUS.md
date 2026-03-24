@@ -4,7 +4,7 @@
 - [x] M1 Core Trade Slice (Lot Auction Bid Order)
 - [x] M2 Ops Slice (Pickup scheduling + POD + no-show)
 - [x] M3 Billing Slice (Invoice export + fees + basic reports)
-- [ ] M4 Admin Slice (buyer approval + disputes)
+- [x] M4 Admin Slice (buyer approval + disputes)
 - [x] M5 Consolidation Slice (login + API docs + jobs + QA/release hardening)
 
 - Scaffold note: pnpm+turborepo baseline created for apps/api, apps/web, packages/domain, and packages/shared.
@@ -57,4 +57,4 @@
 - API-07 fecha o core de billing com export, fee calculation e reports basicos; WEB-05 fecha as surfaces de seller para esse fluxo.
 - M3 Billing Slice foi consolidado com DOM-03, API-07 e WEB-05.
 - DOM-04 fecha o contrato de buyer approval e dispute resolution; `API-08` agora e a proxima task `READY`.
-- API-08 fecha a API de buyer approval + disputes; `WEB-06` agora e a proxima task `READY`.
+- API-08 fecha a API de buyer approval + disputes; WEB-06 fecha a surface admin do web com buyers + disputes, com fallback local apenas para listagem de buyers.

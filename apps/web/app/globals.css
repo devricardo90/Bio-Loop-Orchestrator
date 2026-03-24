@@ -386,6 +386,11 @@ h3 {
   color: var(--accent);
 }
 
+.status-pending {
+  background: rgba(181, 107, 45, 0.12);
+  color: var(--gold);
+}
+
 .status-scheduled {
   background: rgba(181, 107, 45, 0.12);
   color: var(--gold);
@@ -399,6 +404,24 @@ h3 {
 .status-awarded {
   background: rgba(15, 93, 75, 0.12);
   color: var(--accent);
+}
+
+.status-approved,
+.status-resolved {
+  background: rgba(15, 93, 75, 0.12);
+  color: var(--accent);
+}
+
+.status-rejected,
+.status-suspended,
+.status-cancelled {
+  background: rgba(26, 29, 31, 0.08);
+  color: var(--muted);
+}
+
+.status-open {
+  background: rgba(181, 107, 45, 0.12);
+  color: var(--gold);
 }
 
 .status-void {
@@ -439,6 +462,40 @@ h3 {
   display: grid;
   align-content: start;
   gap: 16px;
+}
+
+.admin-control-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-list {
+  margin-top: 16px;
+}
+
+.admin-card {
+  gap: 14px;
+}
+
+.admin-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-note {
+  display: grid;
+  gap: 6px;
+  padding: 16px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(26, 29, 31, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.admin-textarea {
+  min-height: 110px;
+  padding: 12px 14px;
+  resize: vertical;
 }
 
 .pickup-action-grid {
