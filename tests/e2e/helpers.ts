@@ -10,14 +10,14 @@ export async function loginAs(page: Page, persona: "buyer" | "seller" | "admin")
 
 function workspaceTitle(persona: "buyer" | "seller" | "admin") {
   if (persona === "buyer") {
-    return "Buyer workspace";
+    return "Buyer operations";
   }
 
   if (persona === "seller") {
-    return "Seller workspace";
+    return "Seller operations";
   }
 
-  return "Admin workspace";
+  return "Admin operations";
 }
 
 function workspacePath(persona: "buyer" | "seller" | "admin") {

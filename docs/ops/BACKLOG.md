@@ -212,7 +212,7 @@
   - deps: DB-03
   - output: scripts de dev padronizados, sem colisao de portas e com bootstrap consistente de env
   - gate: `dev`, `dev:api`, `dev:web` sobem com comportamento previsivel em maquina limpa
-- [READY] (QA-05) Release gate pos-M7 para auth real + buyer real-data
+- [DONE] (QA-05) Release gate pos-M7 para auth real + buyer real-data
   - owner: QA Agent
   - deps: API-12, API-13, WEB-09, WEB-11
   - output: checklist e2e/manual consolidado para buyer, seller, admin e docs/reference
