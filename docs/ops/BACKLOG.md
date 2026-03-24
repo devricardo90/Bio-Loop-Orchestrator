@@ -65,7 +65,7 @@
   - deps: DOM-02
 - [DONE] (API-07) Invoice export + fee calculation + reports basicos
   - deps: DOM-03, API-04
-- [READY] (WEB-05) Seller reports + invoice/export surfaces
+- [DONE] (WEB-05) Seller reports + invoice/export surfaces
   - deps: API-07
 
 ## M4 Admin Slice

@@ -23,6 +23,9 @@ export default function SellerHomePage() {
             <Link href="/seller/results" className="button button-secondary">
               Open seller results
             </Link>
+            <Link href="/seller/reports" className="button button-secondary">
+              Open seller reports
+            </Link>
           </div>
         </div>
 
@@ -32,6 +35,7 @@ export default function SellerHomePage() {
             <ul className="feature-list">
               <li>Seller lots list with live and terminal states</li>
               <li>Results view with revenue and settlement timeline</li>
+              <li>Billing reports with export snapshots for settled orders</li>
               <li>Lot detail pages for individual auction outcomes</li>
               <li>Shared demo state synced with the buyer workspace</li>
             </ul>

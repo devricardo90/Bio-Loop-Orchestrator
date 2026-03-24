@@ -3,7 +3,7 @@
 - [x] M0 Foundation (repo + monorepo + CI + env + lint/typecheck)
 - [x] M1 Core Trade Slice (Lot Auction Bid Order)
 - [x] M2 Ops Slice (Pickup scheduling + POD + no-show)
-- [ ] M3 Billing Slice (Invoice export + fees + basic reports)
+- [x] M3 Billing Slice (Invoice export + fees + basic reports)
 - [ ] M4 Admin Slice (buyer approval + disputes)
 - [x] M5 Consolidation Slice (login + API docs + jobs + QA/release hardening)
 
@@ -52,4 +52,5 @@
 - API-05 fecha o contrato publico da API; o backlog agora aponta `API-06` como proxima `READY`.
 - API-06 fecha a automacao de `end_auction` e `no_show`; `QA-01` agora e a proxima task de verificacao.
 - QA-01 fechou a verificacao de release do slice M1+M2 com `PASS`.
-- API-07 fecha o core de billing com export, fee calculation e reports basicos; `WEB-05` agora e a proxima task `READY`.
+- API-07 fecha o core de billing com export, fee calculation e reports basicos; WEB-05 fecha as surfaces de seller para esse fluxo.
+- M3 Billing Slice foi consolidado com DOM-03, API-07 e WEB-05.

@@ -32,6 +32,7 @@ export function AppHeader() {
         <Link href="/login">Login</Link>
         <Link href="/buyer/feed">Buyer</Link>
         <Link href="/seller">Seller</Link>
+        <Link href="/seller/reports">Reports</Link>
         <Link href="/buyer/orders">Pickup</Link>
       </nav>
 

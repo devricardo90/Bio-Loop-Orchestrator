@@ -659,6 +659,19 @@ h3 {
   font-size: 1.5rem;
 }
 
+.billing-export-preview {
+  margin: 0;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(26, 29, 31, 0.08);
+  background: rgba(26, 29, 31, 0.04);
+  color: var(--text);
+  overflow: auto;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
 .field {
   display: grid;
   gap: 8px;
