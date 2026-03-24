@@ -21,7 +21,19 @@
         "name": "next"
       }
     ],
-    "incremental": true
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@bio-loop/domain": [
+        "../../packages/domain/src/index.ts"
+      ],
+      "@bio-loop/shared": [
+        "../../packages/shared/src/index.ts"
+      ],
+      "@/*": [
+        "./*"
+      ]
+    }
   },
   "include": [
     "../../packages/domain/src/**/*.ts",

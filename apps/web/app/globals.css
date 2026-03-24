@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   color-scheme: light;
   --bg: #f1eadf;
@@ -9,6 +13,26 @@
   --gold: #b56b2d;
   --border: rgba(26, 29, 31, 0.12);
   --shadow: 0 26px 70px rgba(36, 28, 18, 0.12);
+  --background: 36 45% 94%;
+  --foreground: 210 8% 11%;
+  --card: 32 58% 96%;
+  --card-foreground: 210 8% 11%;
+  --popover: 32 58% 96%;
+  --popover-foreground: 210 8% 11%;
+  --primary: 165 72% 21%;
+  --primary-foreground: 42 43% 95%;
+  --secondary: 38 39% 88%;
+  --secondary-foreground: 210 8% 11%;
+  --muted-shadcn: 35 32% 90%;
+  --muted-foreground: 210 9% 40%;
+  --accent-shadcn: 165 32% 88%;
+  --accent-foreground: 165 72% 21%;
+  --destructive: 0 72% 45%;
+  --destructive-foreground: 42 43% 95%;
+  --border-shadcn: 210 11% 84%;
+  --input: 210 11% 84%;
+  --ring: 165 72% 21%;
+  --radius: 1rem;
 }
 
 * {

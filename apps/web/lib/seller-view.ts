@@ -1,7 +1,7 @@
 import type { DemoAuctionRecord, DemoState } from "./demo-auctions";
 import { formatSek, getAuctionRuntime } from "./demo-auctions";
 
-const lotStatusOrder = {
+const lotStatusOrder: Record<DemoAuctionRecord["lot"]["status"], number> = {
   DRAFT: 0,
   LISTED: 1,
   AWARDED: 2,
