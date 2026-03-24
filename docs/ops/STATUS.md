@@ -1,10 +1,11 @@
 # STATUS.md
 ## Milestones
 - [x] M0 Foundation (repo + monorepo + CI + env + lint/typecheck)
-- [ ] M1 Core Trade Slice (Lot Auction Bid Order)
-- [ ] M2 Ops Slice (Pickup scheduling + POD + no-show)
+- [x] M1 Core Trade Slice (Lot Auction Bid Order)
+- [x] M2 Ops Slice (Pickup scheduling + POD + no-show)
 - [ ] M3 Billing Slice (Invoice export + fees + basic reports)
 - [ ] M4 Admin Slice (buyer approval + disputes)
+- [ ] M5 Consolidation Slice (login + API docs + jobs + QA/release hardening)
 
 - Scaffold note: pnpm+turborepo baseline created for apps/api, apps/web, packages/domain, and packages/shared.
 - Foundation gate note: workspace install, root typecheck, and root build validated after fixing the Nest CLI version and API TypeScript config.
@@ -37,3 +38,11 @@
 - [x] Buyer feed + Auction view (polling)
 - [x] Seller lots + Auction results
 - [x] Pickup/POD screens (M2)
+
+---
+
+## Consolidation Notes
+- M1 e M2 estao funcionalmente entregues no repo e publicados no backlog como DONE.
+- O proximo foco correto nao e abrir novas telas aleatorias; e consolidar o fluxo com login, OpenAPI, jobs e release verification.
+- Existem mudancas operacionais fora do backlog atual (`package.json`, `tools/`, `tsbuildinfo`) que precisam ser tratadas como hygiene task separada.
+- INFRA-02 fecha a política de workspace limpo e o tooling `watch:done`; a próxima funcao de produto é `WEB-04` login seller/buyer.

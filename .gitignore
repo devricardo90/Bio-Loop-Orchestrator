@@ -8,5 +8,4 @@ coverage
 .env.*.local
 *.log
 pnpm-debug.log*
-tsconfig.tsbuildinfo
-
+**/*.tsbuildinfo
