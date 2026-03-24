@@ -73,3 +73,5 @@
 - API-11 fechou a base de demo real com buyers, lots, auctions, orders, disputes e dados prontos para billing.
 - O proximo passo operacional e remover os fallbacks residuais do frontend em `WEB-08` e documentar o fluxo de demo em `DOCS-01`.
 - INFRA-04 fechou a base de runtime local com docker compose, bootstrap de env e runbook para API/Web/Scalar.
+- QA-03 fechou o runbook manual de UAT para buyer, seller, admin, pickup, billing e `/reference`.
+- O proximo passo da fila e `DOCS-01`, seguido por `QA-04` para automatizar o browser e2e principal.

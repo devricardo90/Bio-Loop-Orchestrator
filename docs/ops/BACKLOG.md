@@ -98,7 +98,7 @@
   - deps: INFRA-04
 - [DONE] (WEB-08) Remove residual frontend fallbacks and bind seller/admin demo surfaces to real API data
   - deps: API-11
-- [BLOCKED] (QA-03) Manual UAT runbook for buyer, seller, admin, pickup, billing and docs/reference
+- [DONE] (QA-03) Manual UAT runbook for buyer, seller, admin, pickup, billing and docs/reference
   - deps: INFRA-04, API-11, WEB-08
 - [BLOCKED] (QA-04) Real browser e2e for primary flows
   - deps: QA-03
