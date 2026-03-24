@@ -36,4 +36,4 @@
 - [ ] Login (seller/buyer)
 - [x] Buyer feed + Auction view (polling)
 - [x] Seller lots + Auction results
-- [ ] Pickup/POD screens (M2)
+- [x] Pickup/POD screens (M2)

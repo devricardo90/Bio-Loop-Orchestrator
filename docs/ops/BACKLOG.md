@@ -43,5 +43,5 @@
   - deps: DOM-01
 - [DONE] (API-04) Pickup schedule + POD endpoints
   - deps: DOM-02, API-01, API-02
-- [READY] (WEB-03) Pickup/POD telas
+- [DONE] (WEB-03) Pickup/POD telas
   - deps: API-04
