@@ -2,6 +2,7 @@ const apiBaseUrl = process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:4000"
 
 export type WebAuthPersona = "buyer" | "seller" | "admin";
 export type WebAuthRole = "BUYER_ADMIN" | "SELLER_ADMIN" | "PLATFORM_ADMIN";
+export type AuthSessionFailureReason = "expired" | "network";
 
 export type LoginResponse = {
   user: {
@@ -21,6 +22,16 @@ export type WebSession = {
   accessTokenExpiresAt: string;
   source: "api";
 };
+
+export class AuthApiError extends Error {
+  readonly reason: AuthSessionFailureReason;
+
+  constructor(reason: AuthSessionFailureReason, message: string) {
+    super(message);
+    this.name = "AuthApiError";
+    this.reason = reason;
+  }
+}
 
 function mapPersonaToRole(persona: WebAuthPersona): WebAuthRole {
   if (persona === "buyer") {
@@ -44,6 +55,35 @@ function mapRoleToPersona(role: WebAuthRole): WebAuthPersona {
   }
 
   return "admin";
+}
+
+function createWebSession(payload: LoginResponse, authenticatedAt: string) {
+  return {
+    userId: payload.user.id,
+    email: payload.user.email,
+    role: mapRoleToPersona(payload.user.role),
+    roleLabel: payload.user.role,
+    authenticatedAt,
+    accessTokenExpiresAt: payload.accessTokenExpiresAt,
+    source: "api" as const
+  };
+}
+
+function toAuthApiError(status: number, fallbackMessage: string) {
+  if (status === 401) {
+    return new AuthApiError("expired", fallbackMessage);
+  }
+
+  return new AuthApiError("network", fallbackMessage);
+}
+
+export function isSessionExpired(session: WebSession, now = Date.now()) {
+  const expiresAt = Date.parse(session.accessTokenExpiresAt);
+  if (Number.isNaN(expiresAt)) {
+    return true;
+  }
+
+  return expiresAt <= now;
 }
 
 export async function fetchAuthCsrfToken() {
@@ -90,15 +130,31 @@ export async function loginWithPersona(input: {
   }
 
   const payload = (await response.json()) as LoginResponse;
-  return {
-    userId: payload.user.id,
-    email: payload.user.email,
-    role: mapRoleToPersona(payload.user.role),
-    roleLabel: payload.user.role,
-    authenticatedAt: new Date().toISOString(),
-    accessTokenExpiresAt: payload.accessTokenExpiresAt,
-    source: "api"
-  };
+  return createWebSession(payload, new Date().toISOString());
+}
+
+export async function refreshAuthSession(currentSession: WebSession): Promise<WebSession> {
+  const csrfToken = await fetchAuthCsrfToken().catch(() => {
+    throw new AuthApiError("network", "Unable to reach auth csrf endpoint.");
+  });
+
+  const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "X-CSRF-Token": csrfToken
+    }
+  }).catch(() => {
+    throw new AuthApiError("network", "Unable to refresh the current session.");
+  });
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => "");
+    throw toAuthApiError(response.status, body || `Refresh request failed with ${response.status}`);
+  }
+
+  const payload = (await response.json()) as LoginResponse;
+  return createWebSession(payload, currentSession.authenticatedAt);
 }
 
 export async function logoutFromApi() {

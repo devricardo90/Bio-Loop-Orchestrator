@@ -14,14 +14,19 @@ type WorkspaceRouteGateProps = Readonly<{
 export function WorkspaceRouteGate({ workspace, children }: WorkspaceRouteGateProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { session, hydrated } = useAuthSession();
+  const { session, hydrated, sessionExpired } = useAuthSession();
   const decision = getWorkspaceAccessDecision({
     hydrated,
     pathname,
     workspace,
     sessionRole: session?.role ?? null
   });
-  const redirectHref = decision.kind === "redirect" ? decision.href : null;
+  const redirectHref =
+    decision.kind === "redirect"
+      ? decision.reason === "unauthenticated" && sessionExpired
+        ? `/login?reason=session-expired&next=${encodeURIComponent(pathname)}`
+        : decision.href
+      : null;
 
   useEffect(() => {
     if (!redirectHref) {
@@ -48,7 +53,9 @@ export function WorkspaceRouteGate({ workspace, children }: WorkspaceRouteGatePr
           </h1>
           <p className="muted">
             {decision.reason === "unauthenticated"
-              ? "The current route is protected and requires an authenticated session."
+              ? sessionExpired
+                ? "Your previous session expired or could not be refreshed. Sign in again to continue."
+                : "The current route is protected and requires an authenticated session."
               : "Your signed-in role does not match this workspace, so the router is sending you to the correct area."}
           </p>
         </section>

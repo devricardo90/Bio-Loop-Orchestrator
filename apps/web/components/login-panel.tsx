@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { loginWithPersona, type WebAuthPersona } from "../lib/auth-api";
 import { getWorkspaceHomeRoute } from "../lib/route-access";
@@ -35,13 +35,16 @@ const personaActions: Array<{
 
 export function LoginPanel() {
   const router = useRouter();
-  const { session, signIn } = useAuthSession();
+  const searchParams = useSearchParams();
+  const { session, sessionExpired, signIn } = useAuthSession();
   const [persona, setPersona] = useState<WebAuthPersona>("buyer");
   const [email, setEmail] = useState("buyer.admin@bioloop.dev");
   const [password, setPassword] = useState("demo-password");
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
   const signedInHomeRoute = session ? getWorkspaceHomeRoute(session.role) : null;
+  const nextRoute = searchParams.get("next");
+  const loginReason = searchParams.get("reason");
 
   const activeAction = useMemo(
     () => personaActions.find((item) => item.persona === persona) ?? personaActions[0],
@@ -56,6 +59,16 @@ export function LoginPanel() {
     router.replace(signedInHomeRoute ?? "/");
     router.refresh();
   }, [router, session, signedInHomeRoute]);
+
+  useEffect(() => {
+    if (message) {
+      return;
+    }
+
+    if (loginReason === "session-expired" || sessionExpired) {
+      setMessage("Your session expired. Sign in again to continue.");
+    }
+  }, [loginReason, message, sessionExpired]);
 
   return (
     <main className="app-shell login-shell">
@@ -109,7 +122,7 @@ export function LoginPanel() {
                 .then((nextSession) => {
                   signIn(nextSession);
                   setMessage(`Signed in as ${nextSession.roleLabel}. Redirecting...`);
-                  router.push(getWorkspaceHomeRoute(nextSession.role));
+                  router.push(nextRoute || getWorkspaceHomeRoute(nextSession.role));
                   router.refresh();
                 })
                 .catch((error: unknown) => {

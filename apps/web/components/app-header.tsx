@@ -9,12 +9,14 @@ import { useAuthSession } from "./auth-session";
 
 export function AppHeader() {
   const router = useRouter();
-  const { session, hydrated, signOut } = useAuthSession();
+  const { session, hydrated, sessionExpired, signOut } = useAuthSession();
   const [isPending, startTransition] = useTransition();
   const navigation = getWorkspaceNavigation(session?.role ?? null);
 
   const signedInLabel = session
     ? `${session.roleLabel} | ${session.email}`
+    : sessionExpired
+      ? "Session expired"
     : hydrated
       ? "Demo mode"
       : "Loading session...";
@@ -48,7 +50,7 @@ export function AppHeader() {
                 void logoutFromApi()
                   .catch(() => null)
                   .finally(() => {
-                    signOut();
+                    signOut("manual");
                     router.push("/login");
                     router.refresh();
                   });

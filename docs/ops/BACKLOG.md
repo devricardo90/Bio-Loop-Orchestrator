@@ -189,12 +189,12 @@
   - deps: WEB-09
   - output: estados operacionais consistentes para buyer, seller e admin
   - gate: sem dead-end visual e com mensagens explicitas para `loading`, `API unavailable` e `empty`
-- [READY] (WEB-11) Session lifecycle e auth UX hardening
+- [DONE] (WEB-11) Session lifecycle e auth UX hardening
   - owner: Frontend Agent
   - deps: API-12, WEB-10
   - output: refresh/logout/session-expired coerentes com cookie auth e `sessionStorage`
   - gate: sessao expirada redireciona corretamente e guards nao deixam a UI presa
-- [BLOCKED] (WEB-12) UX operacional conectada ao `/reference`
+- [READY] (WEB-12) UX operacional conectada ao `/reference`
   - owner: Frontend Agent
   - deps: DOCS-01, WEB-10
   - output: links contextuais entre UI operacional e docs vivas da API
@@ -212,7 +212,7 @@
   - deps: DB-03
   - output: scripts de dev padronizados, sem colisao de portas e com bootstrap consistente de env
   - gate: `dev`, `dev:api`, `dev:web` sobem com comportamento previsivel em maquina limpa
-- [BLOCKED] (QA-05) Release gate pos-M7 para auth real + buyer real-data
+- [READY] (QA-05) Release gate pos-M7 para auth real + buyer real-data
   - owner: QA Agent
   - deps: API-12, API-13, WEB-09, WEB-11
   - output: checklist e2e/manual consolidado para buyer, seller, admin e docs/reference
