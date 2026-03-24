@@ -9,7 +9,7 @@ export const metadata = {
     default: "Bio Loop",
     template: "%s | Bio Loop"
   },
-  description: "Buyer feed and auction workspace for surplus trading"
+  description: "Operational console for buyer, seller, pickup, billing, and admin review"
 };
 
 export default function RootLayout({

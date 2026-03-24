@@ -25,9 +25,9 @@ const workspaceHomeRoute: Record<WorkspaceRole, string> = {
 };
 
 const workspaceLabels: Record<WorkspaceRole, string> = {
-  buyer: "buyer workspace",
-  seller: "seller workspace",
-  admin: "admin workspace"
+  buyer: "buyer operations",
+  seller: "seller operations",
+  admin: "admin operations"
 };
 
 const workspaceNavigation: Record<WorkspaceRole, WorkspaceLink[]> = {
@@ -36,13 +36,13 @@ const workspaceNavigation: Record<WorkspaceRole, WorkspaceLink[]> = {
     { label: "Pickup queue", href: "/buyer/orders" }
   ],
   seller: [
-    { label: "Seller hub", href: "/seller" },
+    { label: "Seller overview", href: "/seller" },
     { label: "Seller lots", href: "/seller/lots" },
     { label: "Seller results", href: "/seller/results" },
     { label: "Seller reports", href: "/seller/reports" }
   ],
   admin: [
-    { label: "Admin cockpit", href: "/admin" },
+    { label: "Admin overview", href: "/admin" },
     { label: "Admin buyers", href: "/admin/buyers" },
     { label: "Admin disputes", href: "/admin/disputes" }
   ]

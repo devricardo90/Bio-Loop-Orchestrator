@@ -27,7 +27,7 @@ export function AppHeader() {
       <div className="app-header-brand">
         <div>
           <p className="eyebrow">Bio Loop</p>
-          <strong>Consolidation cockpit</strong>
+          <strong>Operations console</strong>
         </div>
         <span className={`chip ${session ? "chip-accent" : ""}`}>{signedInLabel}</span>
       </div>

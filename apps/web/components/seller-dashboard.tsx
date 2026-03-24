@@ -20,6 +20,7 @@ import {
   getSellerTimeline,
   getSellerTone
 } from "../lib/seller-view";
+import { WorkspaceState } from "./workspace-state";
 
 type SellerDashboardProps = {
   mode: "lots" | "results";
@@ -70,7 +71,16 @@ export function SellerDashboard({ mode, lotId }: SellerDashboardProps) {
   }, [filter, records]);
 
   if (!hydrated) {
-    return <main className="app-shell">Loading seller workspace...</main>;
+    return (
+      <main className="app-shell">
+        <WorkspaceState
+          eyebrow="Seller operations"
+          title="Loading seller overview."
+          description="The seller lots and results surfaces are loading from the current runtime."
+          tone="loading"
+        />
+      </main>
+    );
   }
 
   const filters = mode === "results" ? resultFilters : lotFilters;

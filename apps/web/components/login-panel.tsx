@@ -15,19 +15,19 @@ const personaActions: Array<{
 }> = [
   {
     persona: "buyer",
-    title: "Buyer workspace",
+    title: "Buyer operations",
     subtitle: "Feed, auction detail, bidding, and pickup queue",
     route: getWorkspaceHomeRoute("buyer")
   },
   {
     persona: "seller",
-    title: "Seller workspace",
+    title: "Seller operations",
     subtitle: "Lots, auction results, and pickup status",
     route: getWorkspaceHomeRoute("seller")
   },
   {
     persona: "admin",
-    title: "Admin workspace",
+    title: "Admin operations",
     subtitle: "Buyer approvals and dispute resolution",
     route: getWorkspaceHomeRoute("admin")
   }
@@ -74,11 +74,11 @@ export function LoginPanel() {
     <main className="app-shell login-shell">
       <section className="login-grid">
         <div className="login-copy">
-          <p className="eyebrow">Auth handoff</p>
-          <h1>Sign in to the workspace that fits your role.</h1>
+          <p className="eyebrow">Access control</p>
+          <h1>Sign in to the operational area that matches your role.</h1>
           <p className="lead">
-            The browser only keeps httpOnly cookies. The login page pulls a CSRF token first, then posts your persona
-            to the API and sends you to the right workspace.
+            The browser keeps only httpOnly cookies. This page requests a CSRF token first, posts your role-specific
+            credentials to the API, and returns you to the correct operational route.
           </p>
 
           <div className="persona-stack">
@@ -168,7 +168,7 @@ export function LoginPanel() {
               {isPending ? "Signing in..." : `Sign in as ${persona}`}
             </button>
             <Link className="button button-secondary" href={activeAction.route}>
-              Continue to {activeAction.persona}
+              Open {activeAction.persona} area
             </Link>
           </div>
 
@@ -176,7 +176,7 @@ export function LoginPanel() {
             {message ||
               (session
                 ? `You are already signed in as ${session.roleLabel}.`
-                : "Use one of the seeded persona emails with the shared demo password to establish the API-backed session.")}
+                : "Use one of the seeded persona emails with the shared seeded password to establish the API-backed session.")}
           </p>
         </form>
       </section>

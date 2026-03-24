@@ -5,18 +5,18 @@ export default function AdminHomePage() {
     <main className="app-shell">
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">Platform admin</p>
-          <h1>Admin surface for buyers and disputes.</h1>
+          <p className="eyebrow">Admin overview</p>
+          <h1>Operational review for buyers and disputes.</h1>
           <p className="lead">
-            The admin cockpit closes the M4 slice with buyer approval and dispute resolution surfaces aligned to the
-            live API.
+            The admin area supports manual review of buyer approvals and dispute resolution with the same live API
+            contracts exposed in `/reference`.
           </p>
           <div className="hero-meta">
             <Link href="/admin/buyers" className="button button-primary">
-              Open buyers
+              Buyer approvals
             </Link>
             <Link href="/admin/disputes" className="button button-secondary">
-              Open disputes
+              Dispute queue
             </Link>
             <Link href="/login" className="button button-secondary">
               Sign in
@@ -26,12 +26,12 @@ export default function AdminHomePage() {
 
         <div className="hero-side">
           <div className="panel">
-            <p className="label">Included surfaces</p>
+            <p className="label">Operational checklist</p>
             <ul className="feature-list">
-              <li>Buyer approval queue with API-backed actions</li>
-              <li>Dispute list and resolution actions</li>
-              <li>Loading, empty, and error states</li>
-              <li>Seeded API data for review flows</li>
+              <li>Review buyer approvals against live API state</li>
+              <li>Resolve or escalate disputes from the same queue used in e2e</li>
+              <li>Use consistent loading, empty, and error states during manual checks</li>
+              <li>Jump to `/reference` from the workspaces when troubleshooting</li>
             </ul>
           </div>
         </div>

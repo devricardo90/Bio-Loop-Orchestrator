@@ -199,7 +199,7 @@
   - deps: DOCS-01, WEB-10
   - output: links contextuais entre UI operacional e docs vivas da API
   - gate: navegacao entre frontend e `/reference` sem ambiguidade para troubleshoot/release review
-- [READY] (WEB-13) Manual-ops polish de demo para piloto
+- [DONE] (WEB-13) Manual-ops polish de demo para piloto
   - owner: Frontend Agent
   - deps: WEB-11, WEB-12
   - output: labels, navegacao e consistencia final para uso manual recorrente

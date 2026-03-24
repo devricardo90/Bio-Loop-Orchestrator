@@ -6,43 +6,43 @@ export default function HomePage() {
       <section className="hero hero-home">
         <div className="hero-copy">
           <p className="eyebrow">Bio Loop</p>
-          <h1>Buyer operations with a live auction surface.</h1>
+          <h1>Operational review across buyer, seller, pickup, and admin.</h1>
           <p className="lead">
-            The buyer workspace is wired for polling, contract-safe bids, and
-            route-level auction detail. Login now routes seller and buyer personas through the auth flow.
+            The local stack now supports manual validation with real auth, API-backed buyer flows, admin review
+            surfaces, billing exports, and direct links to the live API reference.
           </p>
           <div className="hero-meta">
             <Link href="/login" className="button button-primary">
-              Open login
+              Sign in
             </Link>
             <Link href="/buyer/feed" className="button button-primary">
-              Open buyer feed
+              Buyer operations
             </Link>
             <Link href="/buyer/orders" className="button button-secondary">
-              Open pickup queue
+              Pickup operations
             </Link>
             <Link href="/buyer/auctions/auction-husks-01" className="button button-secondary">
-              Open live auction
+              Live auction
             </Link>
             <Link href="/seller" className="button button-secondary">
-              Open seller hub
+              Seller overview
             </Link>
             <Link href="/admin" className="button button-secondary">
-              Open admin cockpit
+              Admin overview
             </Link>
           </div>
         </div>
 
         <div className="hero-side">
           <div className="panel">
-            <p className="label">What is ready</p>
+            <p className="label">Recommended manual path</p>
             <ul className="feature-list">
-              <li>Buyer feed with auction cards</li>
-              <li>Live auction detail with bid panel</li>
-              <li>Polling every few seconds for runtime status</li>
-              <li>Demo state that can sync with the real API</li>
-              <li>Auth page for seller and buyer personas</li>
-              <li>Admin cockpit for buyers and disputes</li>
+              <li>Sign in with seeded buyer, seller, or admin credentials</li>
+              <li>Review buyer feed, live auction, and pickup queue against the API</li>
+              <li>Open seller overview, results, and billing exports</li>
+              <li>Approve buyers and resolve disputes in admin operations</li>
+              <li>Cross-check each flow with the live `/reference` docs</li>
+              <li>Use this page as the handoff point for manual release review</li>
             </ul>
           </div>
         </div>
