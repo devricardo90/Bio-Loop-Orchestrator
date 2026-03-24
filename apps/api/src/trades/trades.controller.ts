@@ -1,10 +1,12 @@
 import { BadRequestException, Body, Controller, Param, Post } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
+import { BUYER_ROLES, Roles } from "../auth/roles.decorator";
 import { normalizePlaceBidInput } from "./trades.validators";
 import { TradesService } from "./trades.service";
 
 @Controller("buyer/auctions")
 @ApiTags("trade")
+@Roles(...BUYER_ROLES)
 export class TradesController {
   constructor(private readonly tradesService: TradesService) {}
 

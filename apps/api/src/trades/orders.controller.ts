@@ -1,10 +1,12 @@
 import { BadRequestException, Body, Controller, Param, Post } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
+import { BUYER_ROLES, Roles } from "../auth/roles.decorator";
 import { normalizeRecordPickupInput, normalizeSchedulePickupInput } from "./trades.validators";
 import { TradesService } from "./trades.service";
 
 @Controller("buyer/orders")
 @ApiTags("pickup")
+@Roles(...BUYER_ROLES)
 export class OrdersController {
   constructor(private readonly tradesService: TradesService) {}
 

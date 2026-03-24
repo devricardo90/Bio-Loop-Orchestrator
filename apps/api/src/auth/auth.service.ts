@@ -26,7 +26,7 @@ export class AuthService {
   }
 
   rotateSession(refreshToken: string): AuthSession | null {
-    const existing = this.sessionsByRefreshToken.get(refreshToken);
+    const existing = this.getSessionRecordByRefreshToken(refreshToken);
     if (!existing) {
       return null;
     }
@@ -47,7 +47,28 @@ export class AuthService {
     return Boolean(expectedToken && receivedToken && expectedToken === receivedToken);
   }
 
-  getSessionByRefreshToken(refreshToken: string | undefined): SessionRecord | null {
+  getSessionByRefreshToken(refreshToken: string | undefined): AuthSession | null {
+    const existing = this.getSessionRecordByRefreshToken(refreshToken);
+    if (!existing) {
+      return null;
+    }
+
+    return {
+      user: existing.user,
+      accessToken: existing.accessToken,
+      refreshToken: existing.refreshToken,
+      csrfToken: existing.csrfToken,
+      accessTokenExpiresAt: existing.accessTokenExpiresAt.toISOString(),
+      refreshTokenExpiresAt: existing.refreshTokenExpiresAt.toISOString()
+    };
+  }
+
+  getUserByRefreshToken(refreshToken: string | undefined): AuthUser | null {
+    const session = this.getSessionRecordByRefreshToken(refreshToken);
+    return session?.user ?? null;
+  }
+
+  private getSessionRecordByRefreshToken(refreshToken: string | undefined): SessionRecord | null {
     if (!refreshToken) {
       return null;
     }

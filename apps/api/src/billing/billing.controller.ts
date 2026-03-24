@@ -6,6 +6,7 @@ import {
   ApiQuery,
   ApiTags
 } from "@nestjs/swagger";
+import { Roles, SELLER_ROLES } from "../auth/roles.decorator";
 import { unprocessableError } from "../trades/trade.errors";
 import type { BillingExportQuery, BillingRangeQuery } from "./billing.types";
 import { BillingService } from "./billing.service";
@@ -32,6 +33,7 @@ function normalizeExportFormat(value: unknown) {
 
 @Controller("seller/reports")
 @ApiTags("billing")
+@Roles(...SELLER_ROLES)
 export class BillingController {
   constructor(private readonly billingService: BillingService) {}
 

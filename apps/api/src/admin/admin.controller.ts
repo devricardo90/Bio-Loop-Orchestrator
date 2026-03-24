@@ -17,9 +17,11 @@ import {
 } from "./admin.types";
 import { normalizeApproveBuyerInput, normalizeListDisputesQuery, normalizeResolveDisputeInput } from "./admin.validators";
 import { AdminService } from "./admin.service";
+import { ADMIN_ROLES, Roles } from "../auth/roles.decorator";
 
 @Controller("admin")
 @ApiTags("admin")
+@Roles(...ADMIN_ROLES)
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 

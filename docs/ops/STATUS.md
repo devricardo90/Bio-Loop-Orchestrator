@@ -24,6 +24,7 @@
 - [x] Invoice + fee + export billing contracts
 - [x] Buyer approval + dispute resolution contracts
 - [x] Admin buyers listing real (API-09)
+- [x] RBAC enforcement real for seller/buyer/admin routes (API-10)
 
 ---
 
@@ -62,4 +63,5 @@
 - DOM-04 fecha o contrato de buyer approval e dispute resolution; `API-08` agora e a proxima task `READY`.
 - API-08 fecha a API de buyer approval + disputes; WEB-06 fecha a surface admin do web com buyers + disputes, com fallback local apenas para listagem de buyers.
 - API-09 fecha a listagem real de buyers no backend admin; a proxima melhoria de hardening e remover o fallback do web quando o consumo real for ligado.
-- O proximo bloco correto nao e mais construir novas telas basicas, e sim hardening do produto: remover fallback admin, consolidar RBAC, adicionar e2e real e observabilidade minima.
+- API-10 fecha o enforcement real de RBAC nas rotas buyer, seller e admin.
+- O proximo bloco correto nao e mais construir novas telas basicas, e sim hardening do produto: session guards no frontend, e2e real e observabilidade minima.
