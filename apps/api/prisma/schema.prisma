@@ -67,6 +67,34 @@ enum DisputeStatus {
   CANCELLED
 }
 
+enum BuyerApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum BuyerApprovalDecision {
+  APPROVE
+  REJECT
+  SUSPEND
+  REINSTATE
+}
+
+enum BuyerApprovalReason {
+  AUTO_APPROVAL
+  LOW_REPUTATION
+  PAYMENT_RISK
+  COMPLIANCE
+  MANUAL_REVIEW
+}
+
+enum DisputeResolutionDecision {
+  SETTLE
+  CANCEL_ORDER
+  ESCALATE
+}
+
 model User {
   id        String    @id @default(cuid())
   email     String?   @unique
@@ -78,6 +106,8 @@ model User {
   auditLogs AuditLog[] @relation("AuditLogActor")
   disputesOpened Dispute[] @relation("DisputeOpenedBy")
   disputesResolved Dispute[] @relation("DisputeResolvedBy")
+  buyerApprovalsReviewed BuyerApproval[] @relation("BuyerApprovalReviewedBy")
+  disputeResolutionsReviewed DisputeResolution[] @relation("DisputeResolutionReviewedBy")
 }
 
 model Store {
@@ -104,6 +134,7 @@ model Buyer {
 
   bids   Bid[]
   orders Order[]
+  approval BuyerApproval?
 }
 
 model CommodityCategory {
@@ -221,8 +252,41 @@ model Dispute {
   order          Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
   openedByUser    User? @relation("DisputeOpenedBy", fields: [openedByUserId], references: [id], onDelete: SetNull)
   resolvedByUser  User? @relation("DisputeResolvedBy", fields: [resolvedByUserId], references: [id], onDelete: SetNull)
+  resolution     DisputeResolution?
 
   @@index([status, openedAt])
+}
+
+model BuyerApproval {
+  id          String               @id @default(cuid())
+  buyerId     String               @unique
+  status      BuyerApprovalStatus   @default(PENDING)
+  decision    BuyerApprovalDecision?
+  reason      BuyerApprovalReason?
+  reviewerId  String?
+  reviewedAt  DateTime?
+  notes       String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  buyer       Buyer @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  reviewer    User? @relation("BuyerApprovalReviewedBy", fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@index([status, updatedAt])
+}
+
+model DisputeResolution {
+  id          String                     @id @default(cuid())
+  disputeId   String                     @unique
+  decision    DisputeResolutionDecision
+  note        String?
+  reviewerId  String?
+  resolvedAt  DateTime                   @default(now())
+
+  dispute     Dispute @relation(fields: [disputeId], references: [id], onDelete: Cascade)
+  reviewer    User? @relation("DisputeResolutionReviewedBy", fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@index([decision, resolvedAt])
 }
 
 model AuditLog {

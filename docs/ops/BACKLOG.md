@@ -72,7 +72,7 @@
 
 - [DONE] (DOM-04) Politicas de buyer approval e dispute resolution
   - deps: DOM-02
-- [READY] (API-08) Buyer approval + disputes API
+- [DONE] (API-08) Buyer approval + disputes API
   - deps: DOM-04, API-04
-- [BLOCKED] (WEB-06) Admin buyers + disputes screens
+- [READY] (WEB-06) Admin buyers + disputes screens
   - deps: API-08

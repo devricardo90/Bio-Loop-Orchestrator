@@ -33,6 +33,7 @@
 - [x] OpenAPI atualizado + Scalar em /reference
 - [x] Jobs: end_auction + no_show (M2)
 - [x] Invoice export + fee calculation + reports basicos (M3 core)
+- [x] Buyer approval + disputes API (API-08)
 
 ---
 
@@ -56,3 +57,4 @@
 - API-07 fecha o core de billing com export, fee calculation e reports basicos; WEB-05 fecha as surfaces de seller para esse fluxo.
 - M3 Billing Slice foi consolidado com DOM-03, API-07 e WEB-05.
 - DOM-04 fecha o contrato de buyer approval e dispute resolution; `API-08` agora e a proxima task `READY`.
+- API-08 fecha a API de buyer approval + disputes; `WEB-06` agora e a proxima task `READY`.
