@@ -7,6 +7,15 @@
 - DOING: em execucao
 - DONE: concluido
 
+## Modo Pos-M7
+
+- O orquestrador continua dono da fila e escolhe sempre o 1o item `READY`.
+- Cada task tem um agente especialista principal (`owner`) e pode pedir apoio de outros subagentes no brief.
+- O usuario continua sendo o gatilho manual de avancar task a task.
+- Ao concluir cada task executada, o orquestrador deve gerar um commit proprio da task antes de avancar.
+- Se a task tocar Prisma/API dependente de Prisma, `pnpm.cmd --filter @bio-loop/api prisma:generate` e gate obrigatorio antes de considerar a task pronta.
+- O momento correto para envio de dados reais de supermercados fica documentado em [REAL_DATA_ONBOARDING.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/REAL_DATA_ONBOARDING.md).
+
 ---
 
 ## M0 Foundation
@@ -104,3 +113,107 @@
   - deps: QA-03
 - [DONE] (DOCS-01) Developer quickstart + demo guide for local stack, seed data and Scalar reference
   - deps: INFRA-04, API-11
+
+## M8 Post-M7 Orchestrated Expansion
+
+### Data / Database lane
+
+- [READY] (DB-03) Seed v2 idempotente e orientado a cenarios
+  - owner: DB Agent
+  - deps: API-11, QA-04
+  - output: seed reentrante, cenarios baseline/demo, ids/personas alinhados entre web e API
+  - gate: `db:seed` funciona em banco vazio e em banco ja inicializado; Playwright e smoke manual continuam reproduziveis
+- [BLOCKED] (DATA-01) Onboarding de dados reais dos supermercados da Suecia
+  - owner: DB Agent
+  - deps: DB-03
+  - output: pacote de dados reais anexado ao projeto, mapeado e validado para import controlado
+  - gate: documento recebido com campos minimos obrigatorios; mapeamento origem->destino revisado; import validado em banco limpo
+- [BLOCKED] (DB-01) Normalizar contratos persistidos de dados operacionais
+  - owner: DB Agent
+  - deps: DB-03, DATA-01
+  - output: schema Prisma mais estrito para tipos/constraints operacionais
+  - gate: migration aplica em banco limpo; `prisma:generate`, `db:seed` e testes de API continuam verdes
+- [BLOCKED] (DB-02) Persistencia real de billing e invoice
+  - owner: DB Agent
+  - deps: DB-01, API-07
+  - output: entidades persistidas de invoice/export/fees e compatibilidade com seller reports
+  - gate: schema + migration + Prisma Client gerado; billing segue funcional com dados persistidos
+- [BLOCKED] (DB-04) Read models e indices para queries reais
+  - owner: DB Agent
+  - deps: DB-02, API-13
+  - output: indices/read models para buyers, disputes, reports e buyer feed
+  - gate: queries criticas com indice explicito e sem regressao nos endpoints principais
+- [BLOCKED] (DB-05) Hygiene de migracao e drift
+  - owner: DB Agent
+  - deps: DB-01, INFRA-05
+  - output: verificacao de drift e migrate-deploy em banco limpo no pipeline
+  - gate: pipeline falha em drift/migration invalida e ambiente limpo sobe + migra + seeda sem passo manual
+
+### Backend / API lane
+
+- [BLOCKED] (API-12) Auth real com identidade persistida
+  - owner: API Agent
+  - deps: DB-03, API-10, API-11
+  - output: login real contra usuarios persistidos, mantendo cookies e CSRF
+  - gate: credencial invalida falha; usuarios seedados autenticam; e2e admin/seller continuam verdes
+- [BLOCKED] (API-13) Read-model real para buyer feed e auction detail
+  - owner: API Agent
+  - deps: DB-03, API-12
+  - output: endpoints reais para buyer feed, auction detail e runtime de bids/pickup
+  - gate: OpenAPI atualizado; responses validadas; buyer flow deixa de depender de ids locais inventados
+- [BLOCKED] (API-14) Idempotencia e auditoria para mutacoes criticas
+  - owner: API Agent
+  - deps: API-12, API-13
+  - output: protecao contra replay/double-submit em bid, approval, dispute, pickup e POD
+  - gate: repeticao nao gera efeito indevido; trilha de auditoria cobre actor, entidade e timestamp
+- [BLOCKED] (API-15) Jobs runtime hardening
+  - owner: API Agent
+  - deps: API-14, INFRA-03
+  - output: locking basico, retry e visibilidade de `end_auction` e `no_show`
+  - gate: scheduler nao duplica processamento e health/readiness distinguem degradacao de worker
+- [BLOCKED] (API-16) API production readiness pack
+  - owner: API Agent
+  - deps: API-13, API-15
+  - output: paginacao, filtros, erros tipados e bootstrap/config seguro para exposicao menos assistida
+  - gate: endpoints administrativos/listagens com shape consistente e `/reference` sem drift
+
+### Frontend / Web lane
+
+- [BLOCKED] (WEB-09) Buyer workspace real-data convergence
+  - owner: Frontend Agent
+  - deps: DB-03, API-13
+  - output: buyer feed, auction detail e pickup queue ligados ao backend real
+  - gate: caminho principal buyer usa `source=api`; ids reais do backend; sem fallback silencioso
+- [BLOCKED] (WEB-10) Hardening de error, loading e empty states
+  - owner: Frontend Agent
+  - deps: WEB-09
+  - output: estados operacionais consistentes para buyer, seller e admin
+  - gate: sem dead-end visual e com mensagens explicitas para `loading`, `API unavailable` e `empty`
+- [BLOCKED] (WEB-11) Session lifecycle e auth UX hardening
+  - owner: Frontend Agent
+  - deps: API-12, WEB-10
+  - output: refresh/logout/session-expired coerentes com cookie auth e `sessionStorage`
+  - gate: sessao expirada redireciona corretamente e guards nao deixam a UI presa
+- [BLOCKED] (WEB-12) UX operacional conectada ao `/reference`
+  - owner: Frontend Agent
+  - deps: DOCS-01, WEB-10
+  - output: links contextuais entre UI operacional e docs vivas da API
+  - gate: navegacao entre frontend e `/reference` sem ambiguidade para troubleshoot/release review
+- [BLOCKED] (WEB-13) Manual-ops polish de demo para piloto
+  - owner: Frontend Agent
+  - deps: WEB-11, WEB-12
+  - output: labels, navegacao e consistencia final para uso manual recorrente
+  - gate: buyer/seller/admin passam checklist manual sem confusao de fluxo ou copy residual
+
+### Infra / QA support lane
+
+- [BLOCKED] (INFRA-05) Runtime scripts e portas previsiveis para API/Web/DB
+  - owner: Infra Agent
+  - deps: DB-03
+  - output: scripts de dev padronizados, sem colisao de portas e com bootstrap consistente de env
+  - gate: `dev`, `dev:api`, `dev:web` sobem com comportamento previsivel em maquina limpa
+- [BLOCKED] (QA-05) Release gate pos-M7 para auth real + buyer real-data
+  - owner: QA Agent
+  - deps: API-12, API-13, WEB-09, WEB-11
+  - output: checklist e2e/manual consolidado para buyer, seller, admin e docs/reference
+  - gate: smoke manual e browser e2e passam cobrindo auth real e buyer flow sem demo fallback
