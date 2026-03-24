@@ -179,12 +179,12 @@
 
 ### Frontend / Web lane
 
-- [READY] (WEB-09) Buyer workspace real-data convergence
+- [DONE] (WEB-09) Buyer workspace real-data convergence
   - owner: Frontend Agent
   - deps: DB-03, API-13
   - output: buyer feed, auction detail e pickup queue ligados ao backend real
   - gate: caminho principal buyer usa `source=api`; ids reais do backend; sem fallback silencioso
-- [BLOCKED] (WEB-10) Hardening de error, loading e empty states
+- [READY] (WEB-10) Hardening de error, loading e empty states
   - owner: Frontend Agent
   - deps: WEB-09
   - output: estados operacionais consistentes para buyer, seller e admin

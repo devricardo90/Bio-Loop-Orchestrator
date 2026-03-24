@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { useAuctionStore } from "./auction-store";
-import { formatSyncTime, formatTimeWindow } from "../lib/demo-auctions";
+import { fetchBuyerFeed } from "../lib/buyer-api";
+import { formatSyncTime, formatTimeWindow, type DemoAuctionRecord, type DemoBuyer } from "../lib/demo-auctions";
+import { schedulePickupToApi, submitPodToApi } from "../lib/pickup-api";
 import {
   formatPickupRevenue,
   getPickupOrders,
@@ -22,24 +23,20 @@ type PickupDashboardProps = {
   orderId?: string;
 };
 
+type PickupWorkspaceState = {
+  buyers: DemoBuyer[];
+  activeBuyerId: string;
+  auctions: DemoAuctionRecord[];
+  lastSyncedAt: string;
+};
+
 const proofTypes = ["PHOTO", "SIGNATURE", "DOC"] as const;
 
 export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
-  const {
-    state,
-    now,
-    activeBuyerId,
-    activeBuyerApproved,
-    activeBuyerName,
-    setActiveBuyerId,
-    schedulePickup,
-    submitPod,
-    hydrated
-  } = useAuctionStore();
-
-  const orders = useMemo(() => getPickupOrders(state, activeBuyerId), [activeBuyerId, state]);
-  const summary = useMemo(() => getPickupSummary(orders), [orders]);
-  const spotlight = useMemo(() => getPickupSpotlight(orders, orderId, mode), [mode, orderId, orders]);
+  const [workspace, setWorkspace] = useState<PickupWorkspaceState | null>(null);
+  const [activeBuyerId, setActiveBuyerId] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [scheduleStart, setScheduleStart] = useState("");
   const [scheduleEnd, setScheduleEnd] = useState("");
   const [podType, setPodType] = useState<(typeof proofTypes)[number]>("PHOTO");
@@ -48,6 +45,77 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
   const [podMessage, setPodMessage] = useState("");
   const [schedulePending, startScheduleTransition] = useTransition();
   const [podPending, startPodTransition] = useTransition();
+  const now = Date.now();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      setError("");
+
+      try {
+        const result = await fetchBuyerFeed();
+        if (cancelled) {
+          return;
+        }
+
+        const routeOrderBuyerId = orderId
+          ? result.auctions.find((auction) => auction.order?.id === orderId)?.order?.buyerId ?? result.activeBuyerId
+          : result.activeBuyerId;
+
+        setWorkspace({
+          buyers: result.buyers,
+          activeBuyerId: result.activeBuyerId,
+          auctions: result.auctions,
+          lastSyncedAt: result.lastSyncedAt
+        });
+        setActiveBuyerId((current) => current || routeOrderBuyerId);
+      } catch (nextError) {
+        if (!cancelled) {
+          setError(nextError instanceof Error ? nextError.message : "Unable to load pickup workspace.");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [orderId]);
+
+  const activeBuyer = workspace?.buyers.find((buyer) => buyer.id === activeBuyerId) ?? workspace?.buyers[0];
+  const orders = useMemo(() => {
+    if (!workspace) {
+      return [];
+    }
+
+    return getPickupOrders(workspace, activeBuyerId);
+  }, [activeBuyerId, workspace]);
+  const summary = useMemo(() => getPickupSummary(orders), [orders]);
+  const spotlight = useMemo(() => {
+    if (!workspace) {
+      return null;
+    }
+
+    return getPickupSpotlight(orders, orderId, mode);
+  }, [mode, orderId, orders, workspace]);
+
+  useEffect(() => {
+    if (!workspace) {
+      return;
+    }
+
+    const stillExists = workspace.buyers.some((buyer) => buyer.id === activeBuyerId);
+    if (!stillExists) {
+      setActiveBuyerId(workspace.activeBuyerId);
+    }
+  }, [activeBuyerId, workspace]);
 
   useEffect(() => {
     if (!spotlight) {
@@ -63,10 +131,50 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
     setPodMessage("");
   }, [spotlight?.order.id]);
 
-  if (!hydrated) {
+  async function reloadWorkspace() {
+    const result = await fetchBuyerFeed();
+    const routeOrderBuyerId = orderId
+      ? result.auctions.find((auction) => auction.order?.id === orderId)?.order?.buyerId ?? result.activeBuyerId
+      : result.activeBuyerId;
+    setWorkspace({
+      buyers: result.buyers,
+      activeBuyerId: result.activeBuyerId,
+      auctions: result.auctions,
+      lastSyncedAt: result.lastSyncedAt
+    });
+    setActiveBuyerId(routeOrderBuyerId);
+  }
+
+  if (loading) {
     return <main className="app-shell">Loading pickup workspace...</main>;
   }
 
+  if (error) {
+    return (
+      <main className="app-shell">
+        <section className="panel empty-state">
+          <p className="eyebrow">Pickup API</p>
+          <h2>Unable to load the pickup workspace.</h2>
+          <p className="muted">{error}</p>
+        </section>
+      </main>
+    );
+  }
+
+  if (!workspace || !activeBuyer) {
+    return (
+      <main className="app-shell">
+        <section className="panel empty-state">
+          <p className="eyebrow">Pickup workspace</p>
+          <h2>No pickup data available.</h2>
+          <p className="muted">The live buyer API returned no pickup-ready orders.</p>
+        </section>
+      </main>
+    );
+  }
+
+  const activeBuyerApproved = activeBuyer.approved;
+  const activeBuyerName = activeBuyer.name;
   const canSchedule = Boolean(spotlight && isScheduleAllowed(spotlight));
   const canSubmitPod = Boolean(spotlight && isPodAllowed(spotlight));
   const scheduleWindowValid = isScheduleWindowValid(scheduleStart, scheduleEnd);
@@ -80,14 +188,15 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
           <p className="eyebrow">Pickup operations</p>
           <h1>{mode === "list" ? "Schedule pickups and keep PODs moving." : "Pickup detail with proof upload and dispute state."}</h1>
           <p className="lead">
-            The pickup desk follows the same runtime as the trade flow, with explicit status guards, local fallback
-            when the API is offline, and clear no-show handling.
+            The pickup desk now runs on the buyer API read-model, with explicit status guards and no silent demo
+            fallback in the main path.
           </p>
           <div className="hero-meta">
-            <span className="chip chip-accent">{formatSyncTime(state.lastSyncedAt)}</span>
+            <span className="chip chip-accent">{formatSyncTime(workspace.lastSyncedAt)}</span>
             <span className="chip">{summary.scheduled} scheduled</span>
             <span className="chip">{summary.completed} completed</span>
             <span className="chip">{summary.disputed} disputed</span>
+            <span className="chip">source=api</span>
           </div>
           <div className="hero-meta">
             <Link href="/buyer/feed" className="button button-secondary">
@@ -103,7 +212,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
           <div className="panel buyer-switcher">
             <p className="label">Active buyer</p>
             <div className="buyer-list">
-              {state.buyers.map((buyer) => (
+              {workspace.buyers.map((buyer) => (
                 <button
                   key={buyer.id}
                   className={`buyer-pill ${buyer.id === activeBuyerId ? "buyer-pill-active" : ""}`}
@@ -233,9 +342,9 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                         order: spotlight,
                         scheduleStart,
                         scheduleEnd,
-                        schedulePickup,
                         setScheduleMessage,
-                        startScheduleTransition
+                        startScheduleTransition,
+                        reloadWorkspace
                       });
                     }}
                   >
@@ -276,7 +385,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                       {scheduleMessage ||
                         (canSchedule
                           ? scheduleWindowValid
-                            ? "The pickup window will be stored locally and sent to the API when available."
+                            ? "The pickup window will be sent directly to the live API."
                             : "The window must be in the future and end after the start."
                           : "This order cannot be rescheduled in its current state.")}
                     </p>
@@ -290,9 +399,9 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                         order: spotlight,
                         podType,
                         podUrl,
-                        submitPod,
                         setPodMessage,
-                        startPodTransition
+                        startPodTransition,
+                        reloadWorkspace
                       });
                     }}
                   >
@@ -334,7 +443,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                     <p className={`message ${podMessage ? "message-visible" : ""}`} aria-live="polite">
                       {podMessage ||
                         (canSubmitPod
-                          ? "Submitting POD will complete the order locally if the API is unavailable."
+                          ? "Submitting POD will send proof data to the live API."
                           : "POD is only available after pickup has been scheduled.")}
                     </p>
                   </form>
@@ -456,20 +565,16 @@ async function handleSchedule({
   order,
   scheduleStart,
   scheduleEnd,
-  schedulePickup,
   setScheduleMessage,
-  startScheduleTransition
+  startScheduleTransition,
+  reloadWorkspace
 }: {
   order: PickupOrderRecord;
   scheduleStart: string;
   scheduleEnd: string;
-  schedulePickup: (input: { orderId: string; pickupWindow: { startAt: string; endAt: string } }) => Promise<{
-    ok: boolean;
-    source?: "api" | "demo";
-    error?: string;
-  }>;
   setScheduleMessage: (value: string) => void;
   startScheduleTransition: (callback: () => void) => void;
+  reloadWorkspace: () => Promise<void>;
 }) {
   if (!isScheduleWindowValid(scheduleStart, scheduleEnd)) {
     setScheduleMessage("The pickup window must be in the future and end after the start.");
@@ -477,24 +582,20 @@ async function handleSchedule({
   }
 
   startScheduleTransition(() => {
-    void schedulePickup({
+    void schedulePickupToApi({
       orderId: order.order.id,
       pickupWindow: {
         startAt: toIsoString(scheduleStart),
         endAt: toIsoString(scheduleEnd)
       }
-    }).then((result) => {
-      if (!result.ok) {
-        setScheduleMessage(result.error ?? "Unable to schedule pickup.");
-        return;
-      }
-
-      setScheduleMessage(
-        result.source === "api"
-          ? "Pickup scheduled by the API."
-          : "Pickup scheduled locally while the API was unavailable."
-      );
-    });
+    })
+      .then(async () => {
+        await reloadWorkspace();
+        setScheduleMessage("Pickup scheduled by the API.");
+      })
+      .catch((error: unknown) => {
+        setScheduleMessage(error instanceof Error ? error.message : "Unable to schedule pickup.");
+      });
   });
 }
 
@@ -502,20 +603,16 @@ async function handlePod({
   order,
   podType,
   podUrl,
-  submitPod,
   setPodMessage,
-  startPodTransition
+  startPodTransition,
+  reloadWorkspace
 }: {
   order: PickupOrderRecord;
   podType: (typeof proofTypes)[number];
   podUrl: string;
-  submitPod: (input: { orderId: string; type: string; url: string }) => Promise<{
-    ok: boolean;
-    source?: "api" | "demo";
-    error?: string;
-  }>;
   setPodMessage: (value: string) => void;
   startPodTransition: (callback: () => void) => void;
+  reloadWorkspace: () => Promise<void>;
 }) {
   if (!podUrl.trim()) {
     setPodMessage("Provide a proof URL before submitting POD.");
@@ -523,27 +620,18 @@ async function handlePod({
   }
 
   startPodTransition(() => {
-    void submitPod({
+    void submitPodToApi({
       orderId: order.order.id,
       type: podType,
       url: podUrl.trim()
-    }).then((result) => {
-      if (!result.ok) {
-        setPodMessage(result.error ?? "Unable to submit POD.");
-        return;
-      }
-
-      if (result.source === "api") {
-        setPodMessage("POD accepted by the API.");
-        return;
-      }
-
-      setPodMessage(
-        order.order.pickupStatus === "NO_SHOW"
-          ? "Pickup window elapsed and the demo state moved the order to dispute locally."
-          : "POD stored locally while the API was unavailable."
-      );
-    });
+    })
+      .then(async (result) => {
+        await reloadWorkspace();
+        setPodMessage(result.dispute ? "POD request opened or updated a dispute through the API." : "POD accepted by the API.");
+      })
+      .catch((error: unknown) => {
+        setPodMessage(error instanceof Error ? error.message : "Unable to submit POD.");
+      });
   });
 }
 

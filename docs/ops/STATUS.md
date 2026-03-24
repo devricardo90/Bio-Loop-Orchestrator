@@ -84,5 +84,6 @@
 - `DB-02` fechou a persistencia real de billing com `Invoice`, `InvoiceFee` e `BillingExport`, e o seller reports agora opera sobre artefatos persistidos em vez de calculo efemero puro.
 - `API-12` fechou o login real contra usuarios persistidos com `passwordHash` seedado, mantendo cookies httpOnly, refresh e CSRF no mesmo fluxo.
 - `API-13` fechou os endpoints reais de buyer feed e auction detail, e o buyer workspace principal agora consome IDs e registros vindos da API em vez do catalogo local inventado.
-- O proximo `READY` da fila unificada agora e `WEB-09`, porque a trilha de API ja entregou o read-model necessario para convergir o restante do buyer workspace ao backend real.
+- `WEB-09` fechou a convergencia do buyer workspace para dados reais no frontend, incluindo pickup queue e order detail sem fallback silencioso no caminho principal.
+- O proximo `READY` da fila unificada agora e `WEB-10`, porque o buyer workspace ja esta conectado ao backend real e o proximo passo e endurecer estados operacionais.
 - O momento correto para o usuario enviar os dados reais dos supermercados da Suecia e logo apos `DB-03`; os campos/documentos necessarios ficam em [REAL_DATA_ONBOARDING.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/REAL_DATA_ONBOARDING.md).
