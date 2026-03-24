@@ -54,9 +54,9 @@
   - deps: API-02
 - [DONE] (API-05) OpenAPI atualizado + Scalar em /reference para auth/trade/pickup endpoints
   - deps: API-03, API-04
-- [READY] (API-06) Jobs: end_auction + no_show worker/scheduler
+- [DONE] (API-06) Jobs: end_auction + no_show worker/scheduler
   - deps: API-03, API-04
-- [BLOCKED] (QA-01) Release verification M1+M2: buyer + seller + pickup flows sem dead-ends
+- [READY] (QA-01) Release verification M1+M2: buyer + seller + pickup flows sem dead-ends
   - deps: WEB-04, API-05, API-06
 
 ## M3 Billing Slice

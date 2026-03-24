@@ -20,6 +20,8 @@ const ordersController = readFileSync(new URL("../src/trades/orders.controller.t
 const tradesService = readFileSync(new URL("../src/trades/trades.service.ts", import.meta.url), "utf8");
 const tradesValidators = readFileSync(new URL("../src/trades/trades.validators.ts", import.meta.url), "utf8");
 const tradesModule = readFileSync(new URL("../src/trades/trades.module.ts", import.meta.url), "utf8");
+const apiJobsService = readFileSync(new URL("../src/jobs/api-jobs.service.ts", import.meta.url), "utf8");
+const apiJobsModule = readFileSync(new URL("../src/jobs/api-jobs.module.ts", import.meta.url), "utf8");
 const envExample = readFileSync(new URL("../.env.example", import.meta.url), "utf8");
 
 assert.match(main, /NestFactory\.create/);
@@ -45,6 +47,9 @@ assert.match(tradesService, /endAuction/);
 assert.match(tradesService, /schedulePickup/);
 assert.match(tradesService, /recordPickupProof/);
 assert.match(tradesService, /markNoShow/);
+assert.match(apiJobsService, /runEndAuctionSweep/);
+assert.match(apiJobsService, /runNoShowSweep/);
+assert.match(apiJobsModule, /ApiJobsModule/);
 assert.match(tradesValidators, /normalizePlaceBidInput/);
 assert.match(tradesModule, /TradesController/);
 assert.match(tradesModule, /OrdersController/);

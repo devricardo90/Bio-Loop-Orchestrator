@@ -25,3 +25,15 @@ pnpm --filter @bio-loop/api typecheck
 pnpm --filter @bio-loop/api test
 pnpm --filter @bio-loop/api build
 ```
+
+## Jobs
+
+The API boots a lightweight in-process scheduler for:
+
+- `end_auction`
+- `no_show`
+
+Optional env vars:
+
+- `JOB_SWEEP_INTERVAL_MS`
+- `JOB_INITIAL_DELAY_MS`

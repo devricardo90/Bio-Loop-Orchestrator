@@ -29,7 +29,7 @@
 - [x] Core endpoints M1
 - [x] Pickup schedule + POD endpoints
 - [x] OpenAPI atualizado + Scalar em /reference
-- [ ] Jobs: end_auction + no_show (M2)
+- [x] Jobs: end_auction + no_show (M2)
 
 ---
 
@@ -48,3 +48,4 @@
 - INFRA-02 fecha a politica de workspace limpo e o tooling `watch:done`.
 - WEB-04 fecha o login seller/buyer e `API-05` fecha o contrato publico da API.
 - API-05 fecha o contrato publico da API; o backlog agora aponta `API-06` como proxima `READY`.
+- API-06 fecha a automacao de `end_auction` e `no_show`; `QA-01` agora e a proxima task de verificacao.
