@@ -11,7 +11,12 @@
     "pnpm": "9.x"
   },
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "powershell -ExecutionPolicy Bypass -File tools/run-with-local-env.ps1 -Command \"turbo run dev\"",
+    "dev:api": "powershell -ExecutionPolicy Bypass -File tools/run-with-local-env.ps1 -Command \"pnpm --filter @bio-loop/api dev\"",
+    "dev:web": "powershell -ExecutionPolicy Bypass -File tools/run-with-local-env.ps1 -Command \"pnpm --filter @bio-loop/web dev\"",
+    "compose:up": "docker compose up -d postgres redis",
+    "compose:down": "docker compose down",
+    "compose:logs": "docker compose logs -f postgres redis",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",

@@ -17,6 +17,7 @@ This API uses cookie-based auth for the MVP foundation:
 ## Local env
 
 Copy `.env.example` to `.env` and adjust the origin/cookie settings for your local setup.
+For the full local stack, copy the root [.env.example](../../.env.example) to `.env`, start Postgres/Redis with `pnpm compose:up`, then run `pnpm --filter @bio-loop/api prisma:generate`.
 
 ## Verification
 
@@ -46,3 +47,10 @@ Optional env vars:
 
 - `JOB_SWEEP_INTERVAL_MS`
 - `JOB_INITIAL_DELAY_MS`
+
+## Runtime endpoints
+
+- `GET /health`
+- `GET /readiness`
+- `GET /openapi.json`
+- `GET /reference`

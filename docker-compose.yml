@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: bio-loop-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bio_loop}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bio_loop_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-bio_loop}
+    volumes:
+      - bio-loop-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bio_loop} -d ${POSTGRES_DB:-bio_loop}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    container_name: bio-loop-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - bio-loop-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  bio-loop-postgres-data:
+  bio-loop-redis-data:

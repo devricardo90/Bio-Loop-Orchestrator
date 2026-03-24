@@ -1,6 +1,6 @@
 # Bio-Loop-Orchestrator
 
-Monorepo base for the Bio Loop orchestrator project.
+Monorepo for the Bio Loop orchestrator project.
 
 ## Workspace layout
 
@@ -9,22 +9,39 @@ Monorepo base for the Bio Loop orchestrator project.
 - `packages/domain` - domain contracts package
 - `packages/shared` - shared utilities package
 
-## Setup
+## Local Stack
 
 ```bash
+Copy-Item .env.example .env
 pnpm install
+pnpm compose:up
+pnpm --filter @bio-loop/api prisma:generate
+pnpm dev
 ```
+
+The API runs on `http://localhost:4000`.
+The web app runs on `http://localhost:3000`.
+
+## Useful URLs
+
+- `http://localhost:4000/health`
+- `http://localhost:4000/readiness`
+- `http://localhost:4000/openapi.json`
+- `http://localhost:4000/reference`
 
 ## Common commands
 
 ```bash
+pnpm compose:down
+pnpm dev:api
+pnpm dev:web
 pnpm dev
 pnpm build
 pnpm lint
 pnpm typecheck
 ```
 
-## Status
+## Docs
 
-This repository currently contains the monorepo foundation only. Domain, API, and web business flows are intentionally not implemented yet.
-
+- [Local runtime runbook](docs/ops/LOCAL_RUNTIME_STACK.md)
+- [API README](apps/api/README.md)

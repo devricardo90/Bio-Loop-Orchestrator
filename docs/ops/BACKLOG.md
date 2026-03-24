@@ -89,3 +89,18 @@
   - deps: WEB-07, API-09
 - [DONE] (INFRA-03) Observability minimum: structured logs, request ids, health/readiness checks
   - deps: API-05, API-06
+
+## M7 Runtime Validation & Demo Readiness
+
+- [DONE] (INFRA-04) Local runtime stack: docker compose for Postgres + Redis, env bootstrap, app runbook
+  - deps: INFRA-03
+- [READY] (API-11) Seed/demo data real for buyers, sellers, lots, auctions, orders, disputes, invoices
+  - deps: INFRA-04
+- [BLOCKED] (WEB-08) Remove residual frontend fallbacks and bind seller/admin demo surfaces to real API data
+  - deps: API-11
+- [BLOCKED] (QA-03) Manual UAT runbook for buyer, seller, admin, pickup, billing and docs/reference
+  - deps: INFRA-04, API-11, WEB-08
+- [BLOCKED] (QA-04) Real browser e2e for primary flows
+  - deps: QA-03
+- [BLOCKED] (DOCS-01) Developer quickstart + demo guide for local stack, seed data and Scalar reference
+  - deps: INFRA-04, API-11

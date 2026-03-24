@@ -7,6 +7,7 @@
 - [x] M4 Admin Slice (buyer approval + disputes)
 - [x] M5 Consolidation Slice (login + API docs + jobs + QA/release hardening)
 - [x] M6 Post-MVP Hardening (real admin data + RBAC + e2e + observability)
+- [ ] M7 Runtime Validation & Demo Readiness (local stack + seed + real demo flows + UAT)
 
 - Scaffold note: pnpm+turborepo baseline created for apps/api, apps/web, packages/domain, and packages/shared.
 - Foundation gate note: workspace install, root typecheck, and root build validated after fixing the Nest CLI version and API TypeScript config.
@@ -67,3 +68,5 @@
 - API-10 fecha o enforcement real de RBAC nas rotas buyer, seller e admin.
 - QA-02 fechou a verificacao de smoke flows de buyer, seller e admin; o unico alerta remanescente foi a limitacao de `next build` no ambiente atual (`spawn EPERM`).
 - INFRA-03 fechou a base de observabilidade minima com request ids, logging estruturado e health/readiness checks.
+- O proximo passo correto e tirar o produto do estado de "repo validado" para "stack local demonstravel", com banco, redis, seed real, remocao de fallbacks residuais e roteiro de UAT.
+- INFRA-04 fechou a base de runtime local com docker compose, bootstrap de env e runbook para API/Web/Scalar.
