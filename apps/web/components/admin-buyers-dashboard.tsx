@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useAuthSession } from "./auth-session";
-import { approveBuyerOnApi, type BuyerApprovalDecision } from "../lib/admin-api";
 import {
-  createDemoAdminState,
-  defaultBuyerReasonForDecision,
-  mapBuyerDecisionToStatus,
-  type AdminBuyerRecord
-} from "../lib/demo-admin";
+  approveBuyerOnApi,
+  listAdminBuyers,
+  type BuyerApprovalDecision,
+  type BuyerApprovalReason,
+  type BuyerRecordDto
+} from "../lib/admin-api";
 
 type BuyerAction = {
   decision: BuyerApprovalDecision;
@@ -23,14 +23,27 @@ const actions: BuyerAction[] = [
   { decision: "REINSTATE", label: "Reinstate" }
 ];
 
+function defaultBuyerReasonForDecision(decision: BuyerApprovalDecision): BuyerApprovalReason {
+  if (decision === "APPROVE" || decision === "REINSTATE") {
+    return "MANUAL_REVIEW";
+  }
+
+  if (decision === "REJECT") {
+    return "COMPLIANCE";
+  }
+
+  return "PAYMENT_RISK";
+}
+
 export function AdminBuyersDashboard() {
   const { session, hydrated } = useAuthSession();
-  const [buyers, setBuyers] = useState<AdminBuyerRecord[]>(() => createDemoAdminState().buyers);
-  const [reviewerId, setReviewerId] = useState(session?.userId ?? "admin-demo");
+  const [buyers, setBuyers] = useState<BuyerRecordDto[]>([]);
+  const [reviewerId, setReviewerId] = useState(session?.userId ?? "admin-reviewer");
   const [notes, setNotes] = useState("Manual review from the admin cockpit.");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loadingBuyerId, setLoadingBuyerId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const statusCounts = useMemo(() => {
@@ -43,11 +56,34 @@ export function AdminBuyersDashboard() {
     );
   }, [buyers]);
 
+  useEffect(() => {
+    if (!hydrated) {
+      return;
+    }
+
+    void refreshBuyers();
+  }, [hydrated]);
+
   if (!hydrated) {
     return <main className="app-shell">Loading admin buyers workspace...</main>;
   }
 
-  async function handleAction(buyer: AdminBuyerRecord, decision: BuyerApprovalDecision) {
+  async function refreshBuyers() {
+    setLoading(true);
+    setError("");
+
+    try {
+      const result = await listAdminBuyers();
+      setBuyers(result.buyers);
+    } catch (err) {
+      setBuyers([]);
+      setError(err instanceof Error ? err.message : "Unable to load admin buyers.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleAction(buyer: BuyerRecordDto, decision: BuyerApprovalDecision) {
     const reason = defaultBuyerReasonForDecision(decision);
     setLoadingBuyerId(buyer.buyerId);
     setError("");
@@ -73,13 +109,7 @@ export function AdminBuyersDashboard() {
                 ...entry,
                 status: result.approval.status,
                 notes: notes.trim() || entry.notes,
-                approval: {
-                  decision: result.approval.decision ?? decision,
-                  reason: result.approval.reason ?? reason,
-                  reviewerId: result.approval.reviewerId ?? reviewerId,
-                  notes: result.approval.notes ?? notes,
-                  reviewedAt: result.approval.reviewedAt ?? new Date().toISOString()
-                },
+                approval: result.approval,
                 updatedAt: result.approval.updatedAt ?? new Date().toISOString()
               }
             : entry
@@ -87,26 +117,7 @@ export function AdminBuyersDashboard() {
       );
       setMessage(`Buyer ${buyer.name} updated through the admin API.`);
     } catch (err) {
-      setBuyers((current) =>
-        current.map((entry) =>
-          entry.buyerId === buyer.buyerId
-            ? {
-                ...entry,
-                status: mapBuyerDecisionToStatus(decision),
-                notes: notes.trim() || entry.notes,
-                approval: {
-                  decision,
-                  reason,
-                  reviewerId,
-                  notes: notes.trim() || "Fallback approval note.",
-                  reviewedAt: new Date().toISOString()
-                },
-                updatedAt: new Date().toISOString()
-              }
-            : entry
-        )
-      );
-      setError(err instanceof Error ? `${err.message}. Applied local fallback.` : "Applied local fallback.");
+      setError(err instanceof Error ? err.message : "Buyer approval request failed.");
     } finally {
       setLoadingBuyerId(null);
     }
@@ -118,12 +129,10 @@ export function AdminBuyersDashboard() {
         <div className="hero-copy">
           <p className="eyebrow">Admin buyers</p>
           <h1>Approve and review buyers before they hit the trade surface.</h1>
-          <p className="lead">
-            The buyer registry is seeded locally because the API does not expose a list-buyers endpoint yet. Approval
-            actions still go to the live admin API when available.
-          </p>
+          <p className="lead">The buyer registry is loaded from the admin API and reflects the seeded dataset.</p>
           <div className="hero-meta">
-            <span className="chip chip-accent">{session ? session.roleLabel : "Demo mode"}</span>
+            <span className="chip chip-accent">{session ? session.roleLabel : "Admin session"}</span>
+            <span className="chip">{loading ? "Loading buyers..." : `${buyers.length} buyers loaded`}</span>
             <span className="chip">{buyers.length} buyers tracked</span>
             <span className="chip">Reviewer: {reviewerId}</span>
           </div>
@@ -188,7 +197,7 @@ export function AdminBuyersDashboard() {
             <div className="empty-state">
               <p className="eyebrow">No buyers</p>
               <h2>No buyer records available.</h2>
-              <p className="muted">Add registry data or connect a list endpoint when the backend exposes one.</p>
+              <p className="muted">The admin API returned no buyers for the current workspace.</p>
             </div>
           ) : (
             buyers.map((buyer) => (
@@ -197,7 +206,6 @@ export function AdminBuyersDashboard() {
                   <div>
                     <p className="eyebrow">{buyer.buyerId}</p>
                     <h3>{buyer.name}</h3>
-                    <p className="muted">{buyer.email}</p>
                   </div>
                   <span className={`status-badge status-${buyer.status.toLowerCase()}`}>{buyer.status}</span>
                 </div>
@@ -227,8 +235,10 @@ export function AdminBuyersDashboard() {
                       {buyer.approval.decision} via {buyer.approval.reason}
                     </strong>
                     <p className="muted">
-                      Reviewed by {buyer.approval.reviewerId} on{" "}
-                      {new Date(buyer.approval.reviewedAt).toLocaleString("en-GB")}
+                      Reviewed by {buyer.approval.reviewerId ?? "Unknown"} on{" "}
+                      {buyer.approval.reviewedAt
+                        ? new Date(buyer.approval.reviewedAt).toLocaleString("en-GB")
+                        : "Not reviewed yet"}
                     </p>
                     <p className="muted">{buyer.approval.notes}</p>
                   </div>
@@ -258,6 +268,9 @@ export function AdminBuyersDashboard() {
 
         <p className={`message ${error ? "message-visible" : ""}`} aria-live="polite">
           {error}
+        </p>
+        <p className={`message ${loading ? "message-visible" : ""}`} aria-live="polite">
+          {loading ? "Loading buyer registry from the API..." : ""}
         </p>
         <p className={`message ${message ? "message-visible" : ""}`} aria-live="polite">
           {message}

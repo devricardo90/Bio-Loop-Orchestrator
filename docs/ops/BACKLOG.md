@@ -96,7 +96,7 @@
   - deps: INFRA-03
 - [DONE] (API-11) Seed/demo data real for buyers, sellers, lots, auctions, orders, disputes, invoices
   - deps: INFRA-04
-- [READY] (WEB-08) Remove residual frontend fallbacks and bind seller/admin demo surfaces to real API data
+- [DONE] (WEB-08) Remove residual frontend fallbacks and bind seller/admin demo surfaces to real API data
   - deps: API-11
 - [BLOCKED] (QA-03) Manual UAT runbook for buyer, seller, admin, pickup, billing and docs/reference
   - deps: INFRA-04, API-11, WEB-08

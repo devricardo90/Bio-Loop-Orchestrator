@@ -68,4 +68,5 @@ assert.match(loginPanel, /Sign in as/);
 assert.match(loginPanel, /Admin workspace/);
 assert.match(authSession, /AuthSessionProvider/);
 assert.match(authApi, /fetchAuthCsrfToken/);
+assert.match(adminApi, /listAdminBuyers/);
 assert.match(adminApi, /listAdminDisputes/);

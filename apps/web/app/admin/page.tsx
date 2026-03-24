@@ -31,7 +31,7 @@ export default function AdminHomePage() {
               <li>Buyer approval queue with API-backed actions</li>
               <li>Dispute list and resolution actions</li>
               <li>Loading, empty, and error states</li>
-              <li>Fallback demo data when the API is not reachable</li>
+              <li>Seeded API data for review flows</li>
             </ul>
           </div>
         </div>

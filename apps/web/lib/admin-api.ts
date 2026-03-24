@@ -21,8 +21,24 @@ export type BuyerApprovalDto = {
   updatedAt: string;
 };
 
+export type BuyerRecordDto = {
+  id: string;
+  buyerId: string;
+  name: string;
+  status: BuyerApprovalStatus;
+  reputationScore: number;
+  riskLabel: string;
+  notes: string;
+  approval: BuyerApprovalDto | null;
+  updatedAt: string;
+};
+
 export type ApproveBuyerResult = {
   approval: BuyerApprovalDto;
+};
+
+export type ListBuyersResult = {
+  buyers: BuyerRecordDto[];
 };
 
 export type DisputeDto = {
@@ -71,6 +87,20 @@ export async function approveBuyerOnApi(input: {
   }
 
   return (await response.json()) as ApproveBuyerResult;
+}
+
+export async function listAdminBuyers(): Promise<ListBuyersResult> {
+  const response = await fetch(`${apiBaseUrl}/admin/buyers`, {
+    method: "GET",
+    credentials: "include"
+  });
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => "");
+    throw new Error(body || `Buyers request failed with ${response.status}`);
+  }
+
+  return (await response.json()) as ListBuyersResult;
 }
 
 export async function listAdminDisputes(status?: DisputeStatus): Promise<ListDisputesResult> {

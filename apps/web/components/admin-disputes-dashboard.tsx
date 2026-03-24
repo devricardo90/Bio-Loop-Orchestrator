@@ -9,12 +9,16 @@ import {
   type DisputeResolutionDecision,
   type DisputeStatus
 } from "../lib/admin-api";
-import {
-  createDemoAdminState,
-  demoDisputeStatusLabel,
-  mapDisputeDecisionToStatus,
-  type AdminDisputeRecord
-} from "../lib/demo-admin";
+
+type AdminDisputeRecord = {
+  id: string;
+  orderId: string;
+  reason: "NO_SHOW" | "QUALITY_ISSUE";
+  status: "OPEN" | "RESOLVED" | "CANCELLED";
+  openedAt: string;
+  resolvedAt: string | null;
+  note: string;
+};
 
 type DisputeAction = {
   decision: DisputeResolutionDecision;
@@ -32,14 +36,14 @@ const filters: Array<DisputeStatus | "ALL"> = ["ALL", "OPEN", "RESOLVED", "CANCE
 
 export function AdminDisputesDashboard() {
   const { session, hydrated } = useAuthSession();
-  const [disputes, setDisputes] = useState<AdminDisputeRecord[]>(() => createDemoAdminState().disputes);
+  const [disputes, setDisputes] = useState<AdminDisputeRecord[]>([]);
   const [filter, setFilter] = useState<(typeof filters)[number]>("ALL");
-  const [reviewerId, setReviewerId] = useState(session?.userId ?? "admin-demo");
+  const [reviewerId, setReviewerId] = useState(session?.userId ?? "admin-reviewer");
   const [note, setNote] = useState("Resolution reviewed in the admin cockpit.");
   const [loadingDisputeId, setLoadingDisputeId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [source, setSource] = useState<"api" | "demo">("demo");
+  const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -69,6 +73,7 @@ export function AdminDisputesDashboard() {
   }, [disputes]);
 
   async function refreshDisputes(nextFilter: (typeof filters)[number]) {
+    setLoading(true);
     setMessage("");
     setError("");
 
@@ -85,11 +90,11 @@ export function AdminDisputesDashboard() {
           note: item.status === "OPEN" ? "Live admin dispute from API." : "Resolved or cancelled on the API."
         }))
       );
-      setSource("api");
     } catch (err) {
-      setDisputes(createDemoAdminState().disputes);
-      setSource("demo");
-      setError(err instanceof Error ? `${err.message}. Showing local demo disputes.` : "Showing local demo disputes.");
+      setDisputes([]);
+      setError(err instanceof Error ? err.message : "Unable to load admin disputes.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -122,27 +127,13 @@ export function AdminDisputesDashboard() {
             : entry
         )
       );
-      setSource("api");
       setMessage(
         decision === "ESCALATE"
           ? "Dispute escalated. The API keeps it open for follow-up."
           : `Dispute ${dispute.id} updated through the admin API.`
       );
     } catch (err) {
-      setDisputes((current) =>
-        current.map((entry) =>
-          entry.id === dispute.id
-            ? {
-                ...entry,
-                status: mapDisputeDecisionToStatus(decision),
-                resolvedAt: decision === "ESCALATE" ? null : new Date().toISOString(),
-                note: decision === "ESCALATE" ? "Escalated in local fallback mode." : "Resolved in local fallback mode."
-              }
-            : entry
-        )
-      );
-      setSource("demo");
-      setError(err instanceof Error ? `${err.message}. Applied local fallback.` : "Applied local fallback.");
+      setError(err instanceof Error ? err.message : "Unable to update dispute.");
     } finally {
       setLoadingDisputeId(null);
     }
@@ -158,14 +149,11 @@ export function AdminDisputesDashboard() {
         <div className="hero-copy">
           <p className="eyebrow">Admin disputes</p>
           <h1>Resolve and monitor disputes without leaving the cockpit.</h1>
-          <p className="lead">
-            The disputes panel uses the live admin API when reachable. If the API is unavailable, it falls back to a
-            local demo queue so the surface remains usable.
-          </p>
+          <p className="lead">The disputes panel uses the live admin API and reflects the seeded dispute queue.</p>
           <div className="hero-meta">
-            <span className="chip chip-accent">{session ? session.roleLabel : "Demo mode"}</span>
+            <span className="chip chip-accent">{session ? session.roleLabel : "Admin session"}</span>
             <span className="chip">{visibleDisputes.length} visible</span>
-            <span className="chip">{source === "api" ? "API source" : "Local fallback"}</span>
+            <span className="chip">{loading ? "Loading disputes..." : "Live API"}</span>
           </div>
           <div className="hero-meta">
             <Link href="/admin" className="button button-secondary">
@@ -214,7 +202,7 @@ export function AdminDisputesDashboard() {
           ["Open", counts.OPEN],
           ["Resolved", counts.RESOLVED],
           ["Cancelled", counts.CANCELLED],
-          ["Source", source === "api" ? "API" : "Demo"]
+          ["Source", "API"]
         ].map(([label, value]) => (
           <article key={label as string} className="metric-card">
             <span className="label">{label as string}</span>
@@ -248,7 +236,7 @@ export function AdminDisputesDashboard() {
                     <p className="muted">Opened {new Date(dispute.openedAt).toLocaleString("en-GB")}</p>
                   </div>
                   <span className={`status-badge status-${dispute.status.toLowerCase()}`}>
-                    {demoDisputeStatusLabel(dispute.status).toUpperCase()}
+                    {dispute.status}
                   </span>
                 </div>
 
@@ -297,6 +285,9 @@ export function AdminDisputesDashboard() {
 
         <p className={`message ${error ? "message-visible" : ""}`} aria-live="polite">
           {error}
+        </p>
+        <p className={`message ${loading ? "message-visible" : ""}`} aria-live="polite">
+          {loading ? "Loading disputes from the API..." : ""}
         </p>
         <p className={`message ${message ? "message-visible" : ""}`} aria-live="polite">
           {message}

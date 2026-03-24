@@ -69,6 +69,7 @@
 - QA-02 fechou a verificacao de smoke flows de buyer, seller e admin; o unico alerta remanescente foi a limitacao de `next build` no ambiente atual (`spawn EPERM`).
 - INFRA-03 fechou a base de observabilidade minima com request ids, logging estruturado e health/readiness checks.
 - O proximo passo correto e tirar o produto do estado de "repo validado" para "stack local demonstravel", com banco, redis, seed real, remocao de fallbacks residuais e roteiro de UAT.
+- WEB-08 fecha a remocao de fallbacks residuais no frontend seller/admin; o proximo foco e documentacao operacional do stack e UAT manual.
 - API-11 fechou a base de demo real com buyers, lots, auctions, orders, disputes e dados prontos para billing.
 - O proximo passo operacional e remover os fallbacks residuais do frontend em `WEB-08` e documentar o fluxo de demo em `DOCS-01`.
 - INFRA-04 fechou a base de runtime local com docker compose, bootstrap de env e runbook para API/Web/Scalar.

@@ -20,7 +20,6 @@ type BillingRange = {
 type SellerReportsState = {
   summary: BillingSummary;
   exportSnapshot: BillingExportSnapshot | null;
-  source: "api" | "demo";
 };
 
 const defaultRange = (): BillingRange => {
@@ -32,60 +31,6 @@ const defaultRange = (): BillingRange => {
   return {
     fromAt: toIso(fromAt),
     toAt: toIso(toAt)
-  };
-};
-
-const demoSummary = (range: BillingRange): BillingSummary => ({
-  fromAt: toIso(range.fromAt),
-  toAt: toIso(range.toAt),
-  currency: "SEK",
-  invoiceCount: 3,
-  subtotalSek: 12840,
-  feeTotalSek: 642,
-  totalSek: 12198
-});
-
-const demoExport = (range: BillingRange, format: BillingExportFormat): BillingExportSnapshot => {
-  const report = demoSummary(range);
-  const invoices = [
-    {
-      id: "inv_demo_01",
-      orderId: "order-carrots-01",
-      sellerId: "seller-norrmalm",
-      buyerId: "buyer-grainworks",
-      currency: "SEK",
-      status: "EXPORTED",
-      billedWeightKg: 548,
-      subtotalSek: 3726,
-      feeTotalSek: 296.08,
-      totalSek: 3429.92,
-      issuedAt: new Date().toISOString(),
-      exportedAt: new Date().toISOString(),
-      lineItems: [
-        {
-          id: "line_demo_01",
-          label: "Carrot trim lot",
-          quantityKg: 548,
-          unitPriceSekPerKg: 6.8,
-          amountSek: 3726.4
-        }
-      ],
-      fees: [
-        { id: "fee_demo_platform", type: "PLATFORM_PERCENT", label: "Platform fee (8%)", amountSek: 298.11 }
-      ]
-    }
-  ];
-
-  return {
-    format,
-    downloadName: `billing-demo-${format.toLowerCase()}.${format.toLowerCase()}`,
-    invoiceCount: invoices.length,
-    report,
-    invoices,
-    content:
-      format === "CSV"
-        ? "invoiceId,orderId,sellerId,buyerId,subtotalSek,feeTotalSek,totalSek,issuedAt\ninv_demo_01,order-carrots-01,seller-norrmalm,buyer-grainworks,3726,296.08,3429.92,2026-03-24T00:00:00.000Z"
-        : JSON.stringify({ invoices, report }, null, 2)
   };
 };
 
@@ -124,11 +69,10 @@ export function SellerReports() {
         fromAt: toIso(nextRange.fromAt),
         toAt: toIso(nextRange.toAt)
       });
-      setState({ summary, exportSnapshot: null, source: "api" });
+      setState({ summary, exportSnapshot: null });
     } catch (err) {
-      const summary = demoSummary(nextRange);
-      setState({ summary, exportSnapshot: null, source: "demo" });
-      setError(err instanceof Error ? err.message : "Billing API unavailable. Showing local demo data.");
+      setState(null);
+      setError(err instanceof Error ? err.message : "Billing API unavailable.");
     } finally {
       setLoading(false);
     }
@@ -148,19 +92,12 @@ export function SellerReports() {
       .then((snapshot) => {
         setState((current) => ({
           summary: current?.summary ?? snapshot.report,
-          exportSnapshot: snapshot,
-          source: "api"
+          exportSnapshot: snapshot
         }));
         setMessage(`Export ready: ${snapshot.downloadName}`);
       })
       .catch((err: unknown) => {
-        const snapshot = demoExport(range, format);
-        setState((current) => ({
-          summary: current?.summary ?? snapshot.report,
-          exportSnapshot: snapshot,
-          source: "demo"
-        }));
-        setMessage(err instanceof Error ? `${err.message}. Showing local export demo.` : "Showing local export demo.");
+        setMessage(err instanceof Error ? err.message : "Billing export request failed.");
       })
       .finally(() => setExportLoading(false));
   }
@@ -179,14 +116,11 @@ export function SellerReports() {
         <div className="hero-copy">
           <p className="eyebrow">Seller billing</p>
           <h1>Invoices, fees, and export for settled orders.</h1>
-          <p className="lead">
-            The billing surface mirrors the API summary/export endpoints and keeps a visible fallback when the API is
-            offline.
-          </p>
+          <p className="lead">The billing surface mirrors the live API summary and export endpoints.</p>
           <div className="hero-meta">
-            <span className="chip chip-accent">{session ? session.roleLabel : "Demo mode"}</span>
+            <span className="chip chip-accent">{session ? session.roleLabel : "Seller session"}</span>
             <span className="chip">{rangeLabel}</span>
-            <span className="chip">{state?.source === "api" ? "API data" : "Local demo fallback"}</span>
+            <span className="chip">{loading ? "Loading billing..." : "Live API"}</span>
           </div>
           <div className="hero-meta">
             <Link href="/seller" className="button button-secondary">
@@ -288,8 +222,8 @@ export function SellerReports() {
               ) : null}
               <p className="muted">
                 {canUseSellerSession
-                  ? "The export uses the live API when available and falls back to a demo snapshot when needed."
-                  : "The page is visible in demo mode. Sign in as seller to mirror the httpOnly auth flow."}
+                  ? "The export uses the live API and reflects the seeded billing data."
+                  : "Sign in as seller to use the httpOnly auth flow."}
               </p>
             </div>
 
@@ -297,11 +231,7 @@ export function SellerReports() {
               <p className="label">Current status</p>
               <h3>{loading ? "Loading billing snapshot..." : summary ? `${summary.invoiceCount} invoices` : "Waiting for data"}</h3>
               <p className="muted">
-                {state
-                  ? state.source === "api"
-                    ? "Live report data loaded from the API."
-                    : "Demo report snapshot shown because the API was unavailable."
-                  : "Refresh the window to load the current billing report."}
+                {state ? "Live report data loaded from the API." : "Refresh the window to load the current billing report."}
               </p>
               <p className={`message ${error ? "message-visible" : ""}`}>{error}</p>
               <p className={`message ${message ? "message-visible" : ""}`} aria-live="polite">
@@ -376,7 +306,13 @@ export function SellerReports() {
                   </div>
                 </div>
               </article>
-            ) : null}
+            ) : (
+              <div className="empty-state">
+                <p className="eyebrow">No data</p>
+                <h2>No billing report is loaded yet.</h2>
+                <p className="muted">Use the selected date range and refresh the reports against the live API.</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -387,7 +323,7 @@ export function SellerReports() {
             {[
               ["Invoice summary", "Invoice count, subtotal, fees, and total for the selected window."],
               ["CSV/JSON export", "A direct export snapshot that can be downloaded or piped into reporting."],
-              ["Fallback mode", "Local demo snapshot is shown when the API is offline or unreachable."]
+              ["Live API", "The surface now reads only from the seeded API data."]
             ].map(([label, description]) => (
               <div key={label} className="timeline-step timeline-step-complete">
                 <span className="timeline-step-marker" />
