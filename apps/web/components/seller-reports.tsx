@@ -11,6 +11,7 @@ import {
   type BillingSummary
 } from "../lib/billing-api";
 import { formatSek } from "../lib/demo-auctions";
+import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
 
 type BillingRange = {
@@ -349,6 +350,12 @@ export function SellerReports() {
             ))}
           </div>
         </aside>
+
+        <ApiReferencePanel
+          workspace="seller-billing"
+          title="Verify billing contracts"
+          description="Use the live API reference to inspect the summary and export endpoints while checking seller billing output."
+        />
       </section>
     </main>
   );

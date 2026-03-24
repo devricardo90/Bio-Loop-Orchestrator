@@ -15,6 +15,7 @@ import {
   type DemoBuyer
 } from "../lib/demo-auctions";
 import { BidPanel } from "./bid-panel";
+import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
 
 type BuyerDashboardProps = {
@@ -331,6 +332,12 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
               </Link>
             ) : null}
           </aside>
+
+          <ApiReferencePanel
+            workspace="buyer"
+            title="Trace buyer API behavior"
+            description="Use the live API reference to inspect the feed, auction detail, and bid contract while validating buyer operations."
+          />
         </section>
       ) : (
         <section className="detail-layout">
@@ -398,9 +405,15 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
                       </span>
                       <span>{getAuctionRuntime(auction, now).statusLabel}</span>
                     </Link>
-                  ))}
+                ))}
               </div>
             </div>
+
+            <ApiReferencePanel
+              workspace="buyer"
+              title="Cross-check the auction contract"
+              description="Open the API reference when you need to verify bid validation, payload shapes, or the live buyer read-model."
+            />
           </div>
         </section>
       )}

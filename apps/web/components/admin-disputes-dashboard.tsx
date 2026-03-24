@@ -9,6 +9,7 @@ import {
   type DisputeResolutionDecision,
   type DisputeStatus
 } from "../lib/admin-api";
+import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
 
 type AdminDisputeRecord = {
@@ -306,6 +307,12 @@ export function AdminDisputesDashboard() {
           {message}
         </p>
       </section>
+
+      <ApiReferencePanel
+        workspace="admin-disputes"
+        title="Verify dispute resolution contracts"
+        description="Use the live API reference to inspect the dispute list and resolution endpoints while validating admin actions."
+      />
     </main>
   );
 }

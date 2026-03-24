@@ -10,6 +10,7 @@ import {
   type BuyerApprovalReason,
   type BuyerRecordDto
 } from "../lib/admin-api";
+import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
 
 type BuyerAction = {
@@ -289,6 +290,12 @@ export function AdminBuyersDashboard() {
           {message}
         </p>
       </section>
+
+      <ApiReferencePanel
+        workspace="admin-buyers"
+        title="Verify buyer approval contracts"
+        description="Use the live API reference to inspect the buyers listing and approval mutation while reviewing admin decisions."
+      />
     </main>
   );
 }

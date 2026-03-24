@@ -194,12 +194,12 @@
   - deps: API-12, WEB-10
   - output: refresh/logout/session-expired coerentes com cookie auth e `sessionStorage`
   - gate: sessao expirada redireciona corretamente e guards nao deixam a UI presa
-- [READY] (WEB-12) UX operacional conectada ao `/reference`
+- [DONE] (WEB-12) UX operacional conectada ao `/reference`
   - owner: Frontend Agent
   - deps: DOCS-01, WEB-10
   - output: links contextuais entre UI operacional e docs vivas da API
   - gate: navegacao entre frontend e `/reference` sem ambiguidade para troubleshoot/release review
-- [BLOCKED] (WEB-13) Manual-ops polish de demo para piloto
+- [READY] (WEB-13) Manual-ops polish de demo para piloto
   - owner: Frontend Agent
   - deps: WEB-11, WEB-12
   - output: labels, navegacao e consistencia final para uso manual recorrente

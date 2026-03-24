@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { logoutFromApi } from "../lib/auth-api";
+import { getApiReferenceHref } from "../lib/api-reference";
 import { getWorkspaceNavigation } from "../lib/route-access";
 import { useAuthSession } from "./auth-session";
 
@@ -37,6 +38,9 @@ export function AppHeader() {
             {item.label}
           </Link>
         ))}
+        <a href={getApiReferenceHref()} target="_blank" rel="noreferrer">
+          API reference
+        </a>
       </nav>
 
       <div className="app-header-actions">

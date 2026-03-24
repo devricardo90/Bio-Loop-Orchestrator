@@ -488,6 +488,12 @@ h3 {
   gap: 16px;
 }
 
+.api-reference-panel {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
 .admin-control-panel {
   display: grid;
   gap: 14px;

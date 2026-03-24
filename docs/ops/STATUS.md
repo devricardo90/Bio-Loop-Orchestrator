@@ -87,5 +87,6 @@
 - `WEB-09` fechou a convergencia do buyer workspace para dados reais no frontend, incluindo pickup queue e order detail sem fallback silencioso no caminho principal.
 - `WEB-10` fechou a padronizacao dos estados de loading, API unavailable e empty em buyer, pickup, admin e billing, removendo dead-ends visuais e adicionando CTAs de retry/retorno.
 - `WEB-11` fechou o endurecimento do ciclo de sessao no frontend com refresh na reidratacao, refresh agendado antes da expiracao, redirect para login em sessao expirada e UX coerente entre guard, header e tela de login.
-- A fila unificada agora tem duas tasks `READY`: `WEB-12`, para conectar a UX operacional ao `/reference`, e `QA-05`, para consolidar o gate pos-M7 com auth real e buyer real-data.
+- `WEB-12` conectou buyer, pickup, admin e billing ao `/reference` com acesso global no header e callouts contextuais por workspace para facilitar troubleshoot e release review.
+- A fila unificada agora tem duas tasks `READY`: `WEB-13`, para polish final de demo/manual ops, e `QA-05`, para consolidar o gate pos-M7 com auth real e buyer real-data.
 - O momento correto para o usuario enviar os dados reais dos supermercados da Suecia e logo apos `DB-03`; os campos/documentos necessarios ficam em [REAL_DATA_ONBOARDING.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/REAL_DATA_ONBOARDING.md).

@@ -17,6 +17,7 @@ import {
   getPickupWindow,
   type PickupOrderRecord
 } from "../lib/pickup-view";
+import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
 
 type PickupDashboardProps = {
@@ -313,6 +314,12 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
               </>
             ) : null}
           </aside>
+
+          <ApiReferencePanel
+            workspace="pickup"
+            title="Trace pickup API behavior"
+            description="Use the live API reference to inspect the scheduling and POD endpoints while validating buyer pickup operations."
+          />
         </section>
       ) : (
         <section className="pickup-layout">
@@ -522,6 +529,12 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
               </div>
             </aside>
           ) : null}
+
+          <ApiReferencePanel
+            workspace="pickup"
+            title="Verify pickup mutations"
+            description="Open the API reference to confirm the schedule-pickup and POD contracts when troubleshooting state transitions."
+          />
         </section>
       )}
     </main>
