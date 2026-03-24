@@ -1,9 +1,13 @@
 import { z } from "zod";
 import {
   AUCTION_STATUSES,
+  BUYER_APPROVAL_DECISIONS,
+  BUYER_APPROVAL_REASONS,
+  BUYER_APPROVAL_STATUSES,
   EXPORT_FORMATS,
   DISPUTE_REASONS,
   DISPUTE_STATUSES,
+  DISPUTE_RESOLUTION_DECISIONS,
   FEE_TYPES,
   LOT_GRADES,
   LOT_STATUSES,
@@ -21,6 +25,10 @@ export const orderStatusSchema = z.enum(ORDER_STATUSES);
 export const pickupStatusSchema = z.enum(PICKUP_STATUSES);
 export const disputeStatusSchema = z.enum(DISPUTE_STATUSES);
 export const disputeReasonSchema = z.enum(DISPUTE_REASONS);
+export const buyerApprovalStatusSchema = z.enum(BUYER_APPROVAL_STATUSES);
+export const buyerApprovalDecisionSchema = z.enum(BUYER_APPROVAL_DECISIONS);
+export const buyerApprovalReasonSchema = z.enum(BUYER_APPROVAL_REASONS);
+export const disputeResolutionDecisionSchema = z.enum(DISPUTE_RESOLUTION_DECISIONS);
 export const invoiceStatusSchema = z.enum(INVOICE_STATUSES);
 export const feeTypeSchema = z.enum(FEE_TYPES);
 export const exportFormatSchema = z.enum(EXPORT_FORMATS);
@@ -129,6 +137,31 @@ export const disputeSchema = z
   })
   .strict();
 
+export const buyerApprovalPolicySchema = z
+  .object({
+    minReputation: z.number().nonnegative(),
+    maxOpenDisputes: z.number().int().nonnegative(),
+    maxPendingDays: z.number().int().nonnegative(),
+    autoApproveEnabled: z.boolean(),
+    manualReviewRequired: z.boolean()
+  })
+  .strict();
+
+export const buyerApprovalSchema = z
+  .object({
+    id: z.string().min(1),
+    buyerId: z.string().min(1),
+    status: buyerApprovalStatusSchema,
+    decision: buyerApprovalDecisionSchema.nullable(),
+    reason: buyerApprovalReasonSchema.nullable(),
+    reviewerId: z.string().min(1).nullable(),
+    reviewedAt: z.string().datetime().nullable(),
+    notes: z.string().nullable(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime()
+  })
+  .strict();
+
 export const feeLineItemSchema = z
   .object({
     id: z.string().min(1),
@@ -205,6 +238,15 @@ export const auctionDtoSchema = auctionSchema.extend({
 export const bidDtoSchema = bidSchema;
 export const orderDtoSchema = orderSchema;
 export const disputeDtoSchema = disputeSchema;
+export const buyerApprovalDtoSchema = buyerApprovalSchema;
+
+export const disputeResolutionPolicySchema = z
+  .object({
+    defaultDecision: disputeResolutionDecisionSchema,
+    allowEscalation: z.boolean(),
+    requireReviewerNote: z.boolean()
+  })
+  .strict();
 
 export const createLotRequestSchema = z
   .object({
@@ -268,12 +310,29 @@ export const openDisputeResponseSchema = z
 
 export const resolveDisputeRequestSchema = z
   .object({
-    disputeId: z.string().min(1)
+    disputeId: z.string().min(1),
+    decision: disputeResolutionDecisionSchema,
+    note: z.string().min(1).optional()
   })
   .strict();
 
 export const resolveDisputeResponseSchema = z
   .object({
     dispute: disputeDtoSchema
+  })
+  .strict();
+
+export const approveBuyerRequestSchema = z
+  .object({
+    buyerId: z.string().min(1),
+    decision: buyerApprovalDecisionSchema,
+    reason: buyerApprovalReasonSchema,
+    notes: z.string().min(1).optional()
+  })
+  .strict();
+
+export const approveBuyerResponseSchema = z
+  .object({
+    approval: buyerApprovalDtoSchema
   })
   .strict();

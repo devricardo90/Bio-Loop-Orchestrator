@@ -20,6 +20,24 @@
 - Pickup weight mismatch: final invoice handling is deferred to the billing slice.
 - Re-run after `VOID`: permitted once only if the seller republishes the lot.
 
+## Buyer approval rules (M4)
+
+- A buyer must be `APPROVED` before it can bid or receive an awarded order.
+- New buyers start in `PENDING` until reviewed by an admin or auto-approved by policy.
+- Auto-approval is allowed only when the buyer passes the policy threshold for reputation and open disputes.
+- `SUSPENDED` buyers are blocked from bidding and order acceptance until reinstated.
+- `REJECTED` buyers require a new review cycle before they can return to the market.
+- Every approval decision must be auditable with reviewer, reason, and timestamp.
+
+## Dispute resolution rules (M4)
+
+- A dispute is resolved by an admin decision with a required resolution note in the MVP.
+- `SETTLE` closes the dispute and moves the order to `SETTLED`.
+- `CANCEL_ORDER` closes the dispute and moves the order to `CANCELLED`.
+- One open dispute per order remains the rule; new disputes are blocked while one is open.
+- `ESCALATE` is allowed as a contract decision but leaves the operational follow-up to the API layer and does not mutate billing amounts.
+- Buyer approval and dispute resolution actions must always create audit logs in the API layer.
+
 ## Billing Rules (M3)
 
 - An `Invoice` is generated only from a billable order: the order must be `SETTLED` or otherwise explicitly marked ready by the API layer.
@@ -41,12 +59,16 @@
 - `PlaceBidRequest` is the core M1 mutation contract.
 - `SchedulePickupRequest` is predeclared so the API can adopt the M2 pickup flow without changing the domain package surface.
 - `OpenDisputeRequest` and `ResolveDisputeRequest` are the minimum M2 mutation contracts for dispute handling.
+- `ApproveBuyerRequest`, `BuyerApprovalDto`, and `BuyerApprovalPolicy` are the M4 admin contracts for buyer approval.
+- `ResolveDisputeRequest` now carries an explicit admin decision for M4 dispute handling.
 - `DomainEventName` exists for orchestration and observability, but the exact payload schema is left to the API/infra layer.
 
 ## Validation Checklist
 
 - `LotStatus`, `AuctionStatus`, `OrderStatus`, and `PickupStatus` are all declared.
 - `DisputeStatus` and `DisputeReason` are declared.
+- `BuyerApprovalStatus`, `BuyerApprovalDecision`, and `BuyerApprovalReason` are declared.
+- `DisputeResolutionDecision` is declared.
 - `InvoiceStatus`, `FeeType`, and `ExportFormat` are declared.
 - Core DTO schemas exist and are reusable.
 - The state machine documents every terminal state.

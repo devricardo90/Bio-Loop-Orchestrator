@@ -48,6 +48,38 @@ export type DisputeStatus = (typeof DISPUTE_STATUSES)[number];
 export const DISPUTE_REASONS = ["NO_SHOW", "QUALITY_ISSUE"] as const;
 export type DisputeReason = (typeof DISPUTE_REASONS)[number];
 
+export const BUYER_APPROVAL_STATUSES = [
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+  "SUSPENDED"
+] as const;
+export type BuyerApprovalStatus = (typeof BUYER_APPROVAL_STATUSES)[number];
+
+export const BUYER_APPROVAL_DECISIONS = [
+  "APPROVE",
+  "REJECT",
+  "SUSPEND",
+  "REINSTATE"
+] as const;
+export type BuyerApprovalDecision = (typeof BUYER_APPROVAL_DECISIONS)[number];
+
+export const BUYER_APPROVAL_REASONS = [
+  "AUTO_APPROVAL",
+  "LOW_REPUTATION",
+  "PAYMENT_RISK",
+  "COMPLIANCE",
+  "MANUAL_REVIEW"
+] as const;
+export type BuyerApprovalReason = (typeof BUYER_APPROVAL_REASONS)[number];
+
+export const DISPUTE_RESOLUTION_DECISIONS = [
+  "SETTLE",
+  "CANCEL_ORDER",
+  "ESCALATE"
+] as const;
+export type DisputeResolutionDecision = (typeof DISPUTE_RESOLUTION_DECISIONS)[number];
+
 export const INVOICE_STATUSES = [
   "DRAFT",
   "READY",
@@ -104,6 +136,14 @@ export interface Buyer {
   approved: boolean;
   radiusKmDefault: number;
   reputation: number;
+}
+
+export interface BuyerApprovalPolicy {
+  minReputation: number;
+  maxOpenDisputes: number;
+  maxPendingDays: number;
+  autoApproveEnabled: boolean;
+  manualReviewRequired: boolean;
 }
 
 export interface CommodityCategory {
@@ -167,6 +207,34 @@ export interface Dispute {
   status: DisputeStatus;
   openedAt: string;
   resolvedAt: string | null;
+}
+
+export interface BuyerApproval {
+  id: string;
+  buyerId: string;
+  status: BuyerApprovalStatus;
+  decision: BuyerApprovalDecision | null;
+  reason: BuyerApprovalReason | null;
+  reviewerId: string | null;
+  reviewedAt: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DisputeResolutionPolicy {
+  defaultDecision: DisputeResolutionDecision;
+  allowEscalation: boolean;
+  requireReviewerNote: boolean;
+}
+
+export interface DisputeResolution {
+  id: string;
+  disputeId: string;
+  decision: DisputeResolutionDecision;
+  reviewerId: string | null;
+  note: string | null;
+  resolvedAt: string;
 }
 
 export interface FeeLineItem {
@@ -287,6 +355,19 @@ export interface DisputeDto {
   resolvedAt: string | null;
 }
 
+export interface BuyerApprovalDto {
+  id: string;
+  buyerId: string;
+  status: BuyerApprovalStatus;
+  decision: BuyerApprovalDecision | null;
+  reason: BuyerApprovalReason | null;
+  reviewerId: string | null;
+  reviewedAt: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CreateLotRequest {
   storeId: string;
   categoryId: string;
@@ -333,8 +414,21 @@ export interface OpenDisputeResponse {
 
 export interface ResolveDisputeRequest {
   disputeId: string;
+  decision: DisputeResolutionDecision;
+  note?: string;
 }
 
 export interface ResolveDisputeResponse {
   dispute: DisputeDto;
+}
+
+export interface ApproveBuyerRequest {
+  buyerId: string;
+  decision: BuyerApprovalDecision;
+  reason: BuyerApprovalReason;
+  notes?: string;
+}
+
+export interface ApproveBuyerResponse {
+  approval: BuyerApprovalDto;
 }

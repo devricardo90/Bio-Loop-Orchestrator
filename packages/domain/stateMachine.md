@@ -51,6 +51,16 @@
 | `OPEN` | `RESOLVED` | dispute resolved | decision recorded |
 | `OPEN` | `CANCELLED` | dispute withdrawn | buyer/seller retracts before decision |
 
+## Buyer Approval
+
+| From | To | Trigger | Guard |
+| --- | --- | --- | --- |
+| `PENDING` | `APPROVED` | approve_buyer | policy threshold met or manual override accepted |
+| `PENDING` | `REJECTED` | reject_buyer | compliance/risk check failed |
+| `APPROVED` | `SUSPENDED` | suspend_buyer | compliance, fraud or payment risk |
+| `SUSPENDED` | `APPROVED` | reinstate_buyer | manual review passed |
+| `APPROVED` | `REJECTED` | revoke_approval | severe compliance issue |
+
 ## Invoice
 
 | From | To | Trigger | Guard |

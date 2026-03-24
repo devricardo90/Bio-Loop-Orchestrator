@@ -70,9 +70,9 @@
 
 ## M4 Admin Slice
 
-- [READY] (DOM-04) Politicas de buyer approval e dispute resolution
+- [DONE] (DOM-04) Politicas de buyer approval e dispute resolution
   - deps: DOM-02
-- [BLOCKED] (API-08) Buyer approval + disputes API
+- [READY] (API-08) Buyer approval + disputes API
   - deps: DOM-04, API-04
 - [BLOCKED] (WEB-06) Admin buyers + disputes screens
   - deps: API-08

@@ -21,6 +21,7 @@
 - [x] PickupStatus + pickup flow
 - [x] DisputeStatus + dispute minimum flow
 - [x] Invoice + fee + export billing contracts
+- [x] Buyer approval + dispute resolution contracts
 
 ---
 
@@ -54,3 +55,4 @@
 - QA-01 fechou a verificacao de release do slice M1+M2 com `PASS`.
 - API-07 fecha o core de billing com export, fee calculation e reports basicos; WEB-05 fecha as surfaces de seller para esse fluxo.
 - M3 Billing Slice foi consolidado com DOM-03, API-07 e WEB-05.
+- DOM-04 fecha o contrato de buyer approval e dispute resolution; `API-08` agora e a proxima task `READY`.
