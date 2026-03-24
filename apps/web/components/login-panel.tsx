@@ -163,7 +163,7 @@ export function LoginPanel() {
             {message ||
               (session
                 ? `You are already signed in as ${session.roleLabel}.`
-                : "The suggested emails match the seeded personas, but auth still accepts any non-empty email/password pair today.")}
+                : "Use one of the seeded persona emails with the shared demo password to establish the API-backed session.")}
           </p>
         </form>
       </section>

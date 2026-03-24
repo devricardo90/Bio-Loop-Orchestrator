@@ -70,17 +70,17 @@ pnpm dev:web
 
 ## Demo access
 
-The current login flow is role-based and validates the auth handshake, cookies, and CSRF flow, but it does not yet verify credentials against seeded users.
+The current login flow is role-based and validates the auth handshake, cookies, and CSRF flow against seeded users in Postgres.
 
-Use any non-empty password. The recommended emails from the login screen are:
+Use the shared seeded password below. The recommended emails from the login screen are:
 
 | Workspace | Email | Password | Result |
 | --- | --- | --- | --- |
-| buyer | `buyer.admin@bioloop.dev` | any non-empty value | Opens buyer routes |
-| seller | `seller.admin@bioloop.dev` | any non-empty value | Opens seller routes |
-| admin | `platform.admin@bioloop.dev` | any non-empty value | Opens admin routes |
+| buyer | `buyer.admin@bioloop.dev` | `demo-password` | Opens buyer routes |
+| seller | `seller.admin@bioloop.dev` | `demo-password` | Opens seller routes |
+| admin | `platform.admin@bioloop.dev` | `demo-password` | Opens admin routes |
 
-Those suggested emails now match the seeded personas, even though auth still does not validate credentials against the database yet.
+Those credentials now authenticate against the seeded `User` records in Postgres while preserving the same cookie + CSRF flow.
 
 ## Demo fixtures loaded by seed
 

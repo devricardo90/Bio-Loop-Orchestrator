@@ -1,6 +1,9 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import { randomBytes, scryptSync } from "node:crypto";
 
 const prisma = new PrismaClient();
+const PASSWORD_HASH_VERSION = "scrypt:v1";
+const PASSWORD_KEY_LENGTH = 64;
 
 const currentIds = {
   users: {
@@ -178,24 +181,35 @@ function decimal(value) {
   return new Prisma.Decimal(value);
 }
 
+function hashPassword(password) {
+  const salt = randomBytes(16).toString("hex");
+  const derivedKey = scryptSync(password, salt, PASSWORD_KEY_LENGTH).toString("hex");
+  return `${PASSWORD_HASH_VERSION}$${salt}$${derivedKey}`;
+}
+
 async function seedUsers(tx) {
+  const demoPasswordHash = hashPassword("demo-password");
+
   await tx.user.createMany({
     data: [
       {
         id: currentIds.users.platformAdmin,
         email: "platform.admin@bioloop.dev",
+        passwordHash: demoPasswordHash,
         name: "Platform Admin",
         role: "PLATFORM_ADMIN"
       },
       {
         id: currentIds.users.sellerAdmin,
         email: "seller.admin@bioloop.dev",
+        passwordHash: demoPasswordHash,
         name: "Seller Admin",
         role: "SELLER_ADMIN"
       },
       {
         id: currentIds.users.buyerAdmin,
         email: "buyer.admin@bioloop.dev",
+        passwordHash: demoPasswordHash,
         name: "Buyer Admin",
         role: "BUYER_ADMIN"
       }

@@ -6,3 +6,4 @@ import "./api-07.integration.test.mjs";
 import "./api-08.integration.test.mjs";
 import "./api-09.integration.test.mjs";
 import "./api-10.integration.test.mjs";
+import "./api-12.integration.test.mjs";

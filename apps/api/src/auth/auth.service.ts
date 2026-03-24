@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { createToken } from "./auth.utils";
+import { PrismaService } from "../prisma/prisma.service";
+import { createToken, verifyPassword } from "./auth.utils";
 import type { AuthRole, AuthSession, AuthUser } from "./auth.types";
 
 interface SessionRecord {
@@ -15,6 +16,8 @@ interface SessionRecord {
 export class AuthService {
   private readonly sessionsByRefreshToken = new Map<string, SessionRecord>();
 
+  constructor(private readonly prisma?: PrismaService) {}
+
   createLoginSession(email: string, role: AuthRole): AuthSession {
     const user: AuthUser = {
       id: createToken("user"),
@@ -23,6 +26,33 @@ export class AuthService {
     };
 
     return this.createSessionForUser(user);
+  }
+
+  async authenticateUser(email: string, password: string, requestedRole: AuthRole): Promise<AuthSession | null> {
+    if (!this.prisma) {
+      return null;
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail || !password) {
+      return null;
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: normalizedEmail
+      }
+    });
+
+    if (!user || !user.email || user.role !== requestedRole || !verifyPassword(password, user.passwordHash)) {
+      return null;
+    }
+
+    return this.createSessionForUser({
+      id: user.id,
+      email: user.email,
+      role: user.role
+    });
   }
 
   rotateSession(refreshToken: string): AuthSession | null {

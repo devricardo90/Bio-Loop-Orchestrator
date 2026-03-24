@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Headers, Post, Req, Res } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Headers, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiBody, ApiCookieAuth, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { AUTH_COOKIE_NAMES, DEFAULT_COOKIE_SAMESITE } from "./auth.constants";
 import { AuthService } from "./auth.service";
@@ -83,7 +83,7 @@ export class AuthController {
     description: "Invalid csrf or credentials",
     schema: { type: "object" }
   })
-  login(
+  async login(
     @Req() req: any,
     @Res({ passthrough: true }) res: any,
     @Body() body: LoginRequestBody,
@@ -91,15 +91,19 @@ export class AuthController {
   ) {
     this.assertCsrf(req, csrfHeader);
 
-    const email = typeof body.email === "string" ? body.email.trim() : "";
+    const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
     const password = typeof body.password === "string" ? body.password : "";
     const role = this.parseRole(body.role);
 
     if (!email || !password) {
-      throw new Error("email and password are required");
+      throw new BadRequestException("email and password are required");
     }
 
-    const session = this.authService.createLoginSession(email, role);
+    const session = await this.authService.authenticateUser(email, password, role);
+    if (!session) {
+      throw new UnauthorizedException("invalid credentials");
+    }
+
     this.attachSessionCookies(res, session);
 
     return { user: session.user, accessTokenExpiresAt: session.accessTokenExpiresAt };
@@ -133,7 +137,7 @@ export class AuthController {
     const cookies = parseCookieHeader(req.headers?.cookie);
     const session = this.authService.rotateSession(cookies[AUTH_COOKIE_NAMES.refreshToken]);
     if (!session) {
-      throw new Error("invalid refresh token");
+      throw new UnauthorizedException("invalid refresh token");
     }
 
     this.attachSessionCookies(res, session);
@@ -175,7 +179,7 @@ export class AuthController {
     const cookies = parseCookieHeader(req.headers?.cookie);
     const cookieToken = cookies[AUTH_COOKIE_NAMES.csrfToken];
     if (!this.authService.validateCsrf(cookieToken, csrfHeader)) {
-      throw new Error("invalid csrf token");
+      throw new UnauthorizedException("invalid csrf token");
     }
   }
 

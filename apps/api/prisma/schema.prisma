@@ -118,6 +118,7 @@ enum ExportFormat {
 model User {
   id        String    @id @default(cuid())
   email     String?   @unique
+  passwordHash String?
   name      String?
   role      UserRole  @default(SELLER_OPS)
   createdAt DateTime  @default(now())

@@ -82,5 +82,6 @@
 - `DATA-01` fechou com o pacote real dos supermercados da Suecia anexado em `data/real-data/sweden-supermarkets/incoming/`, mapeamento revisado e checklist de onboarding controlado preenchido.
 - `DB-01` fechou a normalizacao minima do schema operacional com `externalId`, metadata estruturada para stores/buyers/lots, labels de categoria e a relacao `BuyerCategoryInterest`, sem quebrar os fluxos atuais.
 - `DB-02` fechou a persistencia real de billing com `Invoice`, `InvoiceFee` e `BillingExport`, e o seller reports agora opera sobre artefatos persistidos em vez de calculo efemero puro.
-- O proximo `READY` da fila unificada agora e `API-12`, porque a trilha de dados/base ja destravou o passo de auth real com identidade persistida.
+- `API-12` fechou o login real contra usuarios persistidos com `passwordHash` seedado, mantendo cookies httpOnly, refresh e CSRF no mesmo fluxo.
+- O proximo `READY` da fila unificada agora e `API-13`, porque o auth real ja destravou o passo de buyer feed e auction detail 100% ligados aos IDs reais do backend.
 - O momento correto para o usuario enviar os dados reais dos supermercados da Suecia e logo apos `DB-03`; os campos/documentos necessarios ficam em [REAL_DATA_ONBOARDING.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/REAL_DATA_ONBOARDING.md).

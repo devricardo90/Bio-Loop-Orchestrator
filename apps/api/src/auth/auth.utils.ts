@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from "node:crypto";
 
 export interface CookieOptions {
   httpOnly?: boolean;
@@ -55,6 +55,34 @@ export function serializeCookie(name: string, value: string, options: CookieOpti
 
 export function createToken(prefix: string): string {
   return `${prefix}_${randomUUID().replaceAll("-", "")}`;
+}
+
+const PASSWORD_HASH_VERSION = "scrypt:v1";
+const PASSWORD_KEY_LENGTH = 64;
+
+export function hashPassword(password: string): string {
+  const salt = randomBytes(16).toString("hex");
+  const derivedKey = scryptSync(password, salt, PASSWORD_KEY_LENGTH).toString("hex");
+  return `${PASSWORD_HASH_VERSION}$${salt}$${derivedKey}`;
+}
+
+export function verifyPassword(password: string, passwordHash: string | null | undefined): boolean {
+  if (!passwordHash) {
+    return false;
+  }
+
+  const [version, salt, storedHash] = passwordHash.split("$");
+  if (version !== PASSWORD_HASH_VERSION || !salt || !storedHash) {
+    return false;
+  }
+
+  const derivedKey = scryptSync(password, salt, PASSWORD_KEY_LENGTH);
+  const storedKey = Buffer.from(storedHash, "hex");
+  if (storedKey.length !== derivedKey.length) {
+    return false;
+  }
+
+  return timingSafeEqual(derivedKey, storedKey);
 }
 
 export function parseBooleanEnv(value: string | undefined, defaultValue = false): boolean {

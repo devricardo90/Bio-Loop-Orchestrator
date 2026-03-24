@@ -151,12 +151,12 @@
 
 ### Backend / API lane
 
-- [READY] (API-12) Auth real com identidade persistida
+- [DONE] (API-12) Auth real com identidade persistida
   - owner: API Agent
   - deps: DB-03, API-10, API-11
   - output: login real contra usuarios persistidos, mantendo cookies e CSRF
   - gate: credencial invalida falha; usuarios seedados autenticam; e2e admin/seller continuam verdes
-- [BLOCKED] (API-13) Read-model real para buyer feed e auction detail
+- [READY] (API-13) Read-model real para buyer feed e auction detail
   - owner: API Agent
   - deps: DB-03, API-12
   - output: endpoints reais para buyer feed, auction detail e runtime de bids/pickup
