@@ -181,6 +181,10 @@ model Order {
   finalPriceSekPerKg   Decimal       @db.Decimal(12, 2)
   status               OrderStatus   @default(CREATED)
   pickupStatus         PickupStatus  @default(PENDING)
+  pickupWindowStartAt  DateTime?
+  pickupWindowEndAt    DateTime?
+  pickupScheduledAt    DateTime?
+  pickupCompletedAt    DateTime?
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
 

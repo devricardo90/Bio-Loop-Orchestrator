@@ -26,6 +26,7 @@
 - [x] Core persistence schema + Prisma migration for lots/auctions/bids/orders
 - [x] Auth cookie httpOnly (login/refresh/logout/csrf)
 - [x] Core endpoints M1
+- [x] Pickup schedule + POD endpoints
 - [ ] OpenAPI atualizado + Scalar em /reference
 - [ ] Jobs: end_auction + no_show (M2)
 
@@ -33,6 +34,6 @@
 
 ## Web
 - [ ] Login (seller/buyer)
-- [ ] Buyer feed + Auction view (polling)
-- [ ] Seller lots + Auction results
+- [x] Buyer feed + Auction view (polling)
+- [x] Seller lots + Auction results
 - [ ] Pickup/POD screens (M2)

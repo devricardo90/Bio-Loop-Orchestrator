@@ -1,9 +1,30 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma, type Auction as PrismaAuction, type Bid as PrismaBid, type Order as PrismaOrder } from "@prisma/client";
+import {
+  Prisma,
+  type Auction as PrismaAuction,
+  type Bid as PrismaBid,
+  type Dispute as PrismaDispute,
+  type Order as PrismaOrder,
+  type PickupProof as PrismaPickupProof
+} from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { conflictError, notFoundError, unprocessableError } from "./trade.errors";
-import { normalizePlaceBidInput } from "./trades.validators";
-import type { EndAuctionResult, PlaceBidInput, StartAuctionInput } from "./trades.types";
+import {
+  normalizePlaceBidInput,
+  normalizeRecordPickupInput,
+  normalizeSchedulePickupInput
+} from "./trades.validators";
+import type {
+  DisputeDto,
+  EndAuctionResult,
+  PickupProofDto,
+  PlaceBidInput,
+  RecordPickupProofInput,
+  RecordPickupProofResult,
+  SchedulePickupInput,
+  SchedulePickupResult,
+  StartAuctionInput
+} from "./trades.types";
 
 const ACTIVE_AUCTION_STATUSES = new Set(["SCHEDULED", "LIVE"]);
 
@@ -17,6 +38,14 @@ function toNumber(value: Prisma.Decimal | number | string | null | undefined): n
 
 function toIsoString(value: Date | string): string {
   return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
+}
+
+function toDateValue(value: Date | string | null | undefined): Date | null {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  return value instanceof Date ? value : new Date(value);
 }
 
 function bidToDto(bid: PrismaBid) {
@@ -42,13 +71,44 @@ function auctionToDto(auction: PrismaAuction, highestBid: PrismaBid | null) {
 }
 
 function orderToDto(order: PrismaOrder) {
+  const pickupWindowStartAt = toDateValue((order as PrismaOrder & { pickupWindowStartAt?: Date | string | null }).pickupWindowStartAt);
+  const pickupWindowEndAt = toDateValue((order as PrismaOrder & { pickupWindowEndAt?: Date | string | null }).pickupWindowEndAt);
+
   return {
     id: order.id,
     lotId: order.lotId,
     buyerId: order.buyerId,
     finalPriceSekPerKg: toNumber(order.finalPriceSekPerKg),
     status: order.status,
-    pickupStatus: order.pickupStatus
+    pickupStatus: order.pickupStatus,
+    pickupWindow:
+      pickupWindowStartAt && pickupWindowEndAt
+        ? {
+            startAt: toIsoString(pickupWindowStartAt),
+            endAt: toIsoString(pickupWindowEndAt)
+          }
+        : null
+  };
+}
+
+function pickupProofToDto(proof: PrismaPickupProof): PickupProofDto {
+  return {
+    id: proof.id,
+    orderId: proof.orderId,
+    type: proof.type,
+    url: proof.url,
+    createdAt: toIsoString(proof.createdAt)
+  };
+}
+
+function disputeToDto(dispute: PrismaDispute): DisputeDto {
+  return {
+    id: dispute.id,
+    orderId: dispute.orderId,
+    reason: dispute.reason ?? "NO_SHOW",
+    status: dispute.status,
+    openedAt: toIsoString(dispute.openedAt),
+    resolvedAt: dispute.resolvedAt ? toIsoString(dispute.resolvedAt) : null
   };
 }
 
@@ -235,5 +295,170 @@ export class TradesService {
         order: orderToDto(order)
       };
     });
+  }
+
+  async schedulePickup(input: SchedulePickupInput): Promise<SchedulePickupResult> {
+    const parsed = normalizeSchedulePickupInput(input);
+    const now = new Date();
+    const pickupWindowStartAt = new Date(parsed.pickupWindow.startAt);
+    const pickupWindowEndAt = new Date(parsed.pickupWindow.endAt);
+
+    if (!Number.isFinite(pickupWindowStartAt.getTime()) || !Number.isFinite(pickupWindowEndAt.getTime())) {
+      unprocessableError("INVALID_PICKUP_WINDOW", "pickupWindow.startAt and pickupWindow.endAt must be valid datetimes");
+    }
+
+    if (pickupWindowEndAt.getTime() <= pickupWindowStartAt.getTime()) {
+      unprocessableError("INVALID_PICKUP_WINDOW", "pickupWindow.endAt must be after pickupWindow.startAt");
+    }
+
+    if (pickupWindowStartAt.getTime() <= now.getTime()) {
+      unprocessableError("INVALID_PICKUP_WINDOW", "pickupWindow must be in the future");
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const order = await tx.order.findUnique({
+        where: { id: parsed.orderId },
+        include: {
+          dispute: true
+        }
+      });
+
+      if (!order) {
+        notFoundError("ORDER_NOT_FOUND", "Order not found", { orderId: parsed.orderId });
+      }
+
+      if (order.status === "CANCELLED" || order.status === "SETTLED") {
+        conflictError("ORDER_NOT_SCHEDULABLE", "Order cannot schedule pickup in its current state", {
+          orderId: order.id,
+          status: order.status
+        });
+      }
+
+      if (order.status === "IN_DISPUTE") {
+        conflictError("ORDER_IN_DISPUTE", "Order cannot schedule pickup while in dispute", {
+          orderId: order.id
+        });
+      }
+
+      const updatedOrder = await tx.order.update({
+        where: { id: order.id },
+        data: {
+          pickupWindowStartAt,
+          pickupWindowEndAt,
+          pickupScheduledAt: now,
+          status: "CONFIRMED",
+          pickupStatus: "SCHEDULED"
+        }
+      });
+
+      return {
+        order: orderToDto(updatedOrder)
+      };
+    });
+  }
+
+  async recordPickupProof(input: RecordPickupProofInput): Promise<RecordPickupProofResult> {
+    const parsed = normalizeRecordPickupInput(input);
+    const now = new Date();
+
+    return this.prisma.$transaction(async (tx) => {
+      const order = await tx.order.findUnique({
+        where: { id: parsed.orderId },
+        include: {
+          dispute: true
+        }
+      });
+
+      if (!order) {
+        notFoundError("ORDER_NOT_FOUND", "Order not found", { orderId: parsed.orderId });
+      }
+
+      if (order.status === "CANCELLED" || order.status === "SETTLED" || order.status === "IN_DISPUTE") {
+        conflictError("ORDER_NOT_ACCEPTING_POD", "Order cannot receive POD in its current state", {
+          orderId: order.id,
+          status: order.status
+        });
+      }
+
+      const pickupWindowStartAt = toDateValue((order as PrismaOrder & { pickupWindowStartAt?: Date | string | null }).pickupWindowStartAt);
+      const pickupWindowEndAt = toDateValue((order as PrismaOrder & { pickupWindowEndAt?: Date | string | null }).pickupWindowEndAt);
+
+      if (!pickupWindowStartAt || !pickupWindowEndAt) {
+        conflictError("PICKUP_NOT_SCHEDULED", "Pickup must be scheduled before POD upload", { orderId: order.id });
+      }
+
+      if (now.getTime() > pickupWindowEndAt.getTime()) {
+        return this.markNoShowWithinTransaction(tx, order.id);
+      }
+
+      const proof = await tx.pickupProof.create({
+        data: {
+          orderId: order.id,
+          type: parsed.type,
+          url: parsed.url
+        }
+      });
+
+      const updatedOrder = await tx.order.update({
+        where: { id: order.id },
+        data: {
+          pickupCompletedAt: now,
+          status: "SETTLED",
+          pickupStatus: "COMPLETED"
+        }
+      });
+
+      return {
+        order: orderToDto(updatedOrder),
+        proof: pickupProofToDto(proof)
+      };
+    });
+  }
+
+  async markNoShow(orderId: string): Promise<RecordPickupProofResult> {
+    return this.prisma.$transaction(async (tx) => this.markNoShowWithinTransaction(tx, orderId));
+  }
+
+  private async markNoShowWithinTransaction(tx: Prisma.TransactionClient, orderId: string): Promise<RecordPickupProofResult> {
+    const order = await tx.order.findUnique({
+      where: { id: orderId },
+      include: {
+        dispute: true
+      }
+    });
+
+    if (!order) {
+      notFoundError("ORDER_NOT_FOUND", "Order not found", { orderId });
+    }
+
+    const dispute = order.dispute
+      ? await tx.dispute.update({
+          where: { orderId: order.id },
+          data: {
+            status: "OPEN",
+            reason: "NO_SHOW",
+            resolvedAt: null
+          }
+        })
+      : await tx.dispute.create({
+          data: {
+            orderId: order.id,
+            status: "OPEN",
+            reason: "NO_SHOW"
+          }
+        });
+
+    const updatedOrder = await tx.order.update({
+      where: { id: order.id },
+      data: {
+        status: "IN_DISPUTE",
+        pickupStatus: "NO_SHOW"
+      }
+    });
+
+    return {
+      order: orderToDto(updatedOrder),
+      dispute: disputeToDto(dispute)
+    };
   }
 }

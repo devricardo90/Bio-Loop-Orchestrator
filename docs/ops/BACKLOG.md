@@ -32,16 +32,16 @@
   - deps: INFRA-01
 - [DONE] (API-03) Endpoint bid com validacoes de estado + teste integracao
   - deps: API-01, API-02, DOM-01
-- [READY] (WEB-01) Buyer feed + Auction view com polling + bid panel
+- [DONE] (WEB-01) Buyer feed + Auction view com polling + bid panel
   - deps: API-03
-- [READY] (WEB-02) Seller lots + results
+- [DONE] (WEB-02) Seller lots + results
   - deps: API-03
 
 ## M2 Ops Slice
 
 - [DONE] (DOM-02) Regras no-show + disputa minima
   - deps: DOM-01
-- [READY] (API-04) Pickup schedule + POD endpoints
+- [DONE] (API-04) Pickup schedule + POD endpoints
   - deps: DOM-02, API-01, API-02
-- [BLOCKED] (WEB-03) Pickup/POD telas
+- [READY] (WEB-03) Pickup/POD telas
   - deps: API-04
