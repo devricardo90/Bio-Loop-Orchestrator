@@ -188,43 +188,98 @@ async function seedStores(tx) {
     data: [
       {
         id: currentIds.stores.stockholmCentral,
+        externalId: currentIds.stores.stockholmCentral,
         name: "Stockholm Central Market",
+        brandName: "Bio Loop Demo",
+        legalEntityName: "Bio Loop Demo Retail AB",
+        countryCode: "SE",
+        city: "Stockholm",
         address: "Klara Vastra Kyrkogata 20, Stockholm",
+        postalCode: "11152",
         timezone: "Europe/Stockholm",
+        latitude: decimal("59.332580"),
+        longitude: decimal("18.064900"),
+        defaultCurrency: "SEK",
+        isActive: true,
         contacts: { phone: "+46-8-555-0101", email: "ops@stockholm-central.local" },
-        pickupWindows: { standard: { start: "10:00", end: "14:00" }, rush: { start: "14:00", end: "18:00" } }
+        pickupWindows: { standard: { start: "10:00", end: "14:00" }, rush: { start: "14:00", end: "18:00" } },
+        metadata: { source: "scenario_seed" }
       },
       {
         id: currentIds.stores.sodermalm,
+        externalId: currentIds.stores.sodermalm,
         name: "Sodermalm Supermarket",
+        brandName: "Bio Loop Demo",
+        legalEntityName: "Bio Loop Demo Retail AB",
+        countryCode: "SE",
+        city: "Stockholm",
         address: "Gotalandsgatan 15, Stockholm",
+        postalCode: "11846",
         timezone: "Europe/Stockholm",
+        latitude: decimal("59.314884"),
+        longitude: decimal("18.072474"),
+        defaultCurrency: "SEK",
+        isActive: true,
         contacts: { phone: "+46-8-555-0102", email: "ops@sodermalm.local" },
-        pickupWindows: { standard: { start: "16:00", end: "20:00" } }
+        pickupWindows: { standard: { start: "16:00", end: "20:00" } },
+        metadata: { source: "scenario_seed" }
       },
       {
         id: currentIds.stores.norrmalm,
+        externalId: currentIds.stores.norrmalm,
         name: "Norrmalm Fresh Depot",
+        brandName: "Bio Loop Demo",
+        legalEntityName: "Bio Loop Demo Retail AB",
+        countryCode: "SE",
+        city: "Stockholm",
         address: "Birger Jarlsgatan 10, Stockholm",
+        postalCode: "11434",
         timezone: "Europe/Stockholm",
+        latitude: decimal("59.337575"),
+        longitude: decimal("18.072060"),
+        defaultCurrency: "SEK",
+        isActive: true,
         contacts: { phone: "+46-8-555-0103", email: "ops@norrmalm.local" },
-        pickupWindows: { standard: { start: "08:00", end: "12:00" } }
+        pickupWindows: { standard: { start: "08:00", end: "12:00" } },
+        metadata: { source: "scenario_seed" }
       },
       {
         id: currentIds.stores.kungsholmen,
+        externalId: currentIds.stores.kungsholmen,
         name: "Kungsholmen Organic Hall",
+        brandName: "Bio Loop Demo",
+        legalEntityName: "Bio Loop Demo Retail AB",
+        countryCode: "SE",
+        city: "Stockholm",
         address: "Fleminggatan 42, Stockholm",
+        postalCode: "11233",
         timezone: "Europe/Stockholm",
+        latitude: decimal("59.332380"),
+        longitude: decimal("18.036410"),
+        defaultCurrency: "SEK",
+        isActive: true,
         contacts: { phone: "+46-8-555-0104", email: "ops@kungsholmen.local" },
-        pickupWindows: { standard: { start: "07:00", end: "11:00" } }
+        pickupWindows: { standard: { start: "07:00", end: "11:00" } },
+        metadata: { source: "scenario_seed" }
       },
       {
         id: currentIds.stores.uppsalaNorth,
+        externalId: currentIds.stores.uppsalaNorth,
         name: "Uppsala North Depot",
+        brandName: "Bio Loop Demo",
+        legalEntityName: "Bio Loop Demo Retail AB",
+        countryCode: "SE",
+        city: "Uppsala",
         address: "Bolandsgatan 8, Uppsala",
+        postalCode: "75323",
         timezone: "Europe/Stockholm",
+        latitude: decimal("59.847940"),
+        longitude: decimal("17.684910"),
+        defaultCurrency: "SEK",
+        isActive: true,
         contacts: { phone: "+46-18-555-0105", email: "ops@uppsala-north.local" },
-        pickupWindows: { standard: { start: "06:00", end: "09:00" } }
+        pickupWindows: { standard: { start: "06:00", end: "09:00" } },
+        metadata: { source: "scenario_seed" }
       }
     ]
   });
@@ -235,7 +290,10 @@ async function seedCategories(tx) {
     data: [
       {
         id: currentIds.categories.brewerHusk,
+        externalId: currentIds.categories.brewerHusk,
         name: "Brewer's husk",
+        localizedNameSv: "Bryggerirest",
+        targetIndustry: "Brewery",
         storageCondition: "DRY",
         rulesDefault: {
           minWeightKg: 500,
@@ -245,7 +303,10 @@ async function seedCategories(tx) {
       },
       {
         id: currentIds.categories.pomace,
+        externalId: currentIds.categories.pomace,
         name: "Apple pomace",
+        localizedNameSv: "Appelpressmassa",
+        targetIndustry: "Biofuel",
         storageCondition: "COLD",
         rulesDefault: {
           minWeightKg: 1000,
@@ -255,7 +316,10 @@ async function seedCategories(tx) {
       },
       {
         id: currentIds.categories.carrotTrim,
+        externalId: currentIds.categories.carrotTrim,
         name: "Carrot trim",
+        localizedNameSv: "Morotsspill",
+        targetIndustry: "AnimalFeed",
         storageCondition: "FROZEN",
         rulesDefault: {
           minWeightKg: 400,
@@ -265,7 +329,10 @@ async function seedCategories(tx) {
       },
       {
         id: currentIds.categories.greens,
+        externalId: currentIds.categories.greens,
         name: "Leafy trim",
+        localizedNameSv: "Bladgront spill",
+        targetIndustry: "Compost",
         storageCondition: "DRY",
         rulesDefault: {
           minWeightKg: 200,
@@ -275,7 +342,10 @@ async function seedCategories(tx) {
       },
       {
         id: currentIds.categories.beets,
+        externalId: currentIds.categories.beets,
         name: "Beets",
+        localizedNameSv: "Betor",
+        targetIndustry: "FoodProcessing",
         storageCondition: "DRY",
         rulesDefault: {
           minWeightKg: 150,
@@ -285,7 +355,10 @@ async function seedCategories(tx) {
       },
       {
         id: currentIds.categories.rootMix,
+        externalId: currentIds.categories.rootMix,
         name: "Root mix",
+        localizedNameSv: "Rotmix",
+        targetIndustry: "Biofuel",
         storageCondition: "COLD",
         rulesDefault: {
           minWeightKg: 250,
@@ -302,31 +375,63 @@ async function seedBuyers(tx) {
     data: [
       {
         id: currentIds.buyers.grainworks,
+        externalId: currentIds.buyers.grainworks,
         name: "GrainWorks AB",
+        buyerType: "BREWERY",
+        city: "Stockholm",
         approved: true,
         radiusKmDefault: 120,
-        reputation: 92
+        reputation: 92,
+        metadata: {
+          source: "scenario_seed",
+          contactEmail: "ops@grainworks.example",
+          riskLabel: "Low risk"
+        }
       },
       {
         id: currentIds.buyers.freshmart,
+        externalId: currentIds.buyers.freshmart,
         name: "FreshMart Logistics",
+        buyerType: "LOGISTICS",
+        city: "Stockholm",
         approved: false,
         radiusKmDefault: 90,
-        reputation: 74
+        reputation: 74,
+        metadata: {
+          source: "scenario_seed",
+          contactEmail: "ops@freshmart.example",
+          riskLabel: "Needs review"
+        }
       },
       {
         id: currentIds.buyers.novaBrew,
+        externalId: currentIds.buyers.novaBrew,
         name: "Nova Brew Labs",
+        buyerType: "BREWERY",
+        city: "Stockholm",
         approved: false,
         radiusKmDefault: 45,
-        reputation: 44
+        reputation: 44,
+        metadata: {
+          source: "scenario_seed",
+          contactEmail: "ops@novabrew.example",
+          riskLabel: "Pending approval"
+        }
       },
       {
         id: currentIds.buyers.harborFood,
+        externalId: currentIds.buyers.harborFood,
         name: "Harbor Food Systems",
+        buyerType: "FOOD_SERVICE",
+        city: "Uppsala",
         approved: false,
         radiusKmDefault: 60,
-        reputation: 61
+        reputation: 61,
+        metadata: {
+          source: "scenario_seed",
+          contactEmail: "compliance@harborfood.example",
+          riskLabel: "Payment risk"
+        }
       }
     ]
   });
@@ -375,6 +480,27 @@ async function seedBuyers(tx) {
       }
     ]
   });
+
+  await tx.buyerCategoryInterest.createMany({
+    data: [
+      {
+        buyerId: currentIds.buyers.grainworks,
+        categoryId: currentIds.categories.brewerHusk
+      },
+      {
+        buyerId: currentIds.buyers.freshmart,
+        categoryId: currentIds.categories.beets
+      },
+      {
+        buyerId: currentIds.buyers.novaBrew,
+        categoryId: currentIds.categories.brewerHusk
+      },
+      {
+        buyerId: currentIds.buyers.harborFood,
+        categoryId: currentIds.categories.rootMix
+      }
+    ]
+  });
 }
 
 async function seedLotsAndAuctions(tx) {
@@ -382,6 +508,7 @@ async function seedLotsAndAuctions(tx) {
     data: [
       {
         id: currentIds.lots.husks,
+        externalId: currentIds.lots.husks,
         storeId: currentIds.stores.stockholmCentral,
         categoryId: currentIds.categories.brewerHusk,
         storageCondition: "DRY",
@@ -390,10 +517,13 @@ async function seedLotsAndAuctions(tx) {
         estimatedWeightKg: decimal("840.000"),
         finalWeightKg: null,
         grade: "B",
-        status: "LISTED"
+        status: "LISTED",
+        sourceExpiresAt: hours(4),
+        metadata: { source: "scenario_seed" }
       },
       {
         id: currentIds.lots.apples,
+        externalId: currentIds.lots.apples,
         storeId: currentIds.stores.sodermalm,
         categoryId: currentIds.categories.pomace,
         storageCondition: "COLD",
@@ -402,10 +532,13 @@ async function seedLotsAndAuctions(tx) {
         estimatedWeightKg: decimal("1250.000"),
         finalWeightKg: null,
         grade: "A",
-        status: "LISTED"
+        status: "LISTED",
+        sourceExpiresAt: days(1.25),
+        metadata: { source: "scenario_seed" }
       },
       {
         id: currentIds.lots.carrots,
+        externalId: currentIds.lots.carrots,
         storeId: currentIds.stores.norrmalm,
         categoryId: currentIds.categories.carrotTrim,
         storageCondition: "FROZEN",
@@ -414,10 +547,13 @@ async function seedLotsAndAuctions(tx) {
         estimatedWeightKg: decimal("560.000"),
         finalWeightKg: decimal("548.000"),
         grade: "A",
-        status: "PICKUP_SCHEDULED"
+        status: "PICKUP_SCHEDULED",
+        sourceExpiresAt: hours(7),
+        metadata: { source: "scenario_seed" }
       },
       {
         id: currentIds.lots.greens,
+        externalId: currentIds.lots.greens,
         storeId: currentIds.stores.kungsholmen,
         categoryId: currentIds.categories.greens,
         storageCondition: "DRY",
@@ -426,10 +562,13 @@ async function seedLotsAndAuctions(tx) {
         estimatedWeightKg: decimal("310.000"),
         finalWeightKg: null,
         grade: "C",
-        status: "EXPIRED"
+        status: "EXPIRED",
+        sourceExpiresAt: hours(-5),
+        metadata: { source: "scenario_seed" }
       },
       {
         id: currentIds.lots.beets,
+        externalId: currentIds.lots.beets,
         storeId: currentIds.stores.uppsalaNorth,
         categoryId: currentIds.categories.beets,
         storageCondition: "DRY",
@@ -438,10 +577,13 @@ async function seedLotsAndAuctions(tx) {
         estimatedWeightKg: decimal("540.000"),
         finalWeightKg: decimal("548.000"),
         grade: "A",
-        status: "COMPLETED"
+        status: "COMPLETED",
+        sourceExpiresAt: days(-1.75),
+        metadata: { source: "scenario_seed" }
       },
       {
         id: currentIds.lots.roots,
+        externalId: currentIds.lots.roots,
         storeId: currentIds.stores.norrmalm,
         categoryId: currentIds.categories.rootMix,
         storageCondition: "COLD",
@@ -450,7 +592,9 @@ async function seedLotsAndAuctions(tx) {
         estimatedWeightKg: decimal("275.000"),
         finalWeightKg: null,
         grade: "B",
-        status: "PICKUP_SCHEDULED"
+        status: "PICKUP_SCHEDULED",
+        sourceExpiresAt: hours(-26),
+        metadata: { source: "scenario_seed" }
       }
     ]
   });

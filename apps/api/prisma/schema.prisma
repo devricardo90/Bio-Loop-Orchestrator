@@ -111,45 +111,66 @@ model User {
 }
 
 model Store {
-  id            String   @id @default(cuid())
-  name          String
-  address       String
-  timezone      String   @default("Europe/Stockholm")
-  contacts      Json
-  pickupWindows Json
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id              String   @id @default(cuid())
+  externalId      String?  @unique
+  name            String
+  brandName       String?
+  legalEntityName String?
+  countryCode     String?  @db.VarChar(2)
+  city            String?
+  address         String
+  postalCode      String?
+  timezone        String   @default("Europe/Stockholm")
+  latitude        Decimal? @db.Decimal(9, 6)
+  longitude       Decimal? @db.Decimal(9, 6)
+  defaultCurrency String?  @db.VarChar(3)
+  isActive        Boolean  @default(true)
+  contacts        Json
+  pickupWindows   Json
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   lots Lot[]
 }
 
 model Buyer {
-  id               String   @id @default(cuid())
+  id               String                @id @default(cuid())
+  externalId       String?               @unique
   name             String
-  approved         Boolean  @default(false)
-  radiusKmDefault  Int      @default(0)
-  reputation       Int      @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  buyerType        String?
+  city             String?
+  approved         Boolean               @default(false)
+  radiusKmDefault  Int                   @default(0)
+  reputation       Int                   @default(0)
+  metadata         Json?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
 
-  bids   Bid[]
-  orders Order[]
+  bids      Bid[]
+  orders    Order[]
   approval BuyerApproval?
+  interests BuyerCategoryInterest[]
 }
 
 model CommodityCategory {
-  id                String           @id @default(cuid())
-  name              String
-  storageCondition  StorageCondition
-  rulesDefault      Json
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  id               String           @id @default(cuid())
+  externalId       String?          @unique
+  name             String
+  localizedNameSv  String?
+  targetIndustry   String?
+  storageCondition StorageCondition
+  rulesDefault     Json
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 
-  lots Lot[]
+  lots      Lot[]
+  interests BuyerCategoryInterest[]
 }
 
 model Lot {
-  id                 String          @id @default(cuid())
+  id                  String          @id @default(cuid())
+  externalId          String?         @unique
   storeId            String
   categoryId         String
   storageCondition   StorageCondition
@@ -159,6 +180,8 @@ model Lot {
   finalWeightKg      Decimal?        @db.Decimal(12, 3)
   grade              LotGrade
   status             LotStatus       @default(DRAFT)
+  sourceExpiresAt    DateTime?
+  metadata           Json?
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
 
@@ -169,6 +192,20 @@ model Lot {
 
   @@index([storeId, status])
   @@index([categoryId, status])
+}
+
+model BuyerCategoryInterest {
+  id         String   @id @default(cuid())
+  buyerId    String
+  categoryId String
+  createdAt  DateTime @default(now())
+
+  buyer    Buyer             @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  category CommodityCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([buyerId, categoryId])
+  @@index([buyerId])
+  @@index([categoryId])
 }
 
 model Auction {

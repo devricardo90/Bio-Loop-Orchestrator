@@ -128,12 +128,12 @@
   - deps: DB-03
   - output: pacote de dados reais anexado ao projeto, mapeado e validado para import controlado
   - gate: documento recebido com campos minimos obrigatorios; mapeamento origem->destino revisado; pacote validado para onboarding controlado e pronto para `DB-01`
-- [READY] (DB-01) Normalizar contratos persistidos de dados operacionais
+- [DONE] (DB-01) Normalizar contratos persistidos de dados operacionais
   - owner: DB Agent
   - deps: DB-03, DATA-01
   - output: schema Prisma mais estrito para tipos/constraints operacionais
   - gate: migration aplica em banco limpo; `prisma:generate`, `db:seed` e testes de API continuam verdes
-- [BLOCKED] (DB-02) Persistencia real de billing e invoice
+- [READY] (DB-02) Persistencia real de billing e invoice
   - owner: DB Agent
   - deps: DB-01, API-07
   - output: entidades persistidas de invoice/export/fees e compatibilidade com seller reports
