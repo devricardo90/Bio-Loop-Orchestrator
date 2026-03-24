@@ -23,6 +23,54 @@ import { AdminService } from "./admin.service";
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
+  @Get("buyers")
+  @ApiOperation({ summary: "List buyers for admin review" })
+  @ApiOkResponse({
+    description: "Buyer list",
+    schema: {
+      type: "object",
+      properties: {
+        buyers: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              buyerId: { type: "string" },
+              name: { type: "string" },
+              status: { type: "string", enum: ["PENDING", "APPROVED", "REJECTED", "SUSPENDED"] },
+              reputationScore: { type: "number" },
+              riskLabel: { type: "string" },
+              notes: { type: "string" },
+              approval: {
+                type: "object",
+                nullable: true,
+                properties: {
+                  id: { type: "string" },
+                  buyerId: { type: "string" },
+                  status: { type: "string" },
+                  decision: { type: "string", nullable: true },
+                  reason: { type: "string", nullable: true },
+                  reviewerId: { type: "string", nullable: true },
+                  reviewedAt: { type: "string", format: "date-time", nullable: true },
+                  notes: { type: "string", nullable: true },
+                  createdAt: { type: "string", format: "date-time" },
+                  updatedAt: { type: "string", format: "date-time" }
+                }
+              },
+              updatedAt: { type: "string", format: "date-time" }
+            },
+            required: ["id", "buyerId", "name", "status", "reputationScore", "riskLabel", "notes", "approval", "updatedAt"]
+          }
+        }
+      },
+      required: ["buyers"]
+    }
+  })
+  async listBuyers() {
+    return this.adminService.listBuyers();
+  }
+
   @Post("buyers/:buyerId/approve")
   @ApiOperation({ summary: "Approve, reject, suspend, or reinstate a buyer" })
   @ApiParam({ name: "buyerId", type: "string" })

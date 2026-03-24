@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import type {
+  Buyer as PrismaBuyer,
+  BuyerApproval as PrismaBuyerApproval,
   Dispute as PrismaDispute,
   Order as PrismaOrder
 } from "@prisma/client";
@@ -11,8 +13,10 @@ import type {
   BuyerApprovalDecision,
   BuyerApprovalReason,
   BuyerApprovalStatus,
+  BuyerRecordDto,
   ListDisputesQuery,
   ListDisputesResult,
+  ListBuyersResult,
   DisputeReason,
   DisputeResolutionDecision,
   ResolveDisputeAdminInput,
@@ -32,6 +36,12 @@ type AdminBuyerApprovalRecord = {
   updatedAt: Date | string;
 };
 
+type AdminBuyerRecord = PrismaBuyer & {
+  approval?: (PrismaBuyerApproval & {
+    reviewer?: { id: string } | null;
+  }) | null;
+};
+
 type AdminDisputeResolutionRecord = {
   id: string;
   disputeId: string;
@@ -45,6 +55,10 @@ type AdminTransactionClient = {
   buyer: {
     findUnique: (args: { where: { id: string }; include?: { approval?: boolean } }) => Promise<{ id: string; approved: boolean } | null>;
     update: (args: { where: { id: string }; data: { approved: boolean } }) => Promise<{ id: string; approved: boolean }>;
+    findMany: (args: {
+      orderBy: { updatedAt: "desc" };
+      include: { approval: true };
+    }) => Promise<AdminBuyerRecord[]>;
   };
   buyerApproval: {
     upsert: (args: {
@@ -144,9 +158,101 @@ function disputeToDto(dispute: PrismaDispute) {
   };
 }
 
+function buyerApprovalToBuyerDto(buyer: AdminBuyerRecord): BuyerRecordDto {
+  const approval = buyer.approval ?? null;
+  const mappedApproval = approval
+    ? {
+        id: approval.id,
+        buyerId: approval.buyerId,
+        status: approval.status,
+        decision: approval.decision ?? null,
+        reason: approval.reason ?? null,
+        reviewerId: approval.reviewerId ?? null,
+        reviewedAt: toIso(approval.reviewedAt),
+        notes: approval.notes ?? null,
+        createdAt: toIso(approval.createdAt) ?? new Date(0).toISOString(),
+        updatedAt: toIso(approval.updatedAt) ?? new Date(0).toISOString()
+      }
+    : null;
+
+  return {
+    id: buyer.id,
+    buyerId: buyer.id,
+    name: buyer.name,
+    status: approval?.status ?? (buyer.approved ? "APPROVED" : "PENDING"),
+    reputationScore: buyer.reputation,
+    riskLabel: thisBuyerRiskLabel(buyer, approval),
+    notes: thisBuyerNotes(buyer, approval),
+    approval: mappedApproval,
+    updatedAt: toIso(buyer.updatedAt) ?? new Date(0).toISOString()
+  };
+}
+
+function thisBuyerRiskLabel(buyer: Pick<PrismaBuyer, "approved" | "reputation">, approval: PrismaBuyerApproval | null) {
+  if (approval?.status === "APPROVED" || buyer.approved) {
+    return buyer.reputation >= 80 ? "Low risk" : "Approved";
+  }
+
+  if (approval?.status === "REJECTED") {
+    return "Compliance hold";
+  }
+
+  if (approval?.status === "SUSPENDED") {
+    return "Payment risk";
+  }
+
+  if (buyer.reputation >= 70) {
+    return "Needs review";
+  }
+
+  return "High risk";
+}
+
+function thisBuyerNotes(buyer: Pick<PrismaBuyer, "reputation" | "approved">, approval: PrismaBuyerApproval | null) {
+  if (approval?.notes) {
+    return approval.notes;
+  }
+
+  if (approval?.status === "APPROVED" || buyer.approved) {
+    return "Buyer is approved and available for trade.";
+  }
+
+  if (approval?.status === "REJECTED") {
+    return "Buyer was rejected during manual review.";
+  }
+
+  if (approval?.status === "SUSPENDED") {
+    return "Buyer is suspended pending compliance review.";
+  }
+
+  if (buyer.reputation >= 70) {
+    return "Buyer requires manual review before trading.";
+  }
+
+  return "Buyer is waiting for the initial approval decision.";
+}
+
 @Injectable()
 export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async listBuyers(): Promise<ListBuyersResult> {
+    const buyerClient = this.prisma.buyer as unknown as {
+      findMany: (args: {
+        orderBy: { updatedAt: "desc" };
+        include: { approval: true };
+      }) => Promise<AdminBuyerRecord[]>;
+    };
+
+    const buyers = await buyerClient.findMany({
+      orderBy: { updatedAt: "desc" },
+      include: { approval: true }
+    });
+
+    return {
+      buyers: buyers.map((buyer) => buyerApprovalToBuyerDto(buyer))
+    };
+  }
 
   async approveBuyer(buyerId: string, input: ApproveBuyerAdminInput): Promise<ApproveBuyerAdminResult> {
     return this.prisma.$transaction(async (tx) => {

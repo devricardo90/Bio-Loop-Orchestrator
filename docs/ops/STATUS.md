@@ -6,6 +6,7 @@
 - [x] M3 Billing Slice (Invoice export + fees + basic reports)
 - [x] M4 Admin Slice (buyer approval + disputes)
 - [x] M5 Consolidation Slice (login + API docs + jobs + QA/release hardening)
+- [ ] M6 Post-MVP Hardening (real admin data + RBAC + e2e + observability)
 
 - Scaffold note: pnpm+turborepo baseline created for apps/api, apps/web, packages/domain, and packages/shared.
 - Foundation gate note: workspace install, root typecheck, and root build validated after fixing the Nest CLI version and API TypeScript config.
@@ -22,6 +23,7 @@
 - [x] DisputeStatus + dispute minimum flow
 - [x] Invoice + fee + export billing contracts
 - [x] Buyer approval + dispute resolution contracts
+- [x] Admin buyers listing real (API-09)
 
 ---
 
@@ -34,6 +36,7 @@
 - [x] Jobs: end_auction + no_show (M2)
 - [x] Invoice export + fee calculation + reports basicos (M3 core)
 - [x] Buyer approval + disputes API (API-08)
+- [x] Admin buyers listing real (API-09)
 
 ---
 
@@ -58,3 +61,5 @@
 - M3 Billing Slice foi consolidado com DOM-03, API-07 e WEB-05.
 - DOM-04 fecha o contrato de buyer approval e dispute resolution; `API-08` agora e a proxima task `READY`.
 - API-08 fecha a API de buyer approval + disputes; WEB-06 fecha a surface admin do web com buyers + disputes, com fallback local apenas para listagem de buyers.
+- API-09 fecha a listagem real de buyers no backend admin; a proxima melhoria de hardening e remover o fallback do web quando o consumo real for ligado.
+- O proximo bloco correto nao e mais construir novas telas basicas, e sim hardening do produto: remover fallback admin, consolidar RBAC, adicionar e2e real e observabilidade minima.

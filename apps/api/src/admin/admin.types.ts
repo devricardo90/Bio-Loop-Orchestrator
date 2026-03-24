@@ -44,6 +44,18 @@ export interface DisputeDto {
   resolvedAt: string | null;
 }
 
+export interface BuyerRecordDto {
+  id: string;
+  buyerId: string;
+  name: string;
+  status: BuyerApprovalStatus;
+  reputationScore: number;
+  riskLabel: string;
+  notes: string;
+  approval: BuyerApprovalDto | null;
+  updatedAt: string;
+}
+
 export interface ApproveBuyerAdminInput {
   decision: BuyerApprovalDecision;
   reason: BuyerApprovalReason;
@@ -71,4 +83,8 @@ export interface ResolveDisputeAdminResult {
 
 export interface ListDisputesResult {
   disputes: DisputeDto[];
+}
+
+export interface ListBuyersResult {
+  buyers: BuyerRecordDto[];
 }

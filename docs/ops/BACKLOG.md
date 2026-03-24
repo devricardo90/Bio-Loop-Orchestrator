@@ -76,3 +76,16 @@
   - deps: DOM-04, API-04
 - [DONE] (WEB-06) Admin buyers + disputes screens
   - deps: API-08
+
+## M6 Post-MVP Hardening
+
+- [DONE] (API-09) Admin buyers listing real + remove fallback dependency from admin web
+  - deps: API-08, WEB-06
+- [READY] (API-10) RBAC enforcement real for seller/buyer/admin routes
+  - deps: API-02, API-08
+- [BLOCKED] (WEB-07) Session guards and role-aware routing for buyer/seller/admin
+  - deps: API-10, WEB-04, WEB-06
+- [BLOCKED] (QA-02) Browser e2e smoke flows for buyer, seller, admin
+  - deps: WEB-07, API-09
+- [BLOCKED] (INFRA-03) Observability minimum: structured logs, request ids, health/readiness checks
+  - deps: API-05, API-06
