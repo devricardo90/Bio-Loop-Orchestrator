@@ -16,6 +16,7 @@ Copy-Item .env.example .env
 pnpm install
 pnpm compose:up
 pnpm --filter @bio-loop/api prisma:generate
+pnpm --filter @bio-loop/api db:seed
 pnpm dev
 ```
 

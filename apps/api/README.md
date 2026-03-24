@@ -19,10 +19,21 @@ This API uses cookie-based auth for the MVP foundation:
 Copy `.env.example` to `.env` and adjust the origin/cookie settings for your local setup.
 For the full local stack, copy the root [.env.example](../../.env.example) to `.env`, start Postgres/Redis with `pnpm compose:up`, then run `pnpm --filter @bio-loop/api prisma:generate`.
 
+## Demo seed
+
+Load real demo records for buyers, lots, auctions, orders, disputes, and billing with:
+
+```bash
+pnpm --filter @bio-loop/api db:seed
+```
+
+The command applies Prisma migrations first, so it can bootstrap a blank local database.
+
 ## Verification
 
 ```bash
 pnpm --filter @bio-loop/api prisma:generate
+pnpm --filter @bio-loop/api db:seed
 pnpm --filter @bio-loop/api typecheck
 pnpm --filter @bio-loop/api test
 pnpm --filter @bio-loop/api build

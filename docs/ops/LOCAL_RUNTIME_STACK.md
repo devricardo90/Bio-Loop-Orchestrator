@@ -32,7 +32,15 @@ pnpm --filter @bio-loop/api prisma:generate
 
 Do this before commit or push whenever API/Prisma code changes.
 
-## 4. Start the apps
+## 4. Load demo data
+
+```bash
+pnpm --filter @bio-loop/api db:seed
+```
+
+This applies the existing Prisma migrations and then loads buyers, lots, auctions, bids, orders, disputes, and billing-ready records for the local demo.
+
+## 5. Start the apps
 
 ```bash
 pnpm dev
@@ -45,7 +53,7 @@ pnpm dev:api
 pnpm dev:web
 ```
 
-## 5. Verify the runtime
+## 6. Verify the runtime
 
 - API health: `http://localhost:4000/health`
 - API readiness: `http://localhost:4000/readiness`
@@ -53,7 +61,7 @@ pnpm dev:web
 - Scalar UI: `http://localhost:4000/reference`
 - Web app: `http://localhost:3000`
 
-## 6. Stop the stack
+## 7. Stop the stack
 
 ```bash
 pnpm compose:down
