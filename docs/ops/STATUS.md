@@ -66,3 +66,4 @@
 - API-09 fecha a listagem real de buyers no backend admin; a proxima melhoria de hardening e remover o fallback do web quando o consumo real for ligado.
 - API-10 fecha o enforcement real de RBAC nas rotas buyer, seller e admin.
 - O proximo bloco correto nao e mais construir novas telas basicas, e sim hardening do produto: session guards no frontend, e2e real e observabilidade minima.
+- QA-02 fechou a verificacao de smoke flows de buyer, seller e admin; o unico alerta remanescente foi a limitacao de `next build` no ambiente atual (`spawn EPERM`).
