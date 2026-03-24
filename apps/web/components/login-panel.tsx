@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { loginWithPersona, type WebAuthPersona } from "../lib/auth-api";
+import { getWorkspaceHomeRoute } from "../lib/route-access";
 import { useAuthSession } from "./auth-session";
 
 const personaActions: Array<{
@@ -16,19 +17,19 @@ const personaActions: Array<{
     persona: "buyer",
     title: "Buyer workspace",
     subtitle: "Feed, auction detail, bidding, and pickup queue",
-    route: "/buyer/feed"
+    route: getWorkspaceHomeRoute("buyer")
   },
   {
     persona: "seller",
     title: "Seller workspace",
     subtitle: "Lots, auction results, and pickup status",
-    route: "/seller"
+    route: getWorkspaceHomeRoute("seller")
   },
   {
     persona: "admin",
     title: "Admin workspace",
     subtitle: "Buyer approvals and dispute resolution",
-    route: "/admin"
+    route: getWorkspaceHomeRoute("admin")
   }
 ];
 
@@ -40,11 +41,21 @@ export function LoginPanel() {
   const [password, setPassword] = useState("demo-password");
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
+  const signedInHomeRoute = session ? getWorkspaceHomeRoute(session.role) : null;
 
   const activeAction = useMemo(
     () => personaActions.find((item) => item.persona === persona) ?? personaActions[0],
     [persona]
   );
+
+  useEffect(() => {
+    if (!session) {
+      return;
+    }
+
+    router.replace(signedInHomeRoute ?? "/");
+    router.refresh();
+  }, [router, session, signedInHomeRoute]);
 
   return (
     <main className="app-shell login-shell">
@@ -98,7 +109,7 @@ export function LoginPanel() {
                 .then((nextSession) => {
                   signIn(nextSession);
                   setMessage(`Signed in as ${nextSession.roleLabel}. Redirecting...`);
-                  router.push(activeAction.route);
+                  router.push(getWorkspaceHomeRoute(nextSession.role));
                   router.refresh();
                 })
                 .catch((error: unknown) => {

@@ -46,6 +46,7 @@
 - [x] Buyer feed + Auction view (polling)
 - [x] Seller lots + Auction results
 - [x] Pickup/POD screens (M2)
+- [x] Session guards + role-aware routing for buyer/seller/admin (WEB-07)
 
 ---
 

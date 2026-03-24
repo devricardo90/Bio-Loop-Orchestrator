@@ -98,8 +98,8 @@ export function SellerDashboard({ mode, lotId }: SellerDashboardProps) {
             <Link href="/seller/results" className="button button-secondary">
               Seller results
             </Link>
-            <Link href="/buyer/feed" className="button button-secondary">
-              Buyer feed
+            <Link href="/seller/reports" className="button button-secondary">
+              Seller reports
             </Link>
           </div>
         </div>

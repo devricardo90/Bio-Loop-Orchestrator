@@ -63,7 +63,7 @@ assert.match(pickupView, /getPickupTimeline/);
 assert.match(loginPage, /LoginPanel/);
 assert.match(appHeader, /Sign in/);
 assert.match(appHeader, /Sign out/);
-assert.match(appHeader, /Admin/);
+assert.match(appHeader, /getWorkspaceNavigation/);
 assert.match(loginPanel, /Sign in as/);
 assert.match(loginPanel, /Admin workspace/);
 assert.match(authSession, /AuthSessionProvider/);

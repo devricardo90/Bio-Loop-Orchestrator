@@ -60,8 +60,8 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
             <Link href="/buyer/orders" className="button button-secondary">
               Pickup queue
             </Link>
-            <Link href="/seller" className="button button-secondary">
-              Seller hub
+            <Link href="/buyer/feed" className="button button-secondary">
+              Buyer feed
             </Link>
           </div>
         </div>

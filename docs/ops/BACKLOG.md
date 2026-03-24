@@ -83,7 +83,7 @@
   - deps: API-08, WEB-06
 - [DONE] (API-10) RBAC enforcement real for seller/buyer/admin routes
   - deps: API-02, API-08
-- [READY] (WEB-07) Session guards and role-aware routing for buyer/seller/admin
+- [DONE] (WEB-07) Session guards and role-aware routing for buyer/seller/admin
   - deps: API-10, WEB-04, WEB-06
 - [BLOCKED] (QA-02) Browser e2e smoke flows for buyer, seller, admin
   - deps: WEB-07, API-09

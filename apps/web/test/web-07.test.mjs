@@ -1,0 +1,31 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const routeAccess = readFileSync(new URL("../lib/route-access.ts", import.meta.url), "utf8");
+const routeGuard = readFileSync(new URL("../components/route-guard.tsx", import.meta.url), "utf8");
+const buyerLayout = readFileSync(new URL("../app/buyer/layout.tsx", import.meta.url), "utf8");
+const sellerLayout = readFileSync(new URL("../app/seller/layout.tsx", import.meta.url), "utf8");
+const adminLayout = readFileSync(new URL("../app/admin/layout.tsx", import.meta.url), "utf8");
+const appHeader = readFileSync(new URL("../components/app-header.tsx", import.meta.url), "utf8");
+const loginPanel = readFileSync(new URL("../components/login-panel.tsx", import.meta.url), "utf8");
+const buyerDashboard = readFileSync(new URL("../components/buyer-dashboard.tsx", import.meta.url), "utf8");
+const sellerDashboard = readFileSync(new URL("../components/seller-dashboard.tsx", import.meta.url), "utf8");
+const pickupDashboard = readFileSync(new URL("../components/pickup-dashboard.tsx", import.meta.url), "utf8");
+
+assert.match(routeAccess, /getWorkspaceAccessDecision/);
+assert.match(routeAccess, /getWorkspaceHomeRoute/);
+assert.match(routeAccess, /getWorkspaceNavigation/);
+assert.match(routeGuard, /WorkspaceRouteGate/);
+assert.match(routeGuard, /router\.replace/);
+assert.match(buyerLayout, /WorkspaceRouteGate/);
+assert.match(sellerLayout, /WorkspaceRouteGate/);
+assert.match(adminLayout, /WorkspaceRouteGate/);
+assert.match(appHeader, /getWorkspaceNavigation/);
+assert.match(loginPanel, /getWorkspaceHomeRoute/);
+assert.match(loginPanel, /router\.replace/);
+assert.match(buyerDashboard, /\/buyer\/feed/);
+assert.doesNotMatch(buyerDashboard, /\/seller/);
+assert.match(sellerDashboard, /\/seller\/reports/);
+assert.doesNotMatch(sellerDashboard, /\/buyer\/feed/);
+assert.match(pickupDashboard, /\/buyer\/orders/);
+assert.doesNotMatch(pickupDashboard, /\/seller/);

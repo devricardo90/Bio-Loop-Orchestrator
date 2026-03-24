@@ -4,15 +4,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { logoutFromApi } from "../lib/auth-api";
+import { getWorkspaceNavigation } from "../lib/route-access";
 import { useAuthSession } from "./auth-session";
 
 export function AppHeader() {
   const router = useRouter();
   const { session, hydrated, signOut } = useAuthSession();
   const [isPending, startTransition] = useTransition();
+  const navigation = getWorkspaceNavigation(session?.role ?? null);
 
   const signedInLabel = session
-    ? `${session.roleLabel} · ${session.email}`
+    ? `${session.roleLabel} | ${session.email}`
     : hydrated
       ? "Demo mode"
       : "Loading session...";
@@ -28,13 +30,11 @@ export function AppHeader() {
       </div>
 
       <nav className="app-header-nav" aria-label="Primary">
-        <Link href="/">Home</Link>
-        <Link href="/login">Login</Link>
-        <Link href="/buyer/feed">Buyer</Link>
-        <Link href="/seller">Seller</Link>
-        <Link href="/admin">Admin</Link>
-        <Link href="/seller/reports">Reports</Link>
-        <Link href="/buyer/orders">Pickup</Link>
+        {navigation.map((item) => (
+          <Link key={item.href} href={item.href}>
+            {item.label}
+          </Link>
+        ))}
       </nav>
 
       <div className="app-header-actions">
