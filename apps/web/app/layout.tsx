@@ -1,9 +1,13 @@
 import "./globals.css";
 import type { ReactNode } from "react";
+import { AuctionStoreProvider } from "../components/auction-store";
 
 export const metadata = {
-  title: "Bio Loop",
-  description: "Bio-Loop-Orchestrator web scaffold"
+  title: {
+    default: "Bio Loop",
+    template: "%s | Bio Loop"
+  },
+  description: "Buyer feed and auction workspace for surplus trading"
 };
 
 export default function RootLayout({
@@ -13,7 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AuctionStoreProvider>{children}</AuctionStoreProvider>
+      </body>
     </html>
   );
 }
