@@ -20,17 +20,19 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "incremental": true
   },
   "include": [
+    "../../packages/domain/src/**/*.ts",
+    "../../packages/shared/src/**/*.ts",
     "app/**/*.ts",
     "app/**/*.tsx",
     "components/**/*.ts",
     "components/**/*.tsx",
     "lib/**/*.ts",
-    "../../packages/domain/src/**/*.ts",
-    "../../packages/shared/src/**/*.ts",
-    "next-env.d.ts"
+    "next-env.d.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
