@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Headers, Post, Req, Res } from "@nestjs/common";
+import { ApiBadRequestResponse, ApiBody, ApiCookieAuth, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { AUTH_COOKIE_NAMES, DEFAULT_COOKIE_SAMESITE } from "./auth.constants";
 import { AuthService } from "./auth.service";
 import type { AuthRole, LoginRequestBody } from "./auth.types";
@@ -19,10 +20,22 @@ const loginRoles: AuthRole[] = [
 ];
 
 @Controller("auth")
+@ApiTags("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get("csrf")
+  @ApiOperation({ summary: "Issue a CSRF token for cookie-based auth" })
+  @ApiOkResponse({
+    description: "CSRF token issued",
+    schema: {
+      type: "object",
+      properties: {
+        csrfToken: { type: "string" }
+      },
+      required: ["csrfToken"]
+    }
+  })
   csrf(@Res({ passthrough: true }) res: any) {
     const csrfToken = createToken("csrf");
     this.attachCsrfCookie(res, csrfToken);
@@ -31,6 +44,45 @@ export class AuthController {
   }
 
   @Post("login")
+  @ApiOperation({ summary: "Login with cookie-based auth" })
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        email: { type: "string" },
+        password: { type: "string" },
+        role: { type: "string", enum: loginRoles }
+      },
+      required: ["email", "password"]
+    }
+  })
+  @ApiOkResponse({
+    description: "Session established",
+    schema: {
+      type: "object",
+      properties: {
+        user: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            email: { type: "string" },
+            role: { type: "string" }
+          },
+          required: ["id", "email", "role"]
+        },
+        accessTokenExpiresAt: { type: "string", format: "date-time" }
+      },
+      required: ["user", "accessTokenExpiresAt"]
+    }
+  })
+  @ApiBadRequestResponse({
+    description: "Invalid request",
+    schema: { type: "object" }
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid csrf or credentials",
+    schema: { type: "object" }
+  })
   login(
     @Req() req: any,
     @Res({ passthrough: true }) res: any,
@@ -54,6 +106,27 @@ export class AuthController {
   }
 
   @Post("refresh")
+  @ApiOperation({ summary: "Rotate access and refresh cookies" })
+  @ApiCookieAuth("access_token")
+  @ApiOkResponse({
+    description: "Session refreshed",
+    schema: {
+      type: "object",
+      properties: {
+        user: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            email: { type: "string" },
+            role: { type: "string" }
+          },
+          required: ["id", "email", "role"]
+        },
+        accessTokenExpiresAt: { type: "string", format: "date-time" }
+      },
+      required: ["user", "accessTokenExpiresAt"]
+    }
+  })
   refresh(@Req() req: any, @Res({ passthrough: true }) res: any, @Headers("x-csrf-token") csrfHeader?: string) {
     this.assertCsrf(req, csrfHeader);
 
@@ -68,6 +141,18 @@ export class AuthController {
   }
 
   @Post("logout")
+  @ApiOperation({ summary: "Clear auth cookies and revoke the refresh session" })
+  @ApiCookieAuth("access_token")
+  @ApiOkResponse({
+    description: "Logged out",
+    schema: {
+      type: "object",
+      properties: {
+        ok: { type: "boolean", example: true }
+      },
+      required: ["ok"]
+    }
+  })
   logout(@Req() req: any, @Res({ passthrough: true }) res: any, @Headers("x-csrf-token") csrfHeader?: string) {
     this.assertCsrf(req, csrfHeader);
 

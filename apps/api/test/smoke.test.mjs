@@ -25,6 +25,9 @@ const envExample = readFileSync(new URL("../.env.example", import.meta.url), "ut
 assert.match(main, /NestFactory\.create/);
 assert.match(main, /enableCors/);
 assert.match(main, /ALLOWED_ORIGINS/);
+assert.match(main, /SwaggerModule\.createDocument/);
+assert.match(main, /openapi\.json/);
+assert.match(main, /reference/);
 assert.match(module, /AppController/);
 assert.match(module, /AuthModule/);
 assert.match(controller, /@Get\("health"\)/);

@@ -1,5 +1,10 @@
 # API
 
+## Documentation
+
+- `GET /openapi.json`
+- `GET /reference`
+
 ## Auth bootstrap
 
 This API uses cookie-based auth for the MVP foundation:

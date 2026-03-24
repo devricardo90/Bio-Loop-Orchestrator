@@ -52,9 +52,9 @@
   - deps: none
 - [DONE] (WEB-04) Login seller/buyer ligado ao auth httpOnly + csrf
   - deps: API-02
-- [READY] (API-05) OpenAPI atualizado + Scalar em /reference para auth/trade/pickup endpoints
+- [DONE] (API-05) OpenAPI atualizado + Scalar em /reference para auth/trade/pickup endpoints
   - deps: API-03, API-04
-- [BLOCKED] (API-06) Jobs: end_auction + no_show worker/scheduler
+- [READY] (API-06) Jobs: end_auction + no_show worker/scheduler
   - deps: API-03, API-04
 - [BLOCKED] (QA-01) Release verification M1+M2: buyer + seller + pickup flows sem dead-ends
   - deps: WEB-04, API-05, API-06

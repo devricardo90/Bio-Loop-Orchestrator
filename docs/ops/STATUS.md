@@ -28,7 +28,7 @@
 - [x] Auth cookie httpOnly (login/refresh/logout/csrf)
 - [x] Core endpoints M1
 - [x] Pickup schedule + POD endpoints
-- [ ] OpenAPI atualizado + Scalar em /reference
+- [x] OpenAPI atualizado + Scalar em /reference
 - [ ] Jobs: end_auction + no_show (M2)
 
 ---
@@ -43,7 +43,8 @@
 
 ## Consolidation Notes
 - M1 e M2 estao funcionalmente entregues no repo e publicados no backlog como DONE.
-- O proximo foco correto e consolidar o fluxo com OpenAPI, jobs e release verification.
+- O proximo foco correto e consolidar o fluxo com jobs e release verification.
 - Existem mudancas operacionais fora do backlog atual (`package.json`, `tools/`, `tsbuildinfo`) que precisam ser tratadas como hygiene task separada.
 - INFRA-02 fecha a politica de workspace limpo e o tooling `watch:done`.
-- WEB-04 fecha o login seller/buyer e a proxima funcao de produto e `API-05` OpenAPI + Scalar.
+- WEB-04 fecha o login seller/buyer e `API-05` fecha o contrato publico da API.
+- API-05 fecha o contrato publico da API; o backlog agora aponta `API-06` como proxima `READY`.
