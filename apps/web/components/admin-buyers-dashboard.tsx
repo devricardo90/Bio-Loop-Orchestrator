@@ -10,6 +10,7 @@ import {
   type BuyerApprovalReason,
   type BuyerRecordDto
 } from "../lib/admin-api";
+import { WorkspaceState } from "./workspace-state";
 
 type BuyerAction = {
   decision: BuyerApprovalDecision;
@@ -65,7 +66,16 @@ export function AdminBuyersDashboard() {
   }, [hydrated]);
 
   if (!hydrated) {
-    return <main className="app-shell">Loading admin buyers workspace...</main>;
+    return (
+      <main className="app-shell">
+        <WorkspaceState
+          eyebrow="Admin buyers"
+          title="Loading admin buyers workspace."
+          description="The buyer registry is loading from the admin API."
+          tone="loading"
+        />
+      </main>
+    );
   }
 
   async function refreshBuyers() {
@@ -194,11 +204,14 @@ export function AdminBuyersDashboard() {
 
         <div className="compact-list admin-list">
           {buyers.length === 0 ? (
-            <div className="empty-state">
-              <p className="eyebrow">No buyers</p>
-              <h2>No buyer records available.</h2>
-              <p className="muted">The admin API returned no buyers for the current workspace.</p>
-            </div>
+            <WorkspaceState
+              eyebrow="No buyers"
+              title="No buyer records available."
+              description="The admin API returned no buyers for the current workspace."
+              tone={error ? "error" : "empty"}
+              primaryAction={{ label: "Admin hub", href: "/admin" }}
+              secondaryAction={{ label: "Retry", onClick: () => void refreshBuyers(), disabled: loading }}
+            />
           ) : (
             buyers.map((buyer) => (
               <article key={buyer.id} className="seller-card admin-card">
@@ -267,7 +280,7 @@ export function AdminBuyersDashboard() {
         </div>
 
         <p className={`message ${error ? "message-visible" : ""}`} aria-live="polite">
-          {error}
+          {error ? `API unavailable: ${error}` : ""}
         </p>
         <p className={`message ${loading ? "message-visible" : ""}`} aria-live="polite">
           {loading ? "Loading buyer registry from the API..." : ""}

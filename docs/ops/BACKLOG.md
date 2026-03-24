@@ -184,12 +184,12 @@
   - deps: DB-03, API-13
   - output: buyer feed, auction detail e pickup queue ligados ao backend real
   - gate: caminho principal buyer usa `source=api`; ids reais do backend; sem fallback silencioso
-- [READY] (WEB-10) Hardening de error, loading e empty states
+- [DONE] (WEB-10) Hardening de error, loading e empty states
   - owner: Frontend Agent
   - deps: WEB-09
   - output: estados operacionais consistentes para buyer, seller e admin
   - gate: sem dead-end visual e com mensagens explicitas para `loading`, `API unavailable` e `empty`
-- [BLOCKED] (WEB-11) Session lifecycle e auth UX hardening
+- [READY] (WEB-11) Session lifecycle e auth UX hardening
   - owner: Frontend Agent
   - deps: API-12, WEB-10
   - output: refresh/logout/session-expired coerentes com cookie auth e `sessionStorage`

@@ -17,6 +17,7 @@ import {
   getPickupWindow,
   type PickupOrderRecord
 } from "../lib/pickup-view";
+import { WorkspaceState } from "./workspace-state";
 
 type PickupDashboardProps = {
   mode: "list" | "detail";
@@ -146,17 +147,29 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
   }
 
   if (loading) {
-    return <main className="app-shell">Loading pickup workspace...</main>;
+    return (
+      <main className="app-shell">
+        <WorkspaceState
+          eyebrow="Pickup API"
+          title="Loading pickup workspace."
+          description="The buyer pickup queue and order detail are loading from the live API."
+          tone="loading"
+        />
+      </main>
+    );
   }
 
   if (error) {
     return (
       <main className="app-shell">
-        <section className="panel empty-state">
-          <p className="eyebrow">Pickup API</p>
-          <h2>Unable to load the pickup workspace.</h2>
-          <p className="muted">{error}</p>
-        </section>
+        <WorkspaceState
+          eyebrow="Pickup API"
+          title="Unable to load the pickup workspace."
+          description={error}
+          tone="error"
+          primaryAction={{ label: "Buyer feed", href: "/buyer/feed" }}
+          secondaryAction={{ label: "Retry", onClick: () => void reloadWorkspace() }}
+        />
       </main>
     );
   }
@@ -164,11 +177,14 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
   if (!workspace || !activeBuyer) {
     return (
       <main className="app-shell">
-        <section className="panel empty-state">
-          <p className="eyebrow">Pickup workspace</p>
-          <h2>No pickup data available.</h2>
-          <p className="muted">The live buyer API returned no pickup-ready orders.</p>
-        </section>
+        <WorkspaceState
+          eyebrow="Pickup workspace"
+          title="No pickup data available."
+          description="The live buyer API returned no pickup-ready orders for the current workspace."
+          tone="empty"
+          primaryAction={{ label: "Buyer feed", href: "/buyer/feed" }}
+          secondaryAction={{ label: "Reload workspace", onClick: () => void reloadWorkspace() }}
+        />
       </main>
     );
   }
@@ -259,14 +275,13 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
               {orders.length > 0 ? (
                 orders.map((record) => <PickupOrderCard key={record.order.id} record={record} now={now} />)
               ) : (
-                <div className="empty-state">
-                  <p className="eyebrow">No orders</p>
-                  <h2>No pickup orders for the active buyer.</h2>
-                  <p className="muted">Switch buyer profiles or return to the auction flow.</p>
-                  <Link href="/buyer/feed" className="button button-secondary">
-                    Back to feed
-                  </Link>
-                </div>
+                <WorkspaceState
+                  eyebrow="No orders"
+                  title="No pickup orders for the active buyer."
+                  description="Switch buyer profiles or return to the buyer feed to open a different runtime path."
+                  tone="empty"
+                  primaryAction={{ label: "Back to feed", href: "/buyer/feed" }}
+                />
               )}
             </div>
           </div>
@@ -450,14 +465,13 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                 </div>
               </>
             ) : (
-              <div className="empty-state">
-                <p className="eyebrow">Not found</p>
-                <h2>Pickup order not found.</h2>
-                <p className="muted">Return to the pickup list and open an active order.</p>
-                <Link href="/buyer/orders" className="button button-secondary">
-                  Back to pickup queue
-                </Link>
-              </div>
+              <WorkspaceState
+                eyebrow="Not found"
+                title="Pickup order not found."
+                description="Return to the pickup queue and open an active order from the live buyer workspace."
+                tone="empty"
+                primaryAction={{ label: "Back to pickup queue", href: "/buyer/orders" }}
+              />
             )}
           </div>
 

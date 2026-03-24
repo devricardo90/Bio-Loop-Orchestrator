@@ -15,6 +15,7 @@ import {
   type DemoBuyer
 } from "../lib/demo-auctions";
 import { BidPanel } from "./bid-panel";
+import { WorkspaceState } from "./workspace-state";
 
 type BuyerDashboardProps = {
   mode: "feed" | "auction";
@@ -171,17 +172,29 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
   }
 
   if (loading) {
-    return <div className="page-shell">Loading buyer workspace...</div>;
+    return (
+      <main className="app-shell">
+        <WorkspaceState
+          eyebrow="Buyer API"
+          title="Loading buyer workspace."
+          description="The live buyer feed and auction detail are loading from the API."
+          tone="loading"
+        />
+      </main>
+    );
   }
 
   if (error) {
     return (
       <main className="app-shell">
-        <section className="panel empty-state">
-          <p className="eyebrow">Buyer API</p>
-          <h2>Unable to load the buyer workspace.</h2>
-          <p className="muted">{error}</p>
-        </section>
+        <WorkspaceState
+          eyebrow="Buyer API"
+          title="Unable to load the buyer workspace."
+          description={error}
+          tone="error"
+          primaryAction={{ label: "Back to login", href: "/login" }}
+          secondaryAction={{ label: "Retry", onClick: () => void reloadWorkspace() }}
+        />
       </main>
     );
   }
@@ -189,11 +202,14 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
   if (!workspace || !activeBuyer || !spotlight) {
     return (
       <main className="app-shell">
-        <section className="panel empty-state">
-          <p className="eyebrow">Buyer workspace</p>
-          <h2>No buyer data available.</h2>
-          <p className="muted">The live API returned no buyer workspace records.</p>
-        </section>
+        <WorkspaceState
+          eyebrow="Buyer workspace"
+          title="No buyer data available."
+          description="The live API returned no buyer workspace records for the current session."
+          tone="empty"
+          primaryAction={{ label: "Back to login", href: "/login" }}
+          secondaryAction={{ label: "Reload workspace", onClick: () => void reloadWorkspace() }}
+        />
       </main>
     );
   }

@@ -85,5 +85,6 @@
 - `API-12` fechou o login real contra usuarios persistidos com `passwordHash` seedado, mantendo cookies httpOnly, refresh e CSRF no mesmo fluxo.
 - `API-13` fechou os endpoints reais de buyer feed e auction detail, e o buyer workspace principal agora consome IDs e registros vindos da API em vez do catalogo local inventado.
 - `WEB-09` fechou a convergencia do buyer workspace para dados reais no frontend, incluindo pickup queue e order detail sem fallback silencioso no caminho principal.
-- O proximo `READY` da fila unificada agora e `WEB-10`, porque o buyer workspace ja esta conectado ao backend real e o proximo passo e endurecer estados operacionais.
+- `WEB-10` fechou a padronizacao dos estados de loading, API unavailable e empty em buyer, pickup, admin e billing, removendo dead-ends visuais e adicionando CTAs de retry/retorno.
+- O proximo `READY` da fila unificada agora e `WEB-11`, porque a UI operacional ja ficou mais robusta e o proximo passo e endurecer ciclo de sessao e UX de auth.
 - O momento correto para o usuario enviar os dados reais dos supermercados da Suecia e logo apos `DB-03`; os campos/documentos necessarios ficam em [REAL_DATA_ONBOARDING.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/REAL_DATA_ONBOARDING.md).

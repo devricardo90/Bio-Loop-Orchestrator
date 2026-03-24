@@ -11,6 +11,7 @@ import {
   type BillingSummary
 } from "../lib/billing-api";
 import { formatSek } from "../lib/demo-auctions";
+import { WorkspaceState } from "./workspace-state";
 
 type BillingRange = {
   fromAt: string;
@@ -107,7 +108,16 @@ export function SellerReports() {
     : null;
 
   if (!hydrated) {
-    return <main className="app-shell">Loading billing workspace...</main>;
+    return (
+      <main className="app-shell">
+        <WorkspaceState
+          eyebrow="Seller billing"
+          title="Loading billing workspace."
+          description="The summary snapshot and export surface are loading from the live API."
+          tone="loading"
+        />
+      </main>
+    );
   }
 
   return (
@@ -273,11 +283,13 @@ export function SellerReports() {
                 </article>
               ))
             ) : summary?.invoiceCount === 0 ? (
-              <div className="empty-state">
-                <p className="eyebrow">No invoices</p>
-                <h2>No settled invoices were found in this window.</h2>
-                <p className="muted">Adjust the date range or export a wider billing window.</p>
-              </div>
+              <WorkspaceState
+                eyebrow="No invoices"
+                title="No settled invoices were found in this window."
+                description="Adjust the date range or refresh a wider billing window."
+                tone="empty"
+                secondaryAction={{ label: "Refresh reports", onClick: () => void refreshReports(range), disabled: loading }}
+              />
             ) : summary ? (
               <article className="seller-card">
                 <div className="seller-card-top">
@@ -307,11 +319,13 @@ export function SellerReports() {
                 </div>
               </article>
             ) : (
-              <div className="empty-state">
-                <p className="eyebrow">No data</p>
-                <h2>No billing report is loaded yet.</h2>
-                <p className="muted">Use the selected date range and refresh the reports against the live API.</p>
-              </div>
+              <WorkspaceState
+                eyebrow="No data"
+                title="No billing report is loaded yet."
+                description="Use the selected date range and refresh the reports against the live API."
+                tone={error ? "error" : "empty"}
+                secondaryAction={{ label: "Refresh reports", onClick: () => void refreshReports(range), disabled: loading }}
+              />
             )}
           </div>
         </div>

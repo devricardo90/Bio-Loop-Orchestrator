@@ -9,6 +9,7 @@ import {
   type DisputeResolutionDecision,
   type DisputeStatus
 } from "../lib/admin-api";
+import { WorkspaceState } from "./workspace-state";
 
 type AdminDisputeRecord = {
   id: string;
@@ -140,7 +141,16 @@ export function AdminDisputesDashboard() {
   }
 
   if (!hydrated) {
-    return <main className="app-shell">Loading admin disputes workspace...</main>;
+    return (
+      <main className="app-shell">
+        <WorkspaceState
+          eyebrow="Admin disputes"
+          title="Loading admin disputes workspace."
+          description="The dispute queue is loading from the admin API."
+          tone="loading"
+        />
+      </main>
+    );
   }
 
   return (
@@ -221,11 +231,14 @@ export function AdminDisputesDashboard() {
 
         <div className="compact-list admin-list">
           {visibleDisputes.length === 0 ? (
-            <div className="empty-state">
-              <p className="eyebrow">No disputes</p>
-              <h2>No disputes match the current filter.</h2>
-              <p className="muted">Switch filters or create a new dispute in the API.</p>
-            </div>
+            <WorkspaceState
+              eyebrow="No disputes"
+              title="No disputes match the current filter."
+              description="Switch filters or create a new dispute in the API."
+              tone={error ? "error" : "empty"}
+              primaryAction={{ label: "Admin hub", href: "/admin" }}
+              secondaryAction={{ label: "Retry", onClick: () => void refreshDisputes(filter), disabled: loading }}
+            />
           ) : (
             visibleDisputes.map((dispute) => (
               <article key={dispute.id} className="seller-card admin-card">
@@ -284,7 +297,7 @@ export function AdminDisputesDashboard() {
         </div>
 
         <p className={`message ${error ? "message-visible" : ""}`} aria-live="polite">
-          {error}
+          {error ? `API unavailable: ${error}` : ""}
         </p>
         <p className={`message ${loading ? "message-visible" : ""}`} aria-live="polite">
           {loading ? "Loading disputes from the API..." : ""}
