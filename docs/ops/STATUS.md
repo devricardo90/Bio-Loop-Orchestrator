@@ -31,6 +31,7 @@
 - [x] Pickup schedule + POD endpoints
 - [x] OpenAPI atualizado + Scalar em /reference
 - [x] Jobs: end_auction + no_show (M2)
+- [x] Invoice export + fee calculation + reports basicos (M3 core)
 
 ---
 
@@ -51,3 +52,4 @@
 - API-05 fecha o contrato publico da API; o backlog agora aponta `API-06` como proxima `READY`.
 - API-06 fecha a automacao de `end_auction` e `no_show`; `QA-01` agora e a proxima task de verificacao.
 - QA-01 fechou a verificacao de release do slice M1+M2 com `PASS`.
+- API-07 fecha o core de billing com export, fee calculation e reports basicos; `WEB-05` agora e a proxima task `READY`.

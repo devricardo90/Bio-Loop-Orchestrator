@@ -63,9 +63,9 @@
 
 - [DONE] (DOM-03) Contratos de invoice, fees e export basico
   - deps: DOM-02
-- [READY] (API-07) Invoice export + fee calculation + reports basicos
+- [DONE] (API-07) Invoice export + fee calculation + reports basicos
   - deps: DOM-03, API-04
-- [BLOCKED] (WEB-05) Seller reports + invoice/export surfaces
+- [READY] (WEB-05) Seller reports + invoice/export surfaces
   - deps: API-07
 
 ## M4 Admin Slice
