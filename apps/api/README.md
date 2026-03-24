@@ -21,10 +21,19 @@ Copy `.env.example` to `.env` and adjust the origin/cookie settings for your loc
 ## Verification
 
 ```bash
+pnpm --filter @bio-loop/api prisma:generate
 pnpm --filter @bio-loop/api typecheck
 pnpm --filter @bio-loop/api test
 pnpm --filter @bio-loop/api build
 ```
+
+## Prisma safety rule
+
+If you change `apps/api/prisma/**`, Prisma schema, migrations, or API code that depends on the Prisma Client:
+
+1. Run `pnpm --filter @bio-loop/api prisma:generate`
+2. Only then run build/test
+3. Do not commit or push before `prisma:generate` succeeds
 
 ## Jobs
 

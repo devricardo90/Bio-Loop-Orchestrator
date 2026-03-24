@@ -33,6 +33,11 @@ Definir a dinâmica do Agente Orquestrador: como ele escolhe tarefas, chama suba
 - seed/demo data funcionando
 - fluxos buyer + seller navegáveis sem dead-ends
 
+### Regra obrigatória para tasks de API com Prisma
+- Se a task tocar em `apps/api/prisma/**`, `schema.prisma`, migrations, ou código que dependa do Prisma Client, o orquestrador DEVE rodar `pnpm.cmd --filter @bio-loop/api prisma:generate` antes de considerar a task pronta.
+- Não fazer commit nem push de mudanças de API/Prisma sem executar `prisma:generate` com sucesso.
+- Se `prisma generate` falhar por bloqueio de rede/engine, isso deve ser tratado como gate pendente, não como tarefa concluída.
+
 ---
 
 ## Como o orquestrador monta um Task Brief
