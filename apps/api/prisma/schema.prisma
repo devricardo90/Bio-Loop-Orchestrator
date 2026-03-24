@@ -95,6 +95,26 @@ enum DisputeResolutionDecision {
   ESCALATE
 }
 
+enum InvoiceStatus {
+  DRAFT
+  READY
+  EXPORTED
+  SETTLED
+  CANCELLED
+}
+
+enum FeeType {
+  PLATFORM_PERCENT
+  PICKUP_FLAT
+  DISPUTE_FLAT
+  ADJUSTMENT
+}
+
+enum ExportFormat {
+  CSV
+  JSON
+}
+
 model User {
   id        String    @id @default(cuid())
   email     String?   @unique
@@ -260,6 +280,7 @@ model Order {
   buyer     Buyer   @relation(fields: [buyerId], references: [id], onDelete: Restrict)
   proofs    PickupProof[]
   dispute   Dispute?
+  invoice   Invoice?
 
   @@index([buyerId, status])
 }
@@ -338,4 +359,57 @@ model AuditLog {
   actorUser User? @relation("AuditLogActor", fields: [actorUserId], references: [id], onDelete: SetNull)
 
   @@index([entityType, entityId, createdAt])
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  orderId         String        @unique
+  sellerId        String
+  buyerId         String
+  currency        String        @db.VarChar(3)
+  status          InvoiceStatus @default(READY)
+  billedWeightKg  Decimal       @db.Decimal(12, 3)
+  subtotalSek     Decimal       @db.Decimal(12, 2)
+  feeTotalSek     Decimal       @db.Decimal(12, 2)
+  totalSek        Decimal       @db.Decimal(12, 2)
+  issuedAt        DateTime
+  exportedAt      DateTime?
+  lineItems       Json
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  order   Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fees    InvoiceFee[]
+
+  @@index([sellerId, issuedAt])
+  @@index([buyerId, issuedAt])
+  @@index([status, issuedAt])
+}
+
+model InvoiceFee {
+  id         String   @id @default(cuid())
+  invoiceId   String
+  type       FeeType
+  label      String
+  amountSek  Decimal  @db.Decimal(12, 2)
+  createdAt  DateTime @default(now())
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId, type])
+}
+
+model BillingExport {
+  id            String       @id @default(cuid())
+  format        ExportFormat
+  downloadName  String
+  fromAt        DateTime
+  toAt          DateTime
+  invoiceCount  Int
+  content       String
+  reportSnapshot Json
+  createdAt     DateTime     @default(now())
+
+  @@index([createdAt])
+  @@index([format, createdAt])
 }

@@ -133,7 +133,7 @@
   - deps: DB-03, DATA-01
   - output: schema Prisma mais estrito para tipos/constraints operacionais
   - gate: migration aplica em banco limpo; `prisma:generate`, `db:seed` e testes de API continuam verdes
-- [READY] (DB-02) Persistencia real de billing e invoice
+- [DONE] (DB-02) Persistencia real de billing e invoice
   - owner: DB Agent
   - deps: DB-01, API-07
   - output: entidades persistidas de invoice/export/fees e compatibilidade com seller reports

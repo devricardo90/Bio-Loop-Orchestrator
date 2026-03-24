@@ -74,6 +74,17 @@ const currentIds = {
   resolutions: {
     beets: "resolution-beets-01"
   },
+  invoices: {
+    beets: "inv_order-beets-01"
+  },
+  invoiceFees: {
+    beetsPlatform: "fee_order-beets-01_platform",
+    beetsPickup: "fee_order-beets-01_pickup",
+    beetsDispute: "fee_order-beets-01_dispute"
+  },
+  billingExports: {
+    beets: "billing_export_beets_seed"
+  },
   auditLogs: {
     grainworksApproval: "audit-grainworks-approval",
     harborSuspension: "audit-harbor-suspension",
@@ -93,6 +104,9 @@ const legacyIds = {
   proofs: ["proof_carrots_settled"],
   disputes: ["dispute_carrots_quality", "dispute_beets_noshow"],
   resolutions: ["resolution_carrots_quality"],
+  invoices: [],
+  invoiceFees: [],
+  billingExports: [],
   auditLogs: ["audit_buyer_approval", "audit_dispute_resolution"]
 };
 
@@ -136,12 +150,18 @@ async function clearManagedScenario(tx) {
     proofs: [...collectIds(currentIds.proofs), ...legacyIds.proofs],
     disputes: [...collectIds(currentIds.disputes), ...legacyIds.disputes],
     resolutions: [...collectIds(currentIds.resolutions), ...legacyIds.resolutions],
+    invoices: [...collectIds(currentIds.invoices), ...legacyIds.invoices],
+    invoiceFees: [...collectIds(currentIds.invoiceFees), ...legacyIds.invoiceFees],
+    billingExports: [...collectIds(currentIds.billingExports), ...legacyIds.billingExports],
     auditLogs: [...collectIds(currentIds.auditLogs), ...legacyIds.auditLogs]
   };
 
   await tx.auditLog.deleteMany({ where: { id: { in: managedIds.auditLogs } } });
+  await tx.billingExport.deleteMany({ where: { id: { in: managedIds.billingExports } } });
   await tx.disputeResolution.deleteMany({ where: { id: { in: managedIds.resolutions } } });
   await tx.buyerApproval.deleteMany({ where: { id: { in: managedIds.approvals } } });
+  await tx.invoiceFee.deleteMany({ where: { id: { in: managedIds.invoiceFees } } });
+  await tx.invoice.deleteMany({ where: { id: { in: managedIds.invoices } } });
   await tx.pickupProof.deleteMany({ where: { id: { in: managedIds.proofs } } });
   await tx.dispute.deleteMany({ where: { id: { in: managedIds.disputes } } });
   await tx.order.deleteMany({ where: { id: { in: managedIds.orders } } });
@@ -852,6 +872,60 @@ async function seedAuditLogs(tx) {
   });
 }
 
+async function seedBilling(tx) {
+  await tx.invoice.create({
+    data: {
+      id: currentIds.invoices.beets,
+      orderId: currentIds.orders.beets,
+      sellerId: currentIds.stores.uppsalaNorth,
+      buyerId: currentIds.buyers.freshmart,
+      currency: "SEK",
+      status: "READY",
+      billedWeightKg: decimal("548.000"),
+      subtotalSek: decimal("3890.80"),
+      feeTotalSek: decimal("386.26"),
+      totalSek: decimal("3504.54"),
+      issuedAt: days(-1.75),
+      exportedAt: null,
+      lineItems: [
+        {
+          id: "line_order-beets-01_commodity",
+          label: `Lot ${currentIds.stores.uppsalaNorth}`,
+          quantityKg: 548,
+          unitPriceSekPerKg: 7.1,
+          amountSek: 3890.8
+        }
+      ]
+    }
+  });
+
+  await tx.invoiceFee.createMany({
+    data: [
+      {
+        id: currentIds.invoiceFees.beetsPlatform,
+        invoiceId: currentIds.invoices.beets,
+        type: "PLATFORM_PERCENT",
+        label: "Platform fee (8%)",
+        amountSek: decimal("311.26")
+      },
+      {
+        id: currentIds.invoiceFees.beetsPickup,
+        invoiceId: currentIds.invoices.beets,
+        type: "PICKUP_FLAT",
+        label: "Pickup fee",
+        amountSek: decimal("25.00")
+      },
+      {
+        id: currentIds.invoiceFees.beetsDispute,
+        invoiceId: currentIds.invoices.beets,
+        type: "DISPUTE_FLAT",
+        label: "Dispute handling fee",
+        amountSek: decimal("50.00")
+      }
+    ]
+  });
+}
+
 async function main() {
   await prisma.$transaction(async (tx) => {
     await clearManagedScenario(tx);
@@ -862,6 +936,7 @@ async function main() {
     await seedLotsAndAuctions(tx);
     await seedBids(tx);
     await seedOrdersAndDisputes(tx);
+    await seedBilling(tx);
     await seedAuditLogs(tx);
   });
 

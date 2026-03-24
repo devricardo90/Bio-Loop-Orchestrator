@@ -10,12 +10,16 @@ function createFakePrisma() {
     buyers: new Map(),
     lots: new Map(),
     orders: new Map(),
-    disputes: new Map()
+    disputes: new Map(),
+    invoices: new Map(),
+    invoiceFees: new Map(),
+    billingExports: new Map()
   };
 
   const clone = (value) => JSON.parse(JSON.stringify(value));
 
   const prisma = {
+    __state: state,
     $transaction: async (fn) => fn(prisma),
     store: {
       create: async ({ data }) => {
@@ -72,9 +76,79 @@ function createFakePrisma() {
           items.map((order) => ({
             ...order,
             lot: include?.lot ? state.lots.get(order.lotId) ?? null : undefined,
-            dispute: include?.dispute ? state.disputes.get(order.id) ?? null : undefined
+            dispute: include?.dispute ? state.disputes.get(order.id) ?? null : undefined,
+            invoice: include?.invoice
+              ? (() => {
+                  const invoice = [...state.invoices.values()].find((entry) => entry.orderId === order.id) ?? null;
+                  if (!invoice) {
+                    return null;
+                  }
+
+                  return {
+                    ...invoice,
+                    fees: include.invoice.include?.fees
+                      ? [...state.invoiceFees.values()].filter((fee) => fee.invoiceId === invoice.id)
+                      : undefined
+                  };
+                })()
+              : undefined
           }))
         );
+      }
+    },
+    invoice: {
+      upsert: async ({ where, create, update }) => {
+        const existing = [...state.invoices.values()].find((entry) => entry.orderId === where.orderId) ?? null;
+        const base = existing ?? { id: create.id };
+        const record = {
+          ...base,
+          ...(existing ? update : create)
+        };
+        state.invoices.set(record.id, clone(record));
+        return clone(record);
+      },
+      findMany: async ({ where }) => {
+        const items = [...state.invoices.values()].filter((invoice) => {
+          const issuedAt = new Date(invoice.issuedAt).getTime();
+          return issuedAt >= new Date(where.issuedAt.gte).getTime() && issuedAt <= new Date(where.issuedAt.lte).getTime();
+        });
+
+        return clone(
+          items.map((invoice) => ({
+            ...invoice,
+            fees: [...state.invoiceFees.values()].filter((fee) => fee.invoiceId === invoice.id)
+          }))
+        );
+      },
+      update: async ({ where, data }) => {
+        const current = state.invoices.get(where.id);
+        const record = { ...current, ...data };
+        state.invoices.set(where.id, clone(record));
+        return clone({
+          ...record,
+          fees: [...state.invoiceFees.values()].filter((fee) => fee.invoiceId === record.id)
+        });
+      }
+    },
+    invoiceFee: {
+      deleteMany: async ({ where }) => {
+        for (const [id, fee] of state.invoiceFees.entries()) {
+          if (fee.invoiceId === where.invoiceId) {
+            state.invoiceFees.delete(id);
+          }
+        }
+      },
+      createMany: async ({ data }) => {
+        for (const item of data) {
+          state.invoiceFees.set(item.id, clone(item));
+        }
+      }
+    },
+    billingExport: {
+      create: async ({ data }) => {
+        const record = { id: `billing_export_${state.billingExports.size + 1}`, ...data };
+        state.billingExports.set(record.id, clone(record));
+        return clone(record);
       }
     },
     dispute: {
@@ -176,6 +250,7 @@ async function main() {
   assert.equal(exported.invoices.length, 1);
   assert.equal(exported.invoices[0].status, "EXPORTED");
   assert.equal(exported.report.invoiceCount, 1);
+  assert.equal(prisma.__state.billingExports.size, 1);
 }
 
 await main();
