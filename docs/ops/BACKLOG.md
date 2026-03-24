@@ -87,5 +87,5 @@
   - deps: API-10, WEB-04, WEB-06
 - [DONE] (QA-02) Browser e2e smoke flows for buyer, seller, admin
   - deps: WEB-07, API-09
-- [BLOCKED] (INFRA-03) Observability minimum: structured logs, request ids, health/readiness checks
+- [DONE] (INFRA-03) Observability minimum: structured logs, request ids, health/readiness checks
   - deps: API-05, API-06

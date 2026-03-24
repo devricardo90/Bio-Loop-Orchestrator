@@ -10,6 +10,14 @@ const controller = readFileSync(
   new URL("../src/app.controller.ts", import.meta.url),
   "utf8"
 );
+const logger = readFileSync(
+  new URL("../src/observability/structured-logger.ts", import.meta.url),
+  "utf8"
+);
+const requestIdMiddleware = readFileSync(
+  new URL("../src/observability/request-id.middleware.ts", import.meta.url),
+  "utf8"
+);
 const authController = readFileSync(
   new URL("../src/auth/auth.controller.ts", import.meta.url),
   "utf8"
@@ -28,6 +36,9 @@ const apiJobsModule = readFileSync(new URL("../src/jobs/api-jobs.module.ts", imp
 const envExample = readFileSync(new URL("../.env.example", import.meta.url), "utf8");
 
 assert.match(main, /NestFactory\.create/);
+assert.match(main, /StructuredLogger/);
+assert.match(main, /app\.useLogger/);
+assert.match(main, /createRequestIdMiddleware/);
 assert.match(main, /enableCors/);
 assert.match(main, /ALLOWED_ORIGINS/);
 assert.match(main, /SwaggerModule\.createDocument/);
@@ -36,6 +47,13 @@ assert.match(main, /reference/);
 assert.match(module, /AppController/);
 assert.match(module, /AuthModule/);
 assert.match(controller, /@Get\("health"\)/);
+assert.match(controller, /@Get\("readiness"\)/);
+assert.match(controller, /PrismaService/);
+assert.match(controller, /ServiceUnavailableException/);
+assert.match(logger, /requestCompleted/);
+assert.match(logger, /StructuredLogger/);
+assert.match(requestIdMiddleware, /x-request-id/);
+assert.match(requestIdMiddleware, /X-Request-Id/);
 assert.match(authController, /@Get\("csrf"\)/);
 assert.match(authController, /@Post\("login"\)/);
 assert.match(authController, /@Post\("refresh"\)/);

@@ -1,14 +1,17 @@
 import "reflect-metadata";
-import { randomBytes } from "node:crypto";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { apiReference } from "@scalar/nestjs-api-reference";
 import { AppModule } from "./app.module";
 import { DEFAULT_ALLOWED_ORIGINS } from "./auth/auth.constants";
 import { parseBooleanEnv, parseOrigins } from "./auth/auth.utils";
+import { StructuredLogger } from "./observability/structured-logger";
+import { createRequestIdMiddleware } from "./observability/request-id.middleware";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const logger = new StructuredLogger("bio-loop-api");
+  const app = await NestFactory.create(AppModule, { logger });
+  app.useLogger(logger);
   app.enableShutdownHooks();
 
   if (parseBooleanEnv(process.env["TRUST_PROXY"], false)) {
@@ -35,13 +38,10 @@ async function bootstrap() {
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"]
+    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Request-Id"]
   });
 
-  app.use((req: any, res: any, next: () => void) => {
-    res.setHeader("X-Request-Id", req.headers?.["x-request-id"] ?? randomBytes(8).toString("hex"));
-    next();
-  });
+  app.use(createRequestIdMiddleware(logger));
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle("Bio-Loop API")
