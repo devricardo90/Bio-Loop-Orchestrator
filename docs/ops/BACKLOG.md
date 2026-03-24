@@ -30,11 +30,11 @@
   - deps: DOM-01
 - [DONE] (API-02) Auth httpOnly + CSRF + CORS allowlist
   - deps: INFRA-01
-- [READY] (API-03) Endpoint bid com validacoes de estado + teste integracao
+- [DONE] (API-03) Endpoint bid com validacoes de estado + teste integracao
   - deps: API-01, API-02, DOM-01
-- [BLOCKED] (WEB-01) Buyer feed + Auction view com polling + bid panel
+- [READY] (WEB-01) Buyer feed + Auction view com polling + bid panel
   - deps: API-03
-- [BLOCKED] (WEB-02) Seller lots + results
+- [READY] (WEB-02) Seller lots + results
   - deps: API-03
 
 ## M2 Ops Slice

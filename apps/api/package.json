@@ -6,7 +6,7 @@
     "build": "nest build",
     "lint": "tsc -p tsconfig.json --noEmit",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node test/smoke.test.mjs",
+    "test": "pnpm build && node test/run.mjs",
     "prisma:generate": "prisma generate --schema prisma/schema.prisma",
     "prisma:migrate": "prisma migrate dev --schema prisma/schema.prisma",
     "start": "node dist/main.js"
@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.16",
-    "prisma": "^6.16.0",
-    "@types/node": "^24.1.0"
+    "@types/node": "^24.1.0",
+    "prisma": "^6.16.0"
   }
 }
