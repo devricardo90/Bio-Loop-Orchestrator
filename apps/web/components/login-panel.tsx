@@ -163,7 +163,7 @@ export function LoginPanel() {
             {message ||
               (session
                 ? `You are already signed in as ${session.roleLabel}.`
-                : "Use any non-empty email/password pair; the API is wired for auth flow, not credential validation yet.")}
+                : "The suggested emails match the seeded personas, but auth still accepts any non-empty email/password pair today.")}
           </p>
         </form>
       </section>

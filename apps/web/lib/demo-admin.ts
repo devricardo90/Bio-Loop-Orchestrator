@@ -47,49 +47,49 @@ export function createDemoAdminState(): AdminDemoState {
   return {
     buyers: [
       {
-        id: "buyer-registry-01",
+        id: "approval-grainworks",
         buyerId: "buyer-grainworks",
         name: "GrainWorks AB",
         email: "ops@grainworks.example",
         status: "APPROVED",
         reputationScore: 92,
         riskLabel: "Low risk",
-        notes: "High volume buyer with stable settlements.",
+        notes: "Approved seed buyer for live auction and pickup scenarios.",
         approval: {
           decision: "APPROVE",
           reason: "MANUAL_REVIEW",
-          reviewerId: "admin-demo",
-          notes: "Approved after manual review.",
+          reviewerId: "user_platform_admin",
+          notes: "Approved seed buyer for live auction and pickup scenarios.",
           reviewedAt: now
         },
         updatedAt: now
       },
       {
-        id: "buyer-registry-02",
-        buyerId: "buyer-nova-brew",
-        name: "Nova Brew Labs",
-        email: "ops@novabrew.example",
+        id: "approval-freshmart",
+        buyerId: "buyer-freshmart",
+        name: "FreshMart Logistics",
+        email: "ops@freshmart.example",
         status: "PENDING",
-        reputationScore: 44,
+        reputationScore: 74,
         riskLabel: "Needs review",
-        notes: "Pending approval because of lower reputation score.",
+        notes: "Pending manual review in the admin workspace.",
         approval: null,
         updatedAt: now
       },
       {
-        id: "buyer-registry-03",
+        id: "approval-harbor-food",
         buyerId: "buyer-harbor-food",
         name: "Harbor Food Systems",
         email: "compliance@harborfood.example",
         status: "SUSPENDED",
         reputationScore: 61,
         riskLabel: "Compliance hold",
-        notes: "Suspended while payment risk review is pending.",
+        notes: "Suspended while payment reconciliation is pending.",
         approval: {
           decision: "SUSPEND",
           reason: "PAYMENT_RISK",
-          reviewerId: "admin-demo",
-          notes: "Temporary hold until reconciliation.",
+          reviewerId: "user_platform_admin",
+          notes: "Suspended while payment reconciliation is pending.",
           reviewedAt: now
         },
         updatedAt: now
@@ -97,8 +97,8 @@ export function createDemoAdminState(): AdminDemoState {
     ],
     disputes: [
       {
-        id: "dispute-101",
-        orderId: "order-carrots-01",
+        id: "dispute-roots-01",
+        orderId: "order-roots-01",
         reason: "NO_SHOW",
         status: "OPEN",
         openedAt: now,
@@ -106,22 +106,13 @@ export function createDemoAdminState(): AdminDemoState {
         note: "Pickup window passed without POD."
       },
       {
-        id: "dispute-102",
-        orderId: "order-pomace-02",
+        id: "dispute-beets-01",
+        orderId: "order-beets-01",
         reason: "QUALITY_ISSUE",
-        status: "OPEN",
-        openedAt: now,
-        resolvedAt: null,
-        note: "Buyer reported moisture variance."
-      },
-      {
-        id: "dispute-103",
-        orderId: "order-husk-03",
-        reason: "NO_SHOW",
         status: "RESOLVED",
         openedAt: now,
         resolvedAt: now,
-        note: "Settled by admin review."
+        note: "Settled after quality review."
       }
     ],
     lastSyncedAt: now

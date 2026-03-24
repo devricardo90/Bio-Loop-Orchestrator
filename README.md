@@ -21,7 +21,7 @@ pnpm dev
 ```
 
 The API runs on `http://localhost:4000`.
-The web app runs on `http://localhost:3000`.
+The web app runs on `http://localhost:3001`.
 
 ## Useful URLs
 

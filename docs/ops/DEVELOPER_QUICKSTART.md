@@ -18,7 +18,7 @@ pnpm install
 The root `.env` already contains the local defaults for:
 
 - API: `http://localhost:4000`
-- Web: `http://localhost:3000`
+- Web: `http://localhost:3001`
 - Postgres: `postgresql://bio_loop:bio_loop_dev@localhost:5432/bio_loop`
 - Redis: `redis://localhost:6379`
 
@@ -59,8 +59,8 @@ pnpm dev:web
 
 ## 5. Open the local URLs
 
-- Web app: `http://localhost:3000`
-- Login: `http://localhost:3000/login`
+- Web app: `http://localhost:3001`
+- Login: `http://localhost:3001/login`
 - API health: `http://localhost:4000/health`
 - API readiness: `http://localhost:4000/readiness`
 - OpenAPI JSON: `http://localhost:4000/openapi.json`
@@ -80,24 +80,31 @@ Use any non-empty password. The recommended emails from the login screen are:
 | seller | `seller.admin@bioloop.dev` | any non-empty value | Opens seller routes |
 | admin | `platform.admin@bioloop.dev` | any non-empty value | Opens admin routes |
 
-The API seed also creates `platform.admin@bio-loop.local` and `seller.admin@bio-loop.local`, but that mismatch is non-blocking today because login is not credential-backed yet.
+Those suggested emails now match the seeded personas, even though auth still does not validate credentials against the database yet.
 
 ## Demo fixtures loaded by seed
 
 The seeded dataset is designed to make the main surfaces immediately navigable:
 
-- Store: `Norrmalm Market Hub`
+- Users:
+  - `buyer.admin@bioloop.dev`
+  - `seller.admin@bioloop.dev`
+  - `platform.admin@bioloop.dev`
 - Buyers:
   - `GrainWorks AB` approved, high reputation
   - `FreshMart Logistics` pending review
-  - `HarvestCo Distribution` suspended for payment risk
+  - `Nova Brew Labs` pending approval
+  - `Harbor Food Systems` suspended for payment risk
 - Lots and auctions:
-  - `Carrots` completed and settled
-  - `Leafy Greens` live auction
-  - `Beets` pickup/no-show dispute scenario
+  - `auction-husks-01` live buyer bidding scenario
+  - `auction-apples-01` scheduled buyer feed scenario
+  - `auction-carrots-01` awarded order with pickup scheduled
+  - `auction-greens-01` void/expired edge-state scenario
+  - `auction-beets-01` settled billing and resolved dispute scenario
+  - `auction-roots-01` open `NO_SHOW` dispute for admin resolution
 - Orders and disputes:
   - one settled order with pickup proof and resolved dispute
-  - one no-show order still in dispute
+  - one open no-show order still in dispute
 
 This gives you real API-backed data for:
 

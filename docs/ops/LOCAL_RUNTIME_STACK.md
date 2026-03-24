@@ -61,7 +61,7 @@ pnpm dev:web
 - API readiness: `http://localhost:4000/readiness`
 - OpenAPI JSON: `http://localhost:4000/openapi.json`
 - Scalar UI: `http://localhost:4000/reference`
-- Web app: `http://localhost:3000`
+- Web app: `http://localhost:3001`
 
 ## 7. Stop the stack
 
