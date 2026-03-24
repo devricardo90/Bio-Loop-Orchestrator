@@ -63,14 +63,14 @@
 
 - [DONE] (DOM-03) Contratos de invoice, fees e export basico
   - deps: DOM-02
-- [BLOCKED] (API-07) Invoice export + fee calculation + reports basicos
+- [READY] (API-07) Invoice export + fee calculation + reports basicos
   - deps: DOM-03, API-04
 - [BLOCKED] (WEB-05) Seller reports + invoice/export surfaces
   - deps: API-07
 
 ## M4 Admin Slice
 
-- [BLOCKED] (DOM-04) Politicas de buyer approval e dispute resolution
+- [READY] (DOM-04) Politicas de buyer approval e dispute resolution
   - deps: DOM-02
 - [BLOCKED] (API-08) Buyer approval + disputes API
   - deps: DOM-04, API-04
