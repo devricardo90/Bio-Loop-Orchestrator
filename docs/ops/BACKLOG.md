@@ -118,12 +118,12 @@
 
 ### Data / Database lane
 
-- [READY] (DB-03) Seed v2 idempotente e orientado a cenarios
+- [DONE] (DB-03) Seed v2 idempotente e orientado a cenarios
   - owner: DB Agent
   - deps: API-11, QA-04
   - output: seed reentrante, cenarios baseline/demo, ids/personas alinhados entre web e API
   - gate: `db:seed` funciona em banco vazio e em banco ja inicializado; Playwright e smoke manual continuam reproduziveis
-- [BLOCKED] (DATA-01) Onboarding de dados reais dos supermercados da Suecia
+- [READY] (DATA-01) Onboarding de dados reais dos supermercados da Suecia
   - owner: DB Agent
   - deps: DB-03
   - output: pacote de dados reais anexado ao projeto, mapeado e validado para import controlado
@@ -151,7 +151,7 @@
 
 ### Backend / API lane
 
-- [BLOCKED] (API-12) Auth real com identidade persistida
+- [READY] (API-12) Auth real com identidade persistida
   - owner: API Agent
   - deps: DB-03, API-10, API-11
   - output: login real contra usuarios persistidos, mantendo cookies e CSRF
@@ -207,7 +207,7 @@
 
 ### Infra / QA support lane
 
-- [BLOCKED] (INFRA-05) Runtime scripts e portas previsiveis para API/Web/DB
+- [READY] (INFRA-05) Runtime scripts e portas previsiveis para API/Web/DB
   - owner: Infra Agent
   - deps: DB-03
   - output: scripts de dev padronizados, sem colisao de portas e com bootstrap consistente de env
