@@ -2,6 +2,8 @@
 
 This runbook is the shortest path to run the app locally with real Postgres and Redis.
 
+For the broader developer path, demo credentials, fixtures, and `/reference` usage, see [DEVELOPER_QUICKSTART.md](./DEVELOPER_QUICKSTART.md).
+
 ## 1. Prepare env
 
 ```bash

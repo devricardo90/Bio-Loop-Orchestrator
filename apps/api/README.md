@@ -29,6 +29,16 @@ pnpm --filter @bio-loop/api db:seed
 
 The command applies Prisma migrations first, so it can bootstrap a blank local database.
 
+## Demo auth note
+
+The auth flow is real for CSRF plus httpOnly cookie handling, but login is not yet validated against the seeded database users.
+
+- Use the web personas from `http://localhost:3000/login` for buyer, seller, and admin flows.
+- Any non-empty email/password currently works as long as the CSRF handshake succeeds.
+- The seeded business data still drives the buyer, seller, admin, pickup, and billing surfaces after login.
+
+For the full local walkthrough, demo fixtures, and Scalar reference entrypoint, see [docs/ops/DEVELOPER_QUICKSTART.md](../../docs/ops/DEVELOPER_QUICKSTART.md).
+
 ## Verification
 
 ```bash

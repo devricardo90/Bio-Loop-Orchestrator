@@ -7,7 +7,7 @@
 - [x] M4 Admin Slice (buyer approval + disputes)
 - [x] M5 Consolidation Slice (login + API docs + jobs + QA/release hardening)
 - [x] M6 Post-MVP Hardening (real admin data + RBAC + e2e + observability)
-- [ ] M7 Runtime Validation & Demo Readiness (local stack + seed + real demo flows + UAT)
+- [x] M7 Runtime Validation & Demo Readiness (local stack + seed + real demo flows + UAT)
 
 - Scaffold note: pnpm+turborepo baseline created for apps/api, apps/web, packages/domain, and packages/shared.
 - Foundation gate note: workspace install, root typecheck, and root build validated after fixing the Nest CLI version and API TypeScript config.
@@ -74,4 +74,6 @@
 - O proximo passo operacional e remover os fallbacks residuais do frontend em `WEB-08` e documentar o fluxo de demo em `DOCS-01`.
 - INFRA-04 fechou a base de runtime local com docker compose, bootstrap de env e runbook para API/Web/Scalar.
 - QA-03 fechou o runbook manual de UAT para buyer, seller, admin, pickup, billing e `/reference`.
-- O proximo passo da fila e `DOCS-01`, seguido por `QA-04` para automatizar o browser e2e principal.
+- DOCS-01 fechou o quickstart do desenvolvedor com stack local, seed data, demo access e guia de uso do Scalar em `/reference`.
+- QA-04 fechou a suite Playwright real com browser flows para buyer, seller e admin, usando stack e2e isolado com Postgres/Redis, API e web reais.
+- O milestone M7 agora fecha com stack local, seed data, docs, UAT manual e browser e2e principal automatizado.

@@ -9,7 +9,7 @@ Monorepo for the Bio Loop orchestrator project.
 - `packages/domain` - domain contracts package
 - `packages/shared` - shared utilities package
 
-## Local Stack
+## Quickstart
 
 ```bash
 Copy-Item .env.example .env
@@ -44,5 +44,6 @@ pnpm typecheck
 
 ## Docs
 
+- [Developer quickstart + demo guide](docs/ops/DEVELOPER_QUICKSTART.md)
 - [Local runtime runbook](docs/ops/LOCAL_RUNTIME_STACK.md)
 - [API README](apps/api/README.md)

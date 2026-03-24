@@ -9,3 +9,5 @@ coverage
 *.log
 pnpm-debug.log*
 **/*.tsbuildinfo
+playwright-report
+test-results

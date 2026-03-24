@@ -100,7 +100,7 @@
   - deps: API-11
 - [DONE] (QA-03) Manual UAT runbook for buyer, seller, admin, pickup, billing and docs/reference
   - deps: INFRA-04, API-11, WEB-08
-- [BLOCKED] (QA-04) Real browser e2e for primary flows
+- [DONE] (QA-04) Real browser e2e for primary flows
   - deps: QA-03
-- [READY] (DOCS-01) Developer quickstart + demo guide for local stack, seed data and Scalar reference
+- [DONE] (DOCS-01) Developer quickstart + demo guide for local stack, seed data and Scalar reference
   - deps: INFRA-04, API-11
