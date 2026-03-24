@@ -44,8 +44,16 @@
 | `SCHEDULED` | `NO_SHOW` | window elapsed without pickup | auto-generated dispute |
 | `SCHEDULED` | `CANCELLED` | order cancelled | audit log required |
 
+## Dispute
+
+| From | To | Trigger | Guard |
+| --- | --- | --- | --- |
+| `OPEN` | `RESOLVED` | dispute resolved | decision recorded |
+| `OPEN` | `CANCELLED` | dispute withdrawn | buyer/seller retracts before decision |
+
 ## Notes
 
 - `Auction` is the source of truth for bids and reserve-price validation.
 - `Lot` mirrors the commercial lifecycle so the UI can render state without inferring it from auction data.
 - `Order` owns payment and pickup settlement, while `PickupStatus` tracks the operational pickup subflow.
+- `Dispute` is the minimal operational wrapper around `IN_DISPUTE` orders and exists to support no-show handling and manual resolution.

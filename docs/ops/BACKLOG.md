@@ -30,7 +30,7 @@
   - deps: DOM-01
 - [DONE] (API-02) Auth httpOnly + CSRF + CORS allowlist
   - deps: INFRA-01
-- [BLOCKED] (API-03) Endpoint bid com validacoes de estado + teste integracao
+- [READY] (API-03) Endpoint bid com validacoes de estado + teste integracao
   - deps: API-01, API-02, DOM-01
 - [BLOCKED] (WEB-01) Buyer feed + Auction view com polling + bid panel
   - deps: API-03
@@ -39,9 +39,9 @@
 
 ## M2 Ops Slice
 
-- [READY] (DOM-02) Regras no-show + disputa minima
+- [DONE] (DOM-02) Regras no-show + disputa minima
   - deps: DOM-01
-- [BLOCKED] (API-04) Pickup schedule + POD endpoints
+- [READY] (API-04) Pickup schedule + POD endpoints
   - deps: DOM-02, API-01, API-02
 - [BLOCKED] (WEB-03) Pickup/POD telas
   - deps: API-04

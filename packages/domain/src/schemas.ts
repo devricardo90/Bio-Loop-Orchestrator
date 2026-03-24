@@ -1,6 +1,8 @@
 import { z } from "zod";
 import {
   AUCTION_STATUSES,
+  DISPUTE_REASONS,
+  DISPUTE_STATUSES,
   LOT_GRADES,
   LOT_STATUSES,
   ORDER_STATUSES,
@@ -14,6 +16,8 @@ export const lotStatusSchema = z.enum(LOT_STATUSES);
 export const auctionStatusSchema = z.enum(AUCTION_STATUSES);
 export const orderStatusSchema = z.enum(ORDER_STATUSES);
 export const pickupStatusSchema = z.enum(PICKUP_STATUSES);
+export const disputeStatusSchema = z.enum(DISPUTE_STATUSES);
+export const disputeReasonSchema = z.enum(DISPUTE_REASONS);
 
 export const pickupWindowSchema = z
   .object({
@@ -108,12 +112,24 @@ export const pickupProofSchema = z
   })
   .strict();
 
+export const disputeSchema = z
+  .object({
+    id: z.string().min(1),
+    orderId: z.string().min(1),
+    reason: disputeReasonSchema,
+    status: disputeStatusSchema,
+    openedAt: z.string().datetime(),
+    resolvedAt: z.string().datetime().nullable()
+  })
+  .strict();
+
 export const lotDtoSchema = lotSchema;
 export const auctionDtoSchema = auctionSchema.extend({
   highestBid: bidSchema.nullable()
 });
 export const bidDtoSchema = bidSchema;
 export const orderDtoSchema = orderSchema;
+export const disputeDtoSchema = disputeSchema;
 
 export const createLotRequestSchema = z
   .object({
@@ -159,5 +175,30 @@ export const schedulePickupRequestSchema = z
 export const schedulePickupResponseSchema = z
   .object({
     order: orderDtoSchema
+  })
+  .strict();
+
+export const openDisputeRequestSchema = z
+  .object({
+    orderId: z.string().min(1),
+    reason: disputeReasonSchema
+  })
+  .strict();
+
+export const openDisputeResponseSchema = z
+  .object({
+    dispute: disputeDtoSchema
+  })
+  .strict();
+
+export const resolveDisputeRequestSchema = z
+  .object({
+    disputeId: z.string().min(1)
+  })
+  .strict();
+
+export const resolveDisputeResponseSchema = z
+  .object({
+    dispute: disputeDtoSchema
   })
   .strict();

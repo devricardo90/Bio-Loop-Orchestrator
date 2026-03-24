@@ -18,6 +18,7 @@
 - [x] Order + pickup status
 - [x] Zod schemas (server+client)
 - [x] PickupStatus + pickup flow
+- [x] DisputeStatus + dispute minimum flow
 
 ---
 

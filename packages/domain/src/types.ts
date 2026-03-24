@@ -42,6 +42,12 @@ export const PICKUP_STATUSES = [
 ] as const;
 export type PickupStatus = (typeof PICKUP_STATUSES)[number];
 
+export const DISPUTE_STATUSES = ["OPEN", "RESOLVED", "CANCELLED"] as const;
+export type DisputeStatus = (typeof DISPUTE_STATUSES)[number];
+
+export const DISPUTE_REASONS = ["NO_SHOW", "QUALITY_ISSUE"] as const;
+export type DisputeReason = (typeof DISPUTE_REASONS)[number];
+
 export const DOMAIN_EVENTS = [
   "inventory_snapshot_ingested",
   "rule_threshold_met",
@@ -134,6 +140,15 @@ export interface PickupProof {
   createdAt: string;
 }
 
+export interface Dispute {
+  id: string;
+  orderId: string;
+  reason: DisputeReason;
+  status: DisputeStatus;
+  openedAt: string;
+  resolvedAt: string | null;
+}
+
 export interface LotDto {
   id: string;
   storeId: string;
@@ -173,6 +188,15 @@ export interface OrderDto {
   pickupStatus: PickupStatus;
 }
 
+export interface DisputeDto {
+  id: string;
+  orderId: string;
+  reason: DisputeReason;
+  status: DisputeStatus;
+  openedAt: string;
+  resolvedAt: string | null;
+}
+
 export interface CreateLotRequest {
   storeId: string;
   categoryId: string;
@@ -206,4 +230,21 @@ export interface SchedulePickupRequest {
 
 export interface SchedulePickupResponse {
   order: OrderDto;
+}
+
+export interface OpenDisputeRequest {
+  orderId: string;
+  reason: DisputeReason;
+}
+
+export interface OpenDisputeResponse {
+  dispute: DisputeDto;
+}
+
+export interface ResolveDisputeRequest {
+  disputeId: string;
+}
+
+export interface ResolveDisputeResponse {
+  dispute: DisputeDto;
 }

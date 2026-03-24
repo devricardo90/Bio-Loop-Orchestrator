@@ -15,20 +15,24 @@
 - No bids: the auction becomes `VOID` and the lot becomes `EXPIRED`.
 - Reserve not reached: the auction becomes `VOID` and the lot becomes `EXPIRED`.
 - Seller cancellation for compliance: the lot and the order become `CANCELLED`.
-- Buyer no-show: the pickup flow becomes `NO_SHOW` and the order opens `IN_DISPUTE`.
+- Buyer no-show: the pickup flow becomes `NO_SHOW`, the order opens `IN_DISPUTE`, and a `Dispute` is created with reason `NO_SHOW`.
+- Dispute minimum: one open dispute per order at a time; the first resolution closes the dispute and moves the order to `SETTLED` or keeps it `CANCELLED` if the seller revoked the sale.
 - Pickup weight mismatch: final invoice handling is deferred to the billing slice.
 - Re-run after `VOID`: permitted once only if the seller republishes the lot.
 
 ## Contract Notes
 
 - `LotDto`, `AuctionDto`, `BidDto`, and `OrderDto` are the stable response contracts for API and UI.
+- `DisputeDto` is the stable response contract for the operational dispute flow.
 - `PlaceBidRequest` is the core M1 mutation contract.
 - `SchedulePickupRequest` is predeclared so the API can adopt the M2 pickup flow without changing the domain package surface.
+- `OpenDisputeRequest` and `ResolveDisputeRequest` are the minimum M2 mutation contracts for dispute handling.
 - `DomainEventName` exists for orchestration and observability, but the exact payload schema is left to the API/infra layer.
 
 ## Validation Checklist
 
 - `LotStatus`, `AuctionStatus`, `OrderStatus`, and `PickupStatus` are all declared.
+- `DisputeStatus` and `DisputeReason` are declared.
 - Core DTO schemas exist and are reusable.
 - The state machine documents every terminal state.
 - Edge cases are explicit and do not require inference from code.
