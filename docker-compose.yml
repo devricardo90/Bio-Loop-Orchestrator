@@ -4,7 +4,7 @@ services:
     container_name: bio-loop-postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "5453:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-bio_loop}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bio_loop_dev}

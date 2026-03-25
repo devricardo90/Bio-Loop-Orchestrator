@@ -167,7 +167,11 @@ async function clearManagedScenario(tx) {
   await tx.invoice.deleteMany({ where: { id: { in: managedIds.invoices } } });
   await tx.pickupProof.deleteMany({ where: { id: { in: managedIds.proofs } } });
   await tx.dispute.deleteMany({ where: { id: { in: managedIds.disputes } } });
-  await tx.order.deleteMany({ where: { id: { in: managedIds.orders } } });
+  await tx.order.deleteMany({
+    where: {
+      OR: [{ id: { in: managedIds.orders } }, { lotId: { in: managedIds.lots } }]
+    }
+  });
   await tx.bid.deleteMany({ where: { id: { in: managedIds.bids } } });
   await tx.auction.deleteMany({ where: { id: { in: managedIds.auctions } } });
   await tx.lot.deleteMany({ where: { id: { in: managedIds.lots } } });

@@ -1,8 +1,11 @@
 import { spawn } from "node:child_process";
+import { createRequire } from "node:module";
+import path from "node:path";
 
+const requireFromCwd = createRequire(path.join(process.cwd(), "package.json"));
 const port = process.env.WEB_PORT ?? "3001";
-const command = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
-const child = spawn(command, ["exec", "next", "dev", "--port", port], {
+const nextCli = requireFromCwd.resolve("next/dist/bin/next");
+const child = spawn(process.execPath, [nextCli, "dev", "--port", port], {
   cwd: process.cwd(),
   stdio: "inherit"
 });
