@@ -13,6 +13,7 @@ import { conflictError, notFoundError } from "../trades/trade.errors";
 import type {
   ApproveBuyerAdminInput,
   ApproveBuyerAdminResult,
+  ListBuyersQuery,
   BuyerApprovalDecision,
   BuyerApprovalReason,
   BuyerApprovalStatus,
@@ -25,6 +26,9 @@ import type {
   ResolveDisputeAdminInput,
   ResolveDisputeAdminResult
 } from "./admin.types";
+
+const DEFAULT_PAGE_LIMIT = 25;
+const MAX_PAGE_LIMIT = 100;
 
 type AdminBuyerApprovalRecord = {
   id: string;
@@ -72,9 +76,14 @@ type AdminTransactionClient = {
     findUnique: (args: { where: { id: string }; include?: { approval?: boolean } }) => Promise<{ id: string; approved: boolean } | null>;
     update: (args: { where: { id: string }; data: { approved: boolean } }) => Promise<{ id: string; approved: boolean }>;
     findMany: (args: {
+      where?: Record<string, unknown>;
+      skip?: number;
+      take?: number;
       orderBy: { updatedAt: "desc" };
-      include: { approval: true };
+      select?: typeof adminBuyerListSelect;
+      include?: { approval: true };
     }) => Promise<AdminBuyerRecord[]>;
+    count?: (args: { where?: Record<string, unknown> }) => Promise<number>;
   };
   buyerApproval: {
     upsert: (args: {
@@ -103,7 +112,13 @@ type AdminTransactionClient = {
       where: { id: string };
       include?: { order?: boolean; resolution?: boolean };
     }) => Promise<(PrismaDispute & { order?: PrismaOrder | null; resolution?: AdminDisputeResolutionRecord | null }) | null>;
-    findMany: (args: { where?: { status?: string }; orderBy: { openedAt: "desc" } }) => Promise<PrismaDispute[]>;
+    findMany: (args: {
+      where?: Record<string, unknown>;
+      orderBy: { openedAt: "desc" };
+      skip?: number;
+      take?: number;
+    }) => Promise<PrismaDispute[]>;
+    count?: (args: { where?: Record<string, unknown> }) => Promise<number>;
     update: (args: { where: { id: string }; data: Record<string, unknown> }) => Promise<PrismaDispute>;
   };
   disputeResolution: {
@@ -282,14 +297,42 @@ function thisBuyerNotes(buyer: Pick<PrismaBuyer, "reputation" | "approved">, app
 export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async listBuyers(): Promise<ListBuyersResult> {
-    const buyers = await this.prisma.buyer.findMany({
+  async listBuyers(query: ListBuyersQuery = {}): Promise<ListBuyersResult> {
+    const pagination = this.normalizePagination(query.limit, query.offset);
+    const filters: Record<string, unknown>[] = [];
+    if (query.search) {
+      filters.push({
+        OR: [{ id: { contains: query.search } }, { name: { contains: query.search, mode: "insensitive" } }]
+      });
+    }
+
+    const statusWhere = this.buildBuyerStatusWhere(query.status);
+    if (statusWhere) {
+      filters.push(statusWhere);
+    }
+    const where = filters.length === 0 ? undefined : filters.length === 1 ? filters[0] : { AND: filters };
+
+    const buyers = (await this.prisma.buyer.findMany({
+      ...(where ? { where: where as Prisma.BuyerWhereInput } : {}),
       select: adminBuyerListSelect,
-      orderBy: { updatedAt: "desc" }
-    });
+      orderBy: { updatedAt: "desc" },
+      skip: pagination.offset,
+      take: pagination.limit
+    })) as AdminBuyerListRecord[];
+    const total =
+      typeof this.prisma.buyer.count === "function"
+        ? where
+          ? await this.prisma.buyer.count({ where: where as Prisma.BuyerWhereInput })
+          : await this.prisma.buyer.count()
+        : buyers.length;
 
     return {
-      buyers: buyers.map((buyer) => buyerApprovalToBuyerDto(buyer))
+      buyers: buyers.map((buyer) => buyerApprovalToBuyerDto(buyer)),
+      pagination: {
+        ...pagination,
+        total,
+        hasMore: pagination.offset + buyers.length < total
+      }
     };
   }
 
@@ -374,17 +417,42 @@ export class AdminService {
   }
 
   async listDisputes(query: ListDisputesQuery): Promise<ListDisputesResult> {
+    const pagination = this.normalizePagination(query.limit, query.offset);
+    const where: Record<string, unknown> = {};
+    if (query.status) {
+      where["status"] = query.status;
+    }
+    if (query.reason) {
+      where["reason"] = query.reason;
+    }
+
     const disputeClient = this.prisma.dispute as unknown as {
-      findMany: (args: { where?: { status?: string }; orderBy: { openedAt: "desc" } }) => Promise<PrismaDispute[]>;
+      findMany: (args: {
+        where?: Record<string, unknown>;
+        orderBy: { openedAt: "desc" };
+        skip?: number;
+        take?: number;
+      }) => Promise<PrismaDispute[]>;
+      count?: (args: { where?: Record<string, unknown> }) => Promise<number>;
     };
-    const disputes = await disputeClient.findMany(
-      query.status
-        ? { where: { status: query.status }, orderBy: { openedAt: "desc" } }
-        : { orderBy: { openedAt: "desc" } }
-    );
+    const disputes = await disputeClient.findMany({
+      ...(Object.keys(where).length > 0 ? { where } : {}),
+      orderBy: { openedAt: "desc" },
+      skip: pagination.offset,
+      take: pagination.limit
+    });
+    const total =
+      typeof disputeClient.count === "function"
+        ? await disputeClient.count(Object.keys(where).length > 0 ? { where } : {})
+        : disputes.length;
 
     return {
-      disputes: disputes.map((dispute) => disputeToDto(dispute))
+      disputes: disputes.map((dispute) => disputeToDto(dispute)),
+      pagination: {
+        ...pagination,
+        total,
+        hasMore: pagination.offset + disputes.length < total
+      }
     };
   }
 
@@ -494,6 +562,37 @@ export class AdminService {
     }
 
     return "SUSPENDED" as const;
+  }
+
+  private normalizePagination(limit?: number, offset?: number) {
+    const safeLimit = Math.min(Math.max(limit ?? DEFAULT_PAGE_LIMIT, 1), MAX_PAGE_LIMIT);
+    const safeOffset = Math.max(offset ?? 0, 0);
+
+    return {
+      limit: safeLimit,
+      offset: safeOffset
+    };
+  }
+
+  private buildBuyerStatusWhere(status?: BuyerApprovalStatus) {
+    if (!status) {
+      return null;
+    }
+
+    if (status === "PENDING") {
+      return {
+        approved: false,
+        OR: [{ approval: { is: null } }, { approval: { is: { status: "PENDING" } } }]
+      };
+    }
+
+    return {
+      approval: {
+        is: {
+          status
+        }
+      }
+    };
   }
 
 }

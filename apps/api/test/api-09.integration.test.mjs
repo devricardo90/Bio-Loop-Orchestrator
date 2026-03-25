@@ -27,10 +27,45 @@ function createFakePrisma() {
         return clone(record);
       },
       findUnique: async ({ where }) => clone(state.buyers.get(where.id) ?? null),
-      findMany: async ({ include, select }) => {
-        const buyers = [...state.buyers.values()].sort((left, right) =>
+      findMany: async ({ include, select, where, skip, take }) => {
+        let buyers = [...state.buyers.values()];
+
+        if (where?.AND) {
+          for (const filter of where.AND) {
+            buyers = buyers.filter((buyer) => {
+              if (filter.OR) {
+                return filter.OR.some((entry) => {
+                  if (entry.id?.contains) {
+                    return buyer.id.includes(entry.id.contains);
+                  }
+
+                  if (entry.name?.contains) {
+                    return buyer.name.toLowerCase().includes(String(entry.name.contains).toLowerCase());
+                  }
+
+                  return false;
+                });
+              }
+
+              if (filter.approval?.is?.status) {
+                return state.buyerApprovals.get(buyer.id)?.status === filter.approval.is.status;
+              }
+
+              if (filter.approved === false && filter.OR) {
+                return buyer.approved === false;
+              }
+
+              return true;
+            });
+          }
+        } else if (where?.approval?.is?.status) {
+          buyers = buyers.filter((buyer) => state.buyerApprovals.get(buyer.id)?.status === where.approval.is.status);
+        }
+
+        buyers = buyers.sort((left, right) =>
           right.updatedAt.localeCompare(left.updatedAt)
         );
+        buyers = buyers.slice(skip ?? 0, (skip ?? 0) + (take ?? buyers.length));
 
         return clone(
           buyers.map((buyer) => ({
@@ -38,6 +73,10 @@ function createFakePrisma() {
             approval: include?.approval || select?.approval ? state.buyerApprovals.get(buyer.id) ?? null : undefined
           }))
         );
+      },
+      count: async ({ where } = {}) => {
+        const buyers = await prisma.buyer.findMany({ where, include: { approval: true } });
+        return buyers.length;
       },
       update: async ({ where, data }) => {
         const buyer = state.buyers.get(where.id);
@@ -121,6 +160,7 @@ async function main() {
   const result = await controller.listBuyers();
 
   assert.equal(result.buyers.length, 2);
+  assert.equal(result.pagination.total, 2);
   const approved = result.buyers.find((buyer) => buyer.buyerId === "buyer-1");
   const pending = result.buyers.find((buyer) => buyer.buyerId === "buyer-2");
 

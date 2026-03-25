@@ -26,7 +26,8 @@ async function main() {
 
   assert.match(authServiceSource, /authenticateUser/);
   assert.match(authServiceSource, /verifyPassword/);
-  assert.match(authControllerSource, /UnauthorizedException\("invalid credentials"\)/);
+  assert.match(authControllerSource, /INVALID_CREDENTIALS/);
+  assert.match(authControllerSource, /INVALID_AUTH_ROLE/);
 
   const prisma = createFakePrisma();
   prisma.__users.set("buyer.admin@bioloop.dev", {

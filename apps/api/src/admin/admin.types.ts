@@ -71,6 +71,16 @@ export interface ResolveDisputeAdminInput {
 
 export interface ListDisputesQuery {
   status?: DisputeStatus;
+  reason?: DisputeReason;
+  limit?: number;
+  offset?: number;
+}
+
+export interface ListBuyersQuery {
+  status?: BuyerApprovalStatus;
+  search?: string;
+  limit?: number;
+  offset?: number;
 }
 
 export interface ApproveBuyerAdminResult {
@@ -83,8 +93,20 @@ export interface ResolveDisputeAdminResult {
 
 export interface ListDisputesResult {
   disputes: DisputeDto[];
+  pagination: {
+    limit: number;
+    offset: number;
+    total: number;
+    hasMore: boolean;
+  };
 }
 
 export interface ListBuyersResult {
   buyers: BuyerRecordDto[];
+  pagination: {
+    limit: number;
+    offset: number;
+    total: number;
+    hasMore: boolean;
+  };
 }

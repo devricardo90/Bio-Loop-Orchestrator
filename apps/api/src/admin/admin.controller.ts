@@ -11,11 +11,19 @@ import {
 import {
   BUYER_APPROVAL_DECISIONS,
   BUYER_APPROVAL_REASONS,
+  BUYER_APPROVAL_STATUSES,
   DISPUTE_RESOLUTION_DECISIONS,
+  DISPUTE_REASONS,
   DISPUTE_STATUSES,
+  type ListBuyersQuery,
   type DisputeStatus
 } from "./admin.types";
-import { normalizeApproveBuyerInput, normalizeListDisputesQuery, normalizeResolveDisputeInput } from "./admin.validators";
+import {
+  normalizeApproveBuyerInput,
+  normalizeListBuyersQuery,
+  normalizeListDisputesQuery,
+  normalizeResolveDisputeInput
+} from "./admin.validators";
 import { AdminService } from "./admin.service";
 import { ADMIN_ROLES, Roles } from "../auth/roles.decorator";
 import { getMutationContextFromRequest } from "../mutations/mutation-context";
@@ -28,6 +36,10 @@ export class AdminController {
 
   @Get("buyers")
   @ApiOperation({ summary: "List buyers for admin review" })
+  @ApiQuery({ name: "status", required: false, enum: [...BUYER_APPROVAL_STATUSES] })
+  @ApiQuery({ name: "search", required: false, type: String })
+  @ApiQuery({ name: "limit", required: false, type: Number })
+  @ApiQuery({ name: "offset", required: false, type: Number })
   @ApiOkResponse({
     description: "Buyer list",
     schema: {
@@ -65,13 +77,24 @@ export class AdminController {
             },
             required: ["id", "buyerId", "name", "status", "reputationScore", "riskLabel", "notes", "approval", "updatedAt"]
           }
+        },
+        pagination: {
+          type: "object",
+          properties: {
+            limit: { type: "integer" },
+            offset: { type: "integer" },
+            total: { type: "integer" },
+            hasMore: { type: "boolean" }
+          },
+          required: ["limit", "offset", "total", "hasMore"]
         }
       },
-      required: ["buyers"]
+      required: ["buyers", "pagination"]
     }
   })
-  async listBuyers() {
-    return this.adminService.listBuyers();
+  async listBuyers(@Query() query: ListBuyersQuery) {
+    const parsed = normalizeListBuyersQuery(query);
+    return this.adminService.listBuyers(parsed);
   }
 
   @Post("buyers/:buyerId/approve")
@@ -127,6 +150,13 @@ export class AdminController {
     required: false,
     enum: [...DISPUTE_STATUSES]
   })
+  @ApiQuery({
+    name: "reason",
+    required: false,
+    enum: [...DISPUTE_REASONS]
+  })
+  @ApiQuery({ name: "limit", required: false, type: Number })
+  @ApiQuery({ name: "offset", required: false, type: Number })
   @ApiOkResponse({
     description: "Dispute list",
     schema: {
@@ -146,13 +176,23 @@ export class AdminController {
             },
             required: ["id", "orderId", "reason", "status", "openedAt", "resolvedAt"]
           }
+        },
+        pagination: {
+          type: "object",
+          properties: {
+            limit: { type: "integer" },
+            offset: { type: "integer" },
+            total: { type: "integer" },
+            hasMore: { type: "boolean" }
+          },
+          required: ["limit", "offset", "total", "hasMore"]
         }
       },
-      required: ["disputes"]
+      required: ["disputes", "pagination"]
     }
   })
   @ApiBadRequestResponse({ description: "Validation error", schema: { type: "object" } })
-  async listDisputes(@Query() query: { status?: DisputeStatus }) {
+  async listDisputes(@Query() query: { status?: DisputeStatus; reason?: string; limit?: number; offset?: number }) {
     const parsed = normalizeListDisputesQuery(query);
     return this.adminService.listDisputes(parsed);
   }

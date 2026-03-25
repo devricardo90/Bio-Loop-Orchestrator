@@ -29,7 +29,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
   - output: indices/read models para buyers, disputes, reports e buyer feed
   - gate: queries criticas com indice explicito e sem regressao nos endpoints principais
 
-- [BLOCKED] (DATA-02) Import controlado dos supermercados da Suecia
+- [READY] (DATA-02) Import controlado dos supermercados da Suecia
   - owner: DB Agent
   - deps: DB-04, API-16
   - output: import script/processo reprodutivel para stores, contacts, pickup windows, categories, buyers e lots iniciais
@@ -55,7 +55,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
   - output: locking basico, retry e visibilidade de `end_auction` e `no_show`
   - gate: scheduler nao duplica processamento e health/readiness distinguem degradacao de worker
 
-- [READY] (API-16) API production readiness pack
+- [DONE] (API-16) API production readiness pack
   - owner: API Agent
   - deps: API-13, API-15
   - output: paginacao, filtros, erros tipados e bootstrap/config seguro para exposicao menos assistida
@@ -69,7 +69,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ### Frontend / Web lane
 
-- [BLOCKED] (WEB-14) Seller surfaces em dados reais da API
+- [READY] (WEB-14) Seller surfaces em dados reais da API
   - owner: Frontend Agent
   - deps: DB-04, API-16
   - output: seller lots/results menos dependentes do estado derivado local
@@ -89,7 +89,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ### Infra / QA support lane
 
-- [BLOCKED] (INFRA-06) CI split para gates rapidos e gates pesados
+- [READY] (INFRA-06) CI split para gates rapidos e gates pesados
   - owner: Infra Agent
   - deps: DB-05
   - output: pipeline separado entre typecheck/unit e gates de db/e2e mais pesados
@@ -133,4 +133,4 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ## Proxima READY
 
-- `API-16`
+- `DATA-02`

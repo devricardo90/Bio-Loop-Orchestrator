@@ -59,9 +59,9 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 
 ## Pontos ainda em aberto
 
-- `API-16`: pack de readiness de producao
 - `DATA-02`: import controlado do dataset real da Suecia
 - `WEB-14+`: seller/admin mais orientados a dados reais e piloto
+- `INFRA-06`: split de CI entre gates rapidos e gates pesados
 
 ## Riscos reais remanescentes
 
@@ -83,8 +83,8 @@ Objetivo dessa fase:
 
 ## Ultimo avancado
 
-- `API-15` fechou locking basico de worker, retry por item, visibilidade operacional dos sweeps e degradacao refletida em `/health` e `/readiness`
+- `API-16` fechou paginacao/filtros nas listagens admin, envelope de erro HTTP consistente e flags de exposicao para `/openapi.json` e `/reference`
 
 ## Proxima task sugerida
 
-- `API-16` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)
+- `DATA-02` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)

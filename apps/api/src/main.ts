@@ -5,6 +5,7 @@ import { apiReference } from "@scalar/nestjs-api-reference";
 import { AppModule } from "./app.module";
 import { DEFAULT_ALLOWED_ORIGINS } from "./auth/auth.constants";
 import { parseBooleanEnv, parseOrigins } from "./auth/auth.utils";
+import { ApiErrorFilter } from "./common/api-error.filter";
 import { StructuredLogger } from "./observability/structured-logger";
 import { createRequestIdMiddleware } from "./observability/request-id.middleware";
 
@@ -42,6 +43,7 @@ async function bootstrap() {
   });
 
   app.use(createRequestIdMiddleware(logger));
+  app.useGlobalFilters(new ApiErrorFilter());
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle("Bio-Loop API")
@@ -55,16 +57,23 @@ async function bootstrap() {
     operationIdFactory: (_controllerKey, methodKey) => methodKey
   });
 
-  app.use("/openapi.json", (_req: any, res: any) => {
-    res.json(document);
-  });
+  const openApiEnabled = parseBooleanEnv(process.env["OPENAPI_ENABLED"], true);
+  const referenceEnabled = parseBooleanEnv(process.env["REFERENCE_ENABLED"], true);
 
-  app.use(
-    "/reference",
-    apiReference({
-      url: "/openapi.json"
-    })
-  );
+  if (openApiEnabled) {
+    app.use("/openapi.json", (_req: any, res: any) => {
+      res.json(document);
+    });
+  }
+
+  if (openApiEnabled && referenceEnabled) {
+    app.use(
+      "/reference",
+      apiReference({
+        url: "/openapi.json"
+      })
+    );
+  }
 
   const port = Number(process.env["API_PORT"] ?? process.env["PORT"] ?? 4000);
   await app.listen(port);

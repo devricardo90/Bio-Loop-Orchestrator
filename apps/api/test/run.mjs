@@ -10,4 +10,5 @@ import "./api-12.integration.test.mjs";
 import "./api-13.integration.test.mjs";
 import "./api-14.integration.test.mjs";
 import "./api-15.integration.test.mjs";
+import "./api-16.integration.test.mjs";
 import "./db-04.integration.test.mjs";

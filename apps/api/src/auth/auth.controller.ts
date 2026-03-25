@@ -96,12 +96,18 @@ export class AuthController {
     const role = this.parseRole(body.role);
 
     if (!email || !password) {
-      throw new BadRequestException("email and password are required");
+      throw new BadRequestException({
+        code: "INVALID_LOGIN_REQUEST",
+        message: "email and password are required"
+      });
     }
 
     const session = await this.authService.authenticateUser(email, password, role);
     if (!session) {
-      throw new UnauthorizedException("invalid credentials");
+      throw new UnauthorizedException({
+        code: "INVALID_CREDENTIALS",
+        message: "invalid credentials"
+      });
     }
 
     this.attachSessionCookies(res, session);
@@ -137,7 +143,10 @@ export class AuthController {
     const cookies = parseCookieHeader(req.headers?.cookie);
     const session = this.authService.rotateSession(cookies[AUTH_COOKIE_NAMES.refreshToken]);
     if (!session) {
-      throw new UnauthorizedException("invalid refresh token");
+      throw new UnauthorizedException({
+        code: "INVALID_REFRESH_TOKEN",
+        message: "invalid refresh token"
+      });
     }
 
     this.attachSessionCookies(res, session);
@@ -172,14 +181,23 @@ export class AuthController {
       return value as AuthRole;
     }
 
-    return "SELLER_ADMIN";
+    throw new BadRequestException({
+      code: "INVALID_AUTH_ROLE",
+      message: "role must be a valid auth role",
+      details: {
+        allowedRoles: loginRoles
+      }
+    });
   }
 
   private assertCsrf(req: any, csrfHeader?: string) {
     const cookies = parseCookieHeader(req.headers?.cookie);
     const cookieToken = cookies[AUTH_COOKIE_NAMES.csrfToken];
     if (!this.authService.validateCsrf(cookieToken, csrfHeader)) {
-      throw new UnauthorizedException("invalid csrf token");
+      throw new UnauthorizedException({
+        code: "INVALID_CSRF_TOKEN",
+        message: "invalid csrf token"
+      });
     }
   }
 

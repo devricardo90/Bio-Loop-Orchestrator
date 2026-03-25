@@ -74,12 +74,20 @@ function createFakePrisma() {
         state.disputes.set(record.id, clone(record));
         return clone(record);
       },
-      findMany: async ({ where }) => {
+      findMany: async ({ where, skip, take }) => {
+        let items = [...state.disputes.values()].filter((dispute) =>
+          where?.status ? dispute.status === where.status : true
+        );
+        items = items.filter((dispute) => (where?.reason ? dispute.reason === where.reason : true));
+        items = items.slice(skip ?? 0, (skip ?? 0) + (take ?? items.length));
+
+        return clone(items);
+      },
+      count: async ({ where }) => {
         const items = [...state.disputes.values()].filter((dispute) =>
           where?.status ? dispute.status === where.status : true
         );
-
-        return clone(items);
+        return items.filter((dispute) => (where?.reason ? dispute.reason === where.reason : true)).length;
       },
       findUnique: async ({ where, include }) => {
         const dispute = state.disputes.get(where.id);
@@ -255,6 +263,7 @@ async function main() {
   const openDisputes = await controller.listDisputes({ status: "OPEN" });
   assert.equal(openDisputes.disputes.length, 1);
   assert.equal(openDisputes.disputes[0].id, "dispute-1");
+  assert.equal(openDisputes.pagination.total, 1);
 
   const resolved = await controller.resolveDispute("dispute-1", {
     decision: "SETTLE",

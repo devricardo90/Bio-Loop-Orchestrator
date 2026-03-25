@@ -1,9 +1,12 @@
 import {
   BUYER_APPROVAL_DECISIONS,
   BUYER_APPROVAL_REASONS,
+  BUYER_APPROVAL_STATUSES,
   DISPUTE_RESOLUTION_DECISIONS,
+  DISPUTE_REASONS,
   DISPUTE_STATUSES,
   type ApproveBuyerAdminInput,
+  type ListBuyersQuery,
   type ListDisputesQuery,
   type ResolveDisputeAdminInput
 } from "./admin.types";
@@ -41,6 +44,26 @@ function ensureEnum<T extends readonly string[]>(
   }
 
   return normalized as T[number];
+}
+
+function toOptionalString(value: unknown) {
+  const normalized = typeof value === "string" ? value.trim() : "";
+  return normalized || undefined;
+}
+
+function toOptionalPositiveInteger(value: unknown, code: string, message: string, field: string) {
+  if (value === undefined || value === null || value === "") {
+    return undefined;
+  }
+
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 0) {
+    unprocessableError(code, message, {
+      issues: [{ path: field, message: "Must be a non-negative integer" }]
+    });
+  }
+
+  return parsed;
 }
 
 export function normalizeApproveBuyerInput(input: unknown): ApproveBuyerAdminInput {
@@ -115,17 +138,87 @@ export function normalizeResolveDisputeInput(input: unknown): ResolveDisputeAdmi
 }
 
 export function normalizeListDisputesQuery(input: unknown): ListDisputesQuery {
-  if (!isRecord(input) || input["status"] === undefined || input["status"] === null || input["status"] === "") {
+  if (!isRecord(input)) {
     return {};
   }
 
+  const status = toOptionalString(input["status"]);
+  const reason = toOptionalString(input["reason"]);
+  const limit = toOptionalPositiveInteger(
+    input["limit"],
+    "INVALID_DISPUTE_LIST_QUERY",
+    "Invalid dispute list query",
+    "limit"
+  );
+  const offset = toOptionalPositiveInteger(
+    input["offset"],
+    "INVALID_DISPUTE_LIST_QUERY",
+    "Invalid dispute list query",
+    "offset"
+  );
+
   return {
-    status: ensureEnum(
-      input["status"],
-      DISPUTE_STATUSES,
-      "INVALID_DISPUTE_LIST_QUERY",
-      "Invalid dispute list query",
-      "status"
-    )
+    ...(status
+      ? {
+          status: ensureEnum(
+            status,
+            DISPUTE_STATUSES,
+            "INVALID_DISPUTE_LIST_QUERY",
+            "Invalid dispute list query",
+            "status"
+          )
+        }
+      : {}),
+    ...(reason
+      ? {
+          reason: ensureEnum(
+            reason,
+            DISPUTE_REASONS,
+            "INVALID_DISPUTE_LIST_QUERY",
+            "Invalid dispute list query",
+            "reason"
+          )
+        }
+      : {}),
+    ...(limit !== undefined ? { limit } : {}),
+    ...(offset !== undefined ? { offset } : {})
+  };
+}
+
+export function normalizeListBuyersQuery(input: unknown): ListBuyersQuery {
+  if (!isRecord(input)) {
+    return {};
+  }
+
+  const status = toOptionalString(input["status"]);
+  const search = toOptionalString(input["search"]);
+  const limit = toOptionalPositiveInteger(
+    input["limit"],
+    "INVALID_BUYER_LIST_QUERY",
+    "Invalid buyer list query",
+    "limit"
+  );
+  const offset = toOptionalPositiveInteger(
+    input["offset"],
+    "INVALID_BUYER_LIST_QUERY",
+    "Invalid buyer list query",
+    "offset"
+  );
+
+  return {
+    ...(status
+      ? {
+          status: ensureEnum(
+            status,
+            BUYER_APPROVAL_STATUSES,
+            "INVALID_BUYER_LIST_QUERY",
+            "Invalid buyer list query",
+            "status"
+          )
+        }
+      : {}),
+    ...(search ? { search } : {}),
+    ...(limit !== undefined ? { limit } : {}),
+    ...(offset !== undefined ? { offset } : {})
   };
 }
