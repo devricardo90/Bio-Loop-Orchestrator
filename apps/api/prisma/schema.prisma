@@ -172,6 +172,9 @@ model Buyer {
   orders    Order[]
   approval BuyerApproval?
   interests BuyerCategoryInterest[]
+
+  @@index([approved, reputation, name])
+  @@index([updatedAt])
 }
 
 model CommodityCategory {
@@ -245,6 +248,7 @@ model Auction {
   highestBid Bid?  @relation("AuctionHighestBid", fields: [highestBidId], references: [id], onDelete: SetNull)
 
   @@index([lotId, status])
+  @@index([status, endAt, createdAt])
 }
 
 model Bid {
@@ -284,6 +288,8 @@ model Order {
   invoice   Invoice?
 
   @@index([buyerId, status])
+  @@index([status, pickupCompletedAt])
+  @@index([pickupStatus, pickupWindowEndAt])
 }
 
 model PickupProof {
@@ -385,6 +391,7 @@ model Invoice {
   @@index([sellerId, issuedAt])
   @@index([buyerId, issuedAt])
   @@index([status, issuedAt])
+  @@index([issuedAt, status])
 }
 
 model InvoiceFee {
@@ -413,4 +420,5 @@ model BillingExport {
 
   @@index([createdAt])
   @@index([format, createdAt])
+  @@index([fromAt, toAt, createdAt])
 }

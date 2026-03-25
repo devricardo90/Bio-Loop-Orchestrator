@@ -69,15 +69,15 @@ function createFakePrisma() {
         state.orders.set(record.id, clone(record));
         return clone(record);
       },
-      findMany: async ({ where, include }) => {
+      findMany: async ({ where, include, select }) => {
         const items = [...state.orders.values()].filter((order) => order.status === where.status);
 
         return clone(
           items.map((order) => ({
             ...order,
-            lot: include?.lot ? state.lots.get(order.lotId) ?? null : undefined,
-            dispute: include?.dispute ? state.disputes.get(order.id) ?? null : undefined,
-            invoice: include?.invoice
+            lot: include?.lot || select?.lot ? state.lots.get(order.lotId) ?? null : undefined,
+            dispute: include?.dispute || select?.dispute ? state.disputes.get(order.id) ?? null : undefined,
+            invoice: include?.invoice || select?.invoice
               ? (() => {
                   const invoice = [...state.invoices.values()].find((entry) => entry.orderId === order.id) ?? null;
                   if (!invoice) {
@@ -86,7 +86,7 @@ function createFakePrisma() {
 
                   return {
                     ...invoice,
-                    fees: include.invoice.include?.fees
+                    fees: include?.invoice?.include?.fees || select?.invoice?.include?.fees
                       ? [...state.invoiceFees.values()].filter((fee) => fee.invoiceId === invoice.id)
                       : undefined
                   };
@@ -107,7 +107,7 @@ function createFakePrisma() {
         state.invoices.set(record.id, clone(record));
         return clone(record);
       },
-      findMany: async ({ where }) => {
+      findMany: async ({ where, select }) => {
         const items = [...state.invoices.values()].filter((invoice) => {
           const issuedAt = new Date(invoice.issuedAt).getTime();
           return issuedAt >= new Date(where.issuedAt.gte).getTime() && issuedAt <= new Date(where.issuedAt.lte).getTime();
@@ -116,7 +116,7 @@ function createFakePrisma() {
         return clone(
           items.map((invoice) => ({
             ...invoice,
-            fees: [...state.invoiceFees.values()].filter((fee) => fee.invoiceId === invoice.id)
+            fees: select?.fees ? [...state.invoiceFees.values()].filter((fee) => fee.invoiceId === invoice.id) : undefined
           }))
         );
       },

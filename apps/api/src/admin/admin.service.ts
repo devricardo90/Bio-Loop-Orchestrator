@@ -5,6 +5,7 @@ import type {
   Dispute as PrismaDispute,
   Order as PrismaOrder
 } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { conflictError, notFoundError } from "../trades/trade.errors";
 import type {
@@ -41,6 +42,19 @@ type AdminBuyerRecord = PrismaBuyer & {
     reviewer?: { id: string } | null;
   }) | null;
 };
+
+const adminBuyerListSelect = Prisma.validator<Prisma.BuyerSelect>()({
+  id: true,
+  name: true,
+  approved: true,
+  reputation: true,
+  updatedAt: true,
+  approval: true
+});
+
+type AdminBuyerListRecord = Prisma.BuyerGetPayload<{
+  select: typeof adminBuyerListSelect;
+}>;
 
 type AdminDisputeResolutionRecord = {
   id: string;
@@ -158,7 +172,7 @@ function disputeToDto(dispute: PrismaDispute) {
   };
 }
 
-function buyerApprovalToBuyerDto(buyer: AdminBuyerRecord): BuyerRecordDto {
+function buyerApprovalToBuyerDto(buyer: AdminBuyerListRecord): BuyerRecordDto {
   const approval = buyer.approval ?? null;
   const mappedApproval = approval
     ? {
@@ -237,16 +251,9 @@ export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
 
   async listBuyers(): Promise<ListBuyersResult> {
-    const buyerClient = this.prisma.buyer as unknown as {
-      findMany: (args: {
-        orderBy: { updatedAt: "desc" };
-        include: { approval: true };
-      }) => Promise<AdminBuyerRecord[]>;
-    };
-
-    const buyers = await buyerClient.findMany({
-      orderBy: { updatedAt: "desc" },
-      include: { approval: true }
+    const buyers = await this.prisma.buyer.findMany({
+      select: adminBuyerListSelect,
+      orderBy: { updatedAt: "desc" }
     });
 
     return {

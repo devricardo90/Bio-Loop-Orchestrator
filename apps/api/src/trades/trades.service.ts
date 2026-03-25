@@ -45,31 +45,108 @@ type BuyerWorkspaceBuyerRecord = {
   metadata: Prisma.JsonValue | null;
 };
 
+const buyerWorkspaceBuyerSelect = Prisma.validator<Prisma.BuyerSelect>()({
+  id: true,
+  name: true,
+  approved: true,
+  reputation: true,
+  city: true,
+  metadata: true
+});
+
+const buyerWorkspaceAuctionSelect = Prisma.validator<Prisma.AuctionSelect>()({
+  id: true,
+  lotId: true,
+  reservePriceSekPerKg: true,
+  startAt: true,
+  endAt: true,
+  status: true,
+  highestBidId: true,
+  createdAt: true,
+  updatedAt: true,
+  bids: {
+    orderBy: {
+      createdAt: "asc"
+    },
+    select: {
+      id: true,
+      auctionId: true,
+      buyerId: true,
+      priceSekPerKg: true,
+      createdAt: true
+    }
+  },
+  highestBid: {
+    select: {
+      id: true,
+      auctionId: true,
+      buyerId: true,
+      priceSekPerKg: true,
+      createdAt: true
+    }
+  },
+  lot: {
+    select: {
+      id: true,
+      storeId: true,
+      categoryId: true,
+      storageCondition: true,
+      pickupWindowStartAt: true,
+      pickupWindowEndAt: true,
+      estimatedWeightKg: true,
+      finalWeightKg: true,
+      grade: true,
+      status: true,
+      store: {
+        select: {
+          id: true,
+          name: true,
+          latitude: true,
+          longitude: true
+        }
+      },
+      category: {
+        select: {
+          id: true,
+          name: true,
+          rulesDefault: true
+        }
+      },
+      order: {
+        select: {
+          id: true,
+          lotId: true,
+          buyerId: true,
+          finalPriceSekPerKg: true,
+          status: true,
+          pickupStatus: true,
+          createdAt: true,
+          updatedAt: true,
+          pickupWindowStartAt: true,
+          pickupWindowEndAt: true,
+          pickupScheduledAt: true,
+          pickupCompletedAt: true,
+          dispute: true,
+          proofs: {
+            orderBy: {
+              createdAt: "desc"
+            },
+            select: {
+              id: true,
+              orderId: true,
+              type: true,
+              url: true,
+              createdAt: true
+            }
+          }
+        }
+      }
+    }
+  }
+});
+
 type BuyerWorkspaceAuctionRecord = Prisma.AuctionGetPayload<{
-  include: {
-    bids: {
-      orderBy: {
-        createdAt: "asc";
-      };
-    };
-    highestBid: true;
-    lot: {
-      include: {
-        store: true;
-        category: true;
-        order: {
-          include: {
-            dispute: true;
-            proofs: {
-              orderBy: {
-                createdAt: "desc";
-              };
-            };
-          };
-        };
-      };
-    };
-  };
+  select: typeof buyerWorkspaceAuctionSelect;
 }>;
 
 function toNumber(value: Prisma.Decimal | number | string | null | undefined): number {
@@ -698,6 +775,7 @@ export class TradesService {
 
   private async loadWorkspaceBuyers(): Promise<BuyerWorkspaceBuyerDto[]> {
     const buyers = await this.prisma.buyer.findMany({
+      select: buyerWorkspaceBuyerSelect,
       orderBy: [{ approved: "desc" }, { reputation: "desc" }, { name: "asc" }]
     });
 
@@ -715,30 +793,7 @@ export class TradesService {
 
   private async loadWorkspaceAuctions(): Promise<BuyerWorkspaceAuctionRecordDto[]> {
     const auctions = await this.prisma.auction.findMany({
-      include: {
-        bids: {
-          orderBy: {
-            createdAt: "asc"
-          }
-        },
-        highestBid: true,
-        lot: {
-          include: {
-            store: true,
-            category: true,
-            order: {
-              include: {
-                dispute: true,
-                proofs: {
-                  orderBy: {
-                    createdAt: "desc"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
+      select: buyerWorkspaceAuctionSelect,
       orderBy: [{ endAt: "desc" }, { createdAt: "desc" }]
     });
 

@@ -23,7 +23,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ### Data / Database lane
 
-- [READY] (DB-04) Read models e indices para queries reais
+- [DONE] (DB-04) Read models e indices para queries reais
   - owner: DB Agent
   - deps: DB-02, API-13
   - output: indices/read models para buyers, disputes, reports e buyer feed
@@ -31,7 +31,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 - [BLOCKED] (DATA-02) Import controlado dos supermercados da Suecia
   - owner: DB Agent
-  - deps: DB-04
+  - deps: DB-04, API-16
   - output: import script/processo reprodutivel para stores, contacts, pickup windows, categories, buyers e lots iniciais
   - gate: pacote real entra sem sobrescrever seed de demo e com validacao de integridade
 
@@ -43,7 +43,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ### Backend / API lane
 
-- [BLOCKED] (API-14) Idempotencia e auditoria para mutacoes criticas
+- [READY] (API-14) Idempotencia e auditoria para mutacoes criticas
   - owner: API Agent
   - deps: API-12, API-13
   - output: protecao contra replay/double-submit em bid, approval, dispute, pickup e POD
@@ -133,4 +133,4 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ## Proxima READY
 
-- `DB-04`
+- `API-14`

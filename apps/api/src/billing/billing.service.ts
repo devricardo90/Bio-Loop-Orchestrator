@@ -51,6 +51,51 @@ type PersistedInvoiceRecord = {
   }>;
 };
 
+const billingOrderSelect = {
+  id: true,
+  buyerId: true,
+  finalPriceSekPerKg: true,
+  pickupStatus: true,
+  pickupCompletedAt: true,
+  updatedAt: true,
+  createdAt: true,
+  lot: {
+    select: {
+      storeId: true,
+      estimatedWeightKg: true,
+      finalWeightKg: true
+    }
+  },
+  dispute: {
+    select: {
+      status: true,
+      reason: true
+    }
+  },
+  invoice: {
+    include: {
+      fees: true
+    }
+  }
+} satisfies Prisma.OrderSelect;
+
+const persistedInvoiceSelect = {
+  id: true,
+  orderId: true,
+  sellerId: true,
+  buyerId: true,
+  currency: true,
+  status: true,
+  billedWeightKg: true,
+  subtotalSek: true,
+  feeTotalSek: true,
+  totalSek: true,
+  issuedAt: true,
+  exportedAt: true,
+  lineItems: true,
+  fees: true
+} satisfies Prisma.InvoiceSelect;
+
 function toNumber(value: Prisma.Decimal | number | string | null | undefined): number {
   if (value === null || value === undefined) {
     return 0;
@@ -208,14 +253,9 @@ export class BillingService {
       where: {
         status: "SETTLED"
       },
-      include: {
-        lot: true,
-        dispute: true,
-        invoice: {
-          include: {
-            fees: true
-          }
-        }
+      select: billingOrderSelect,
+      orderBy: {
+        pickupCompletedAt: "desc"
       }
     });
 
@@ -230,9 +270,7 @@ export class BillingService {
           lte: toAt
         }
       },
-      include: {
-        fees: true
-      },
+      select: persistedInvoiceSelect,
       orderBy: {
         issuedAt: "desc"
       }

@@ -11,6 +11,7 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 - pickup, seller reports e admin flows navegaveis para validacao manual
 - `/reference` conectado a partir da UI operacional
 - hygiene de Prisma/migrations adicionada ao CI com drift e banco limpo
+- indices e selects criticos do buyer/admin/billing reforcados para reduzir overfetch e melhorar queries reais
 
 ## O que ja esta solido
 
@@ -74,7 +75,7 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 
 ## Onde estamos indo
 
-A proxima fase proposta e `M9 Production Hardening And Real Data Activation`, documentada em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md).
+A fase atual em curso e `M9 Production Hardening And Real Data Activation`, documentada em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md).
 
 Objetivo dessa fase:
 
@@ -83,6 +84,10 @@ Objetivo dessa fase:
 - reduzir dependencia de surfaces derivadas/local state
 - preparar um perfil de piloto com checklist unico
 
+## Ultimo avancado
+
+- `DB-04` fechou indices explicitos e read-model narrowing para buyer/admin/billing
+
 ## Proxima task sugerida
 
-- `DB-04` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)
+- `API-14` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)

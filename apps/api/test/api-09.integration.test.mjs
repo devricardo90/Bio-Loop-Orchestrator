@@ -27,7 +27,7 @@ function createFakePrisma() {
         return clone(record);
       },
       findUnique: async ({ where }) => clone(state.buyers.get(where.id) ?? null),
-      findMany: async ({ include }) => {
+      findMany: async ({ include, select }) => {
         const buyers = [...state.buyers.values()].sort((left, right) =>
           right.updatedAt.localeCompare(left.updatedAt)
         );
@@ -35,7 +35,7 @@ function createFakePrisma() {
         return clone(
           buyers.map((buyer) => ({
             ...buyer,
-            approval: include?.approval ? state.buyerApprovals.get(buyer.id) ?? null : undefined
+            approval: include?.approval || select?.approval ? state.buyerApprovals.get(buyer.id) ?? null : undefined
           }))
         );
       },
