@@ -95,13 +95,13 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
     - output: pipelines distintos: gate rápido com lint/typecheck/test e gate pesado com drift/verify + browser e2e
     - gate: gate rápido fornece feedback imediato e gate pesado certifica a estabilidade de DB + e2e antes de merge/release
 
-- [READY] (INFRA-07) Runtime profile para piloto
-  - owner: Infra Agent
-  - deps: API-16, DATA-02
-  - output: profile/env documentado para rodar stack com dados reais controlados
-  - gate: ambiente de piloto sobe sem improviso de portas, env ou bootstrap
+  - [DONE] (INFRA-07) Runtime profile para piloto
+    - owner: Infra Agent
+    - deps: API-16, DATA-02
+    - output: `docs/ops/PILOT_RUNTIME_PROFILE.md` documenta os env, portas e comandos necessários para operar com os dados reais da Suécia
+    - gate: ambiente de piloto sobe com passos padronizados e sem improvisação de portas, env ou bootstrap
 
-- [BLOCKED] (QA-06) Browser e2e expandido para buyer real-data
+- [READY] (QA-06) Browser e2e expandido para buyer real-data
   - owner: QA Agent
   - deps: DB-04, API-16, WEB-14
   - output: suite cobrindo buyer feed/detail/pickup com dados reais e nao apenas seed de demo
@@ -134,4 +134,4 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ## Proxima READY
 
-- `INFRA-07`
+- `QA-06`

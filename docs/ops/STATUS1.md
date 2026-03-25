@@ -65,8 +65,7 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 
 - `API-17`: ingest API para importar/reprocessar o dataset real de forma exposta e auditavel
 - `WEB-16`: pilot-ready dashboard handoff com contexto executivo
-- `INFRA-07`: runtime profile e docs para piloto com dados reais controlados
-- `QA-06`: suite browser real expandida para buyer real-data (bloqueado por dependencias)
+- `QA-06`: suite browser real expandida para buyer real-data (dependencias cumpridas, pronto para gate)
 
 ## Riscos reais remanescentes
 
@@ -92,7 +91,8 @@ Objetivo dessa fase:
 - `WEB-14` entregou superfícies de seller vinculadas ao fluxo real de lotes/resultados no buyer feed
 - `WEB-15` esclareceu o contexto admin com filtros catalogScope e badges que destacam registros reais vs demo
 - `INFRA-06` separou o CI em gate rápido (lint/typecheck/test) e gate pesado (drift + db verify + browser e2e) para feedbacks previsíveis
+- `INFRA-07` documentou o perfil pilot (`docs/ops/PILOT_RUNTIME_PROFILE.md`) com as portas, o import real e as verificações necessárias
 
 ## Proxima task sugerida
 
-- `INFRA-07` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)
+- `QA-06` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)
