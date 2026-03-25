@@ -124,3 +124,23 @@ export interface ListBuyersResult {
     hasMore: boolean;
   };
 }
+
+export interface IngestRealDataInput {
+  apply?: boolean;
+}
+
+export interface IngestRealDataResult {
+  mode: string;
+  dataset: string;
+  source: string;
+  stores?: number;
+  categories?: number;
+  buyers?: number;
+  lots?: number;
+  staleRemoved?: {
+    stores: number;
+    categories: number;
+    buyers: number;
+    lots: number;
+  };
+}

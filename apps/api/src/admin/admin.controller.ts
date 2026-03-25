@@ -23,7 +23,8 @@ import {
   normalizeApproveBuyerInput,
   normalizeListBuyersQuery,
   normalizeListDisputesQuery,
-  normalizeResolveDisputeInput
+  normalizeResolveDisputeInput,
+  normalizeIngestRealDataInput
 } from "./admin.validators";
 import { AdminService } from "./admin.service";
 import { ADMIN_ROLES, Roles } from "../auth/roles.decorator";
@@ -261,5 +262,45 @@ export class AdminController {
   async resolveDispute(@Param("disputeId") disputeId: string, @Body() body: unknown, @Req() req: any) {
     const parsed = normalizeResolveDisputeInput(body);
     return this.adminService.resolveDispute(disputeId, parsed, getMutationContextFromRequest(req));
+  }
+
+  @Post("ingest/real-data")
+  @ApiOperation({ summary: "Ingest real data from the Sweden Supermarkets dataset" })
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        apply: { type: "boolean", default: false, description: "If true, persists data. Otherwise dry-run." }
+      }
+    }
+  })
+  @ApiOkResponse({
+    description: "Ingest results",
+    schema: {
+      type: "object",
+      properties: {
+        mode: { type: "string", enum: ["dry-run", "apply"] },
+        dataset: { type: "string" },
+        source: { type: "string" },
+        stores: { type: "number" },
+        categories: { type: "number" },
+        buyers: { type: "number" },
+        lots: { type: "number" },
+        staleRemoved: {
+          type: "object",
+          nullable: true,
+          properties: {
+            stores: { type: "number" },
+            categories: { type: "number" },
+            buyers: { type: "number" },
+            lots: { type: "number" }
+          }
+        }
+      }
+    }
+  })
+  async ingestRealData(@Body() body: unknown, @Req() req: any) {
+    const parsed = normalizeIngestRealDataInput(body);
+    return this.adminService.ingestRealData(parsed, getMutationContextFromRequest(req));
   }
 }

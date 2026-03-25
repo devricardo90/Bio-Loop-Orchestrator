@@ -230,6 +230,15 @@ async function main() {
   const service = new TradesService(prisma);
   const controller = new OrdersController(service);
 
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrow10 = new Date(tomorrow.setUTCHours(10, 0, 0, 0)).toISOString();
+  const tomorrow12 = new Date(tomorrow.setUTCHours(12, 0, 0, 0)).toISOString();
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterday08 = new Date(yesterday.setUTCHours(8, 0, 0, 0)).toISOString();
+  const yesterday09 = new Date(yesterday.setUTCHours(9, 0, 0, 0)).toISOString();
+
   const store = await prisma.store.create({
     data: {
       name: "Central Store",
@@ -262,8 +271,8 @@ async function main() {
       storeId: store.id,
       categoryId: category.id,
       storageCondition: "DRY",
-      pickupWindowStartAt: new Date("2026-03-25T10:00:00.000Z"),
-      pickupWindowEndAt: new Date("2026-03-25T12:00:00.000Z"),
+      pickupWindowStartAt: new Date(tomorrow10),
+      pickupWindowEndAt: new Date(tomorrow12),
       estimatedWeightKg: 100,
       finalWeightKg: null,
       grade: "A",
@@ -274,8 +283,8 @@ async function main() {
   const auction = await service.startAuction({
     lotId: lot.id,
     reservePriceSekPerKg: 12,
-    startAt: "2026-03-24T08:00:00.000Z",
-    endAt: "2026-03-24T09:00:00.000Z"
+    startAt: yesterday08,
+    endAt: yesterday09
   });
 
   const bidResult = await service.placeBid({
@@ -292,8 +301,8 @@ async function main() {
 
   const scheduledResult = await controller.schedulePickup(orderId, {
     pickupWindow: {
-      startAt: "2026-03-25T10:00:00.000Z",
-      endAt: "2026-03-25T12:00:00.000Z"
+      startAt: tomorrow10,
+      endAt: tomorrow12
     }
   });
 
@@ -301,8 +310,8 @@ async function main() {
   assert.equal(scheduledResult.order.status, "CONFIRMED");
   assert.equal(scheduledResult.order.pickupStatus, "SCHEDULED");
   assert.deepEqual(scheduledResult.order.pickupWindow, {
-    startAt: "2026-03-25T10:00:00.000Z",
-    endAt: "2026-03-25T12:00:00.000Z"
+    startAt: tomorrow10,
+    endAt: tomorrow12
   });
 
   const podResult = await controller.recordPod(orderId, {
@@ -322,8 +331,8 @@ async function main() {
       finalPriceSekPerKg: new Prisma.Decimal(15),
       status: "CONFIRMED",
       pickupStatus: "SCHEDULED",
-      pickupWindowStartAt: new Date("2026-03-25T10:00:00.000Z"),
-      pickupWindowEndAt: new Date("2026-03-25T12:00:00.000Z")
+      pickupWindowStartAt: new Date(tomorrow10),
+      pickupWindowEndAt: new Date(tomorrow12)
     }
   });
 

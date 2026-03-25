@@ -9,7 +9,8 @@ import {
   type ApproveBuyerAdminInput,
   type ListBuyersQuery,
   type ListDisputesQuery,
-  type ResolveDisputeAdminInput
+  type ResolveDisputeAdminInput,
+  type IngestRealDataInput
 } from "./admin.types";
 import { unprocessableError } from "../trades/trade.errors";
 
@@ -245,5 +246,16 @@ export function normalizeListBuyersQuery(input: unknown): ListBuyersQuery {
     ...(search ? { search } : {}),
     ...(limit !== undefined ? { limit } : {}),
     ...(offset !== undefined ? { offset } : {})
+  };
+}
+
+export function normalizeIngestRealDataInput(input: unknown): IngestRealDataInput {
+  if (!isRecord(input)) {
+    return { apply: false };
+  }
+
+  const apply = input["apply"];
+  return {
+    apply: typeof apply === "boolean" ? apply : apply === "true"
   };
 }

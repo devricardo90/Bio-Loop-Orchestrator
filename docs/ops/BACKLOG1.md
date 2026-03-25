@@ -61,7 +61,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
   - output: paginacao, filtros, erros tipados e bootstrap/config seguro para exposicao menos assistida
   - gate: endpoints administrativos/listagens com shape consistente e `/reference` sem drift
 
-- [READY] (API-17) Ingest API para dados reais
+- [DONE] (API-17) Ingest API para dados reais
   - owner: API Agent
   - deps: DATA-02, API-16
   - output: ponto seguro para ingestao/importacao e reprocessamento controlado do dataset real
@@ -134,4 +134,4 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ## Proxima READY
 
-- `API-17`
+- `WEB-14`

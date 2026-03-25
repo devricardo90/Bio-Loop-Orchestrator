@@ -26,7 +26,9 @@ import type {
   DisputeReason,
   DisputeResolutionDecision,
   ResolveDisputeAdminInput,
-  ResolveDisputeAdminResult
+  ResolveDisputeAdminResult,
+  IngestRealDataInput,
+  IngestRealDataResult
 } from "./admin.types";
 
 const DEFAULT_PAGE_LIMIT = 25;
@@ -690,4 +692,49 @@ export class AdminService {
     };
   }
 
+  async ingestRealData(
+    input: IngestRealDataInput,
+    context?: MutationContext | null
+  ): Promise<IngestRealDataResult> {
+    // @ts-ignore
+    const { loadSwedenSupermarketDataset, syncSwedenSupermarketDataset } = await import(
+      // @ts-ignore
+      "../../../prisma/import-real-data.mjs"
+    );
+
+    const dataset = loadSwedenSupermarketDataset();
+
+    if (!input.apply) {
+      return {
+        mode: "dry-run",
+        dataset: dataset.dataset,
+        source: dataset.source,
+        ...dataset.summary
+      };
+    }
+
+    const { staleRemoved } = await syncSwedenSupermarketDataset(this.prisma, dataset);
+
+    await writeAuditLog(this.prisma as unknown as AdminTransactionClient, {
+      actorUserId: context?.actor?.id ?? "system",
+      entityType: "System",
+      entityId: "real_data_dataset",
+      action: "real_data_ingest",
+      payload: {
+        dataset: dataset.dataset,
+        summary: dataset.summary,
+        staleRemoved,
+        requestId: context?.requestId ?? null,
+        idempotencyKey: context?.idempotencyKey ?? null
+      }
+    });
+
+    return {
+      mode: "apply",
+      dataset: dataset.dataset,
+      source: dataset.source,
+      ...dataset.summary,
+      staleRemoved
+    };
+  }
 }
