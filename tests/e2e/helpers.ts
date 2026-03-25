@@ -31,3 +31,49 @@ function workspacePath(persona: "buyer" | "seller" | "admin") {
 
   return /\/admin$/;
 }
+
+export type BuyerFeedSnapshot = {
+  source: "api";
+  buyers: Array<{
+    id: string;
+    name: string;
+    approved: boolean;
+    reputation: number;
+    note: string;
+  }>;
+  activeBuyerId: string;
+  auctions: Array<{
+    id: string;
+    storeName: string;
+    categoryName: string;
+    summary: string;
+    tags: string[];
+    lot: {
+      id: string;
+      pickupWindow: {
+        startAt: string;
+        endAt: string;
+      };
+    };
+    auction: {
+      id: string;
+      status: string;
+    };
+    order?: {
+      id: string;
+      status: string;
+      pickupStatus: string;
+    };
+  }>;
+  lastSyncedAt: string;
+};
+
+export async function fetchBuyerFeedSnapshot(page: Page) {
+  const response = await page.request.get("http://localhost:4101/buyer/auctions/feed");
+
+  if (!response.ok()) {
+    throw new Error(`Buyer feed request failed with ${response.status()}`);
+  }
+
+  return (await response.json()) as BuyerFeedSnapshot;
+}

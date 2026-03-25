@@ -90,6 +90,7 @@
 - `WEB-12` conectou buyer, pickup, admin e billing ao `/reference` com acesso global no header e callouts contextuais por workspace para facilitar troubleshoot e release review.
 - `WEB-13` fechou o polish final de manual ops no web com labels mais claras, navegação mais consistente, limpeza de copy residual de demo/cockpit/hub e um loading padronizado para seller.
 - `QA-05` fechou o gate pos-M7 com um checklist unico para auth real, buyer real-data, seller/admin review e docs vivas, alem de endurecer as assertions browser para `source=api`, `/reference` e sessao expirada.
+- `QA-06` fechou o browser e2e expandido do buyer real-data com captura de snapshot via `page.request`, validacao do fluxo buyer feed -> auction detail -> pickup detail e gate verde em Chromium.
 - `INFRA-05` fechou a previsibilidade operacional do runtime com bootstrap automatico de `.env`, separacao entre `API_PORT` e `WEB_PORT`, script de web dev orientado por env e docs alinhadas ao stack real.
 - `DB-05` fechou a hygiene de migracao com gate explicito de drift, verify-clean cross-platform e validacao no pipeline contra Postgres limpo.
 - Nao ha task `READY` restante no backlog atual.

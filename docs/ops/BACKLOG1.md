@@ -101,7 +101,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
     - output: `docs/ops/PILOT_RUNTIME_PROFILE.md` documenta os env, portas e comandos necessários para operar com os dados reais da Suécia
     - gate: ambiente de piloto sobe com passos padronizados e sem improvisação de portas, env ou bootstrap
 
-- [READY] (QA-06) Browser e2e expandido para buyer real-data
+- [DONE] (QA-06) Browser e2e expandido para buyer real-data
   - owner: QA Agent
   - deps: DB-04, API-16, WEB-14
   - output: suite cobrindo buyer feed/detail/pickup com dados reais e nao apenas seed de demo
@@ -134,4 +134,4 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ## Proxima READY
 
-- `QA-06`
+- nenhuma task `READY` restante
