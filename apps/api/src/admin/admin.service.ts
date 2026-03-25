@@ -6,6 +6,8 @@ import type {
   Order as PrismaOrder
 } from "@prisma/client";
 import { Prisma } from "@prisma/client";
+import type { MutationContext } from "../mutations/mutation-context";
+import { runIdempotentMutation, writeAuditLog } from "../mutations/mutation-guards";
 import { PrismaService } from "../prisma/prisma.service";
 import { conflictError, notFoundError } from "../trades/trade.errors";
 import type {
@@ -136,6 +138,36 @@ type AdminTransactionClient = {
       };
     }) => Promise<unknown>;
   };
+  mutationIdempotency?: {
+    create: (args: {
+      data: {
+        scope: string;
+        actorKey: string;
+        key: string;
+        requestHash: string;
+        response: Record<string, unknown>;
+      };
+    }) => Promise<unknown>;
+    findUnique: (args: {
+      where: {
+        scope_actorKey_key: {
+          scope: string;
+          actorKey: string;
+          key: string;
+        };
+      };
+    }) => Promise<{ requestHash: string; response: unknown } | null>;
+    update: (args: {
+      where: {
+        scope_actorKey_key: {
+          scope: string;
+          actorKey: string;
+          key: string;
+        };
+      };
+      data: { requestHash: string; response: unknown };
+    }) => Promise<unknown>;
+  };
 };
 
 function toIso(value: Date | string | null | undefined): string | null {
@@ -261,63 +293,83 @@ export class AdminService {
     };
   }
 
-  async approveBuyer(buyerId: string, input: ApproveBuyerAdminInput): Promise<ApproveBuyerAdminResult> {
+  async approveBuyer(
+    buyerId: string,
+    input: ApproveBuyerAdminInput,
+    context?: MutationContext | null
+  ): Promise<ApproveBuyerAdminResult> {
     return this.prisma.$transaction(async (tx) => {
       const adminTx = tx as unknown as AdminTransactionClient;
-
-      const buyer = await adminTx.buyer.findUnique({
-        where: { id: buyerId },
-        include: { approval: true }
-      });
-
-      if (!buyer) {
-        notFoundError("BUYER_NOT_FOUND", "Buyer not found", { buyerId });
-      }
-
-      const status = this.mapApprovalStatus(input.decision);
-      const approved = status === "APPROVED";
-      const now = new Date();
-
-      const approval = await adminTx.buyerApproval.upsert({
-        where: { buyerId },
-        create: {
+      return runIdempotentMutation({
+        tx: adminTx,
+        scope: "admin.buyer.approve",
+        context,
+        request: {
           buyerId,
-          status,
           decision: input.decision,
           reason: input.reason,
           reviewerId: input.reviewerId,
-          reviewedAt: now,
           notes: input.notes ?? null
         },
-        update: {
-          status,
-          decision: input.decision,
-          reason: input.reason,
-          reviewerId: input.reviewerId,
-          reviewedAt: now,
-          notes: input.notes ?? null
+        execute: async () => {
+          const buyer = await adminTx.buyer.findUnique({
+            where: { id: buyerId },
+            include: { approval: true }
+          });
+
+          if (!buyer) {
+            notFoundError("BUYER_NOT_FOUND", "Buyer not found", { buyerId });
+          }
+
+          const status = this.mapApprovalStatus(input.decision);
+          const approved = status === "APPROVED";
+          const now = new Date();
+
+          const approval = await adminTx.buyerApproval.upsert({
+            where: { buyerId },
+            create: {
+              buyerId,
+              status,
+              decision: input.decision,
+              reason: input.reason,
+              reviewerId: input.reviewerId,
+              reviewedAt: now,
+              notes: input.notes ?? null
+            },
+            update: {
+              status,
+              decision: input.decision,
+              reason: input.reason,
+              reviewerId: input.reviewerId,
+              reviewedAt: now,
+              notes: input.notes ?? null
+            }
+          });
+
+          await adminTx.buyer.update({
+            where: { id: buyerId },
+            data: { approved }
+          });
+
+          await writeAuditLog(adminTx, {
+            actorUserId: context?.actor?.id ?? input.reviewerId,
+            entityType: "Buyer",
+            entityId: buyerId,
+            action: "buyer_approval_decision",
+            payload: {
+              decision: input.decision,
+              reason: input.reason,
+              notes: input.notes ?? null,
+              reviewerId: input.reviewerId,
+              requestId: context?.requestId ?? null,
+              idempotencyKey: context?.idempotencyKey ?? null,
+              status
+            }
+          });
+
+          return { approval: buyerApprovalToDto(approval) };
         }
       });
-
-      await adminTx.buyer.update({
-        where: { id: buyerId },
-        data: { approved }
-      });
-
-      await this.writeAuditLog(adminTx, {
-        actorUserId: input.reviewerId,
-        entityType: "Buyer",
-        entityId: buyerId,
-        action: "buyer_approval_decision",
-        payload: {
-          decision: input.decision,
-          reason: input.reason,
-          notes: input.notes ?? null,
-          status
-        }
-      });
-
-      return { approval: buyerApprovalToDto(approval) };
     });
   }
 
@@ -336,80 +388,99 @@ export class AdminService {
     };
   }
 
-  async resolveDispute(disputeId: string, input: ResolveDisputeAdminInput): Promise<ResolveDisputeAdminResult> {
+  async resolveDispute(
+    disputeId: string,
+    input: ResolveDisputeAdminInput,
+    context?: MutationContext | null
+  ): Promise<ResolveDisputeAdminResult> {
     return this.prisma.$transaction(async (tx) => {
       const adminTx = tx as unknown as AdminTransactionClient;
-
-      const dispute = await adminTx.dispute.findUnique({
-        where: { id: disputeId },
-        include: {
-          order: true,
-          resolution: true
-        }
-      });
-
-      if (!dispute) {
-        notFoundError("DISPUTE_NOT_FOUND", "Dispute not found", { disputeId });
-      }
-
-      if (dispute.status !== "OPEN") {
-        conflictError("DISPUTE_NOT_OPEN", "Dispute can only be resolved while open", {
+      return runIdempotentMutation({
+        tx: adminTx,
+        scope: "admin.dispute.resolve",
+        context,
+        request: {
           disputeId,
-          status: dispute.status
-        });
-      }
-
-      const now = new Date();
-      const resolution = await adminTx.disputeResolution.upsert({
-        where: { disputeId },
-        create: {
-          disputeId: dispute.id,
           decision: input.decision,
-          note: input.note ?? null,
           reviewerId: input.reviewerId,
-          resolvedAt: now
+          note: input.note ?? null
         },
-        update: {
-          decision: input.decision,
-          note: input.note ?? null,
-          reviewerId: input.reviewerId,
-          resolvedAt: now
-        }
-      });
+        execute: async () => {
+          const dispute = await adminTx.dispute.findUnique({
+            where: { id: disputeId },
+            include: {
+              order: true,
+              resolution: true
+            }
+          });
 
-      let updatedDispute = dispute;
-
-      if (input.decision === "SETTLE" || input.decision === "CANCEL_ORDER") {
-        const orderStatus = input.decision === "SETTLE" ? "SETTLED" : "CANCELLED";
-
-        await adminTx.order.update({
-          where: { id: dispute.orderId },
-          data: { status: orderStatus }
-        });
-
-        updatedDispute = await adminTx.dispute.update({
-          where: { id: dispute.id },
-          data: {
-            status: "RESOLVED",
-            resolvedAt: now,
-            resolvedByUserId: input.reviewerId
+          if (!dispute) {
+            notFoundError("DISPUTE_NOT_FOUND", "Dispute not found", { disputeId });
           }
-        });
-      }
 
-      await this.writeAuditLog(adminTx, {
-        actorUserId: input.reviewerId,
-        entityType: "Dispute",
-        entityId: disputeId,
-        action: "dispute_resolution_decision",
-        payload: {
-          decision: input.decision,
-          note: input.note ?? null,
-          resolutionId: resolution.id
+          if (dispute.status !== "OPEN") {
+            conflictError("DISPUTE_NOT_OPEN", "Dispute can only be resolved while open", {
+              disputeId,
+              status: dispute.status
+            });
+          }
+
+          const now = new Date();
+          const resolution = await adminTx.disputeResolution.upsert({
+            where: { disputeId },
+            create: {
+              disputeId: dispute.id,
+              decision: input.decision,
+              note: input.note ?? null,
+              reviewerId: input.reviewerId,
+              resolvedAt: now
+            },
+            update: {
+              decision: input.decision,
+              note: input.note ?? null,
+              reviewerId: input.reviewerId,
+              resolvedAt: now
+            }
+          });
+
+          let updatedDispute = dispute;
+
+          if (input.decision === "SETTLE" || input.decision === "CANCEL_ORDER") {
+            const orderStatus = input.decision === "SETTLE" ? "SETTLED" : "CANCELLED";
+
+            await adminTx.order.update({
+              where: { id: dispute.orderId },
+              data: { status: orderStatus }
+            });
+
+            updatedDispute = await adminTx.dispute.update({
+              where: { id: dispute.id },
+              data: {
+                status: "RESOLVED",
+                resolvedAt: now,
+                resolvedByUserId: input.reviewerId
+              }
+            });
+          }
+
+          await writeAuditLog(adminTx, {
+            actorUserId: context?.actor?.id ?? input.reviewerId,
+            entityType: "Dispute",
+            entityId: disputeId,
+            action: "dispute_resolution_decision",
+            payload: {
+              decision: input.decision,
+              note: input.note ?? null,
+              reviewerId: input.reviewerId,
+              requestId: context?.requestId ?? null,
+              idempotencyKey: context?.idempotencyKey ?? null,
+              resolutionId: resolution.id
+            }
+          });
+
+          return { dispute: disputeToDto(updatedDispute) };
         }
       });
-
-      return { dispute: disputeToDto(updatedDispute) };
     });
   }
 
@@ -425,28 +496,4 @@ export class AdminService {
     return "SUSPENDED" as const;
   }
 
-  private async writeAuditLog(
-    tx: AdminTransactionClient,
-    entry: {
-      actorUserId: string | null;
-      entityType: string;
-      entityId: string;
-      action: string;
-      payload?: Record<string, unknown> | null;
-    }
-  ) {
-    if (!tx.auditLog) {
-      return;
-    }
-
-    await tx.auditLog.create({
-      data: {
-        actorUserId: entry.actorUserId,
-        entityType: entry.entityType,
-        entityId: entry.entityId,
-        action: entry.action,
-        payload: entry.payload ?? null
-      }
-    });
-  }
 }

@@ -43,7 +43,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ### Backend / API lane
 
-- [READY] (API-14) Idempotencia e auditoria para mutacoes criticas
+- [DONE] (API-14) Idempotencia e auditoria para mutacoes criticas
   - owner: API Agent
   - deps: API-12, API-13
   - output: protecao contra replay/double-submit em bid, approval, dispute, pickup e POD
@@ -133,4 +133,4 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ## Proxima READY
 
-- `API-14`
+- `API-15` apos `INFRA-03`, portanto sem task `READY` adicional neste recorte

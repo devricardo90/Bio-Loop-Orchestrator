@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, Req } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -18,6 +18,7 @@ import {
 import { normalizeApproveBuyerInput, normalizeListDisputesQuery, normalizeResolveDisputeInput } from "./admin.validators";
 import { AdminService } from "./admin.service";
 import { ADMIN_ROLES, Roles } from "../auth/roles.decorator";
+import { getMutationContextFromRequest } from "../mutations/mutation-context";
 
 @Controller("admin")
 @ApiTags("admin")
@@ -114,9 +115,9 @@ export class AdminController {
     }
   })
   @ApiBadRequestResponse({ description: "Validation error", schema: { type: "object" } })
-  async approveBuyer(@Param("buyerId") buyerId: string, @Body() body: unknown) {
+  async approveBuyer(@Param("buyerId") buyerId: string, @Body() body: unknown, @Req() req: any) {
     const parsed = normalizeApproveBuyerInput(body);
-    return this.adminService.approveBuyer(buyerId, parsed);
+    return this.adminService.approveBuyer(buyerId, parsed, getMutationContextFromRequest(req));
   }
 
   @Get("disputes")
@@ -192,8 +193,8 @@ export class AdminController {
     }
   })
   @ApiBadRequestResponse({ description: "Validation error", schema: { type: "object" } })
-  async resolveDispute(@Param("disputeId") disputeId: string, @Body() body: unknown) {
+  async resolveDispute(@Param("disputeId") disputeId: string, @Body() body: unknown, @Req() req: any) {
     const parsed = normalizeResolveDisputeInput(body);
-    return this.adminService.resolveDispute(disputeId, parsed);
+    return this.adminService.resolveDispute(disputeId, parsed, getMutationContextFromRequest(req));
   }
 }

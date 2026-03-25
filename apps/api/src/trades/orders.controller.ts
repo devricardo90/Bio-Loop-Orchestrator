@@ -1,6 +1,7 @@
-import { BadRequestException, Body, Controller, Param, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Param, Post, Req } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { BUYER_ROLES, Roles } from "../auth/roles.decorator";
+import { getMutationContextFromRequest } from "../mutations/mutation-context";
 import { normalizeRecordPickupInput, normalizeSchedulePickupInput } from "./trades.validators";
 import { TradesService } from "./trades.service";
 
@@ -55,7 +56,7 @@ export class OrdersController {
     description: "Request validation error",
     schema: { type: "object" }
   })
-  async schedulePickup(@Param("orderId") orderId: string, @Body() body: unknown) {
+  async schedulePickup(@Param("orderId") orderId: string, @Body() body: unknown, @Req() req: any) {
     const parsed = normalizeSchedulePickupInput(body);
 
     if (parsed.orderId && parsed.orderId !== orderId) {
@@ -69,10 +70,13 @@ export class OrdersController {
       });
     }
 
-    return this.tradesService.schedulePickup({
-      orderId,
-      pickupWindow: parsed.pickupWindow
-    });
+    return this.tradesService.schedulePickup(
+      {
+        orderId,
+        pickupWindow: parsed.pickupWindow
+      },
+      getMutationContextFromRequest(req)
+    );
   }
 
   @Post(":orderId/pod")
@@ -113,7 +117,7 @@ export class OrdersController {
     description: "Request validation error",
     schema: { type: "object" }
   })
-  async recordPod(@Param("orderId") orderId: string, @Body() body: unknown) {
+  async recordPod(@Param("orderId") orderId: string, @Body() body: unknown, @Req() req: any) {
     const parsed = normalizeRecordPickupInput(body);
 
     if (parsed.orderId && parsed.orderId !== orderId) {
@@ -127,10 +131,13 @@ export class OrdersController {
       });
     }
 
-    return this.tradesService.recordPickupProof({
-      orderId,
-      type: parsed.type,
-      url: parsed.url
-    });
+    return this.tradesService.recordPickupProof(
+      {
+        orderId,
+        type: parsed.type,
+        url: parsed.url
+      },
+      getMutationContextFromRequest(req)
+    );
   }
 }

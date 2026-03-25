@@ -59,8 +59,6 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 
 ## Pontos ainda em aberto
 
-- `DB-04`: indices e read-models para consultas reais em escala menos assistida
-- `API-14`: idempotencia e auditoria nas mutacoes criticas
 - `API-15`: hardening dos jobs
 - `API-16`: pack de readiness de producao
 - `DATA-02`: import controlado do dataset real da Suecia
@@ -86,8 +84,8 @@ Objetivo dessa fase:
 
 ## Ultimo avancado
 
-- `DB-04` fechou indices explicitos e read-model narrowing para buyer/admin/billing
+- `API-14` fechou idempotencia persistida e auditoria expandida para bid, approval, dispute, pickup, POD e no-show
 
 ## Proxima task sugerida
 
-- `API-14` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)
+- sem nova task `READY` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md) ate destravar as dependencias de `API-15`

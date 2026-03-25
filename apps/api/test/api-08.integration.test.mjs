@@ -9,7 +9,8 @@ function createFakePrisma() {
     disputes: new Map(),
     disputeResolutions: new Map(),
     orders: new Map(),
-    auditLogs: []
+    auditLogs: [],
+    mutationIdempotency: new Map()
   };
 
   const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -149,6 +150,30 @@ function createFakePrisma() {
         return clone({ id: `audit_${state.auditLogs.length}`, ...data, createdAt: new Date().toISOString() });
       }
     },
+    mutationIdempotency: {
+      create: async ({ data }) => {
+        const key = `${data.scope}:${data.actorKey}:${data.key}`;
+        if (state.mutationIdempotency.has(key)) {
+          const error = new Error("unique constraint");
+          error.code = "P2002";
+          throw error;
+        }
+
+        state.mutationIdempotency.set(key, clone(data));
+        return clone(data);
+      },
+      findUnique: async ({ where }) => {
+        const key = `${where.scope_actorKey_key.scope}:${where.scope_actorKey_key.actorKey}:${where.scope_actorKey_key.key}`;
+        return clone(state.mutationIdempotency.get(key) ?? null);
+      },
+      update: async ({ where, data }) => {
+        const key = `${where.scope_actorKey_key.scope}:${where.scope_actorKey_key.actorKey}:${where.scope_actorKey_key.key}`;
+        const current = state.mutationIdempotency.get(key);
+        const updated = { ...current, ...data };
+        state.mutationIdempotency.set(key, clone(updated));
+        return clone(updated);
+      }
+    },
     __state: state
   };
 
@@ -175,10 +200,26 @@ async function main() {
     reason: "MANUAL_REVIEW",
     reviewerId: "user-1",
     notes: "approved for admin slice"
+  }, {
+    user: { id: "user-1", role: "PLATFORM_ADMIN" },
+    requestId: "req-approve-1",
+    headers: {}
+  });
+
+  const repeatedApproval = await controller.approveBuyer("buyer-1", {
+    decision: "APPROVE",
+    reason: "MANUAL_REVIEW",
+    reviewerId: "user-1",
+    notes: "approved for admin slice"
+  }, {
+    user: { id: "user-1", role: "PLATFORM_ADMIN" },
+    requestId: "req-approve-2",
+    headers: {}
   });
 
   assert.equal(approval.approval.buyerId, buyer.id);
   assert.equal(approval.approval.status, "APPROVED");
+  assert.equal(repeatedApproval.approval.id, approval.approval.id);
   assert.equal(prisma.__state.buyers.get("buyer-1").approved, true);
   assert.equal(prisma.__state.auditLogs.length, 1);
 
@@ -219,11 +260,27 @@ async function main() {
     decision: "SETTLE",
     reviewerId: "user-2",
     note: "settled via admin review"
+  }, {
+    user: { id: "user-2", role: "PLATFORM_ADMIN" },
+    requestId: "req-dispute-1",
+    headers: {}
+  });
+
+  const repeatedResolution = await controller.resolveDispute("dispute-1", {
+    decision: "SETTLE",
+    reviewerId: "user-2",
+    note: "settled via admin review"
+  }, {
+    user: { id: "user-2", role: "PLATFORM_ADMIN" },
+    requestId: "req-dispute-2",
+    headers: {}
   });
 
   assert.equal(resolved.dispute.status, "RESOLVED");
+  assert.equal(repeatedResolution.dispute.id, resolved.dispute.id);
   assert.equal(prisma.__state.orders.get("order-1").status, "SETTLED");
   assert.equal(prisma.__state.disputeResolutions.get("dispute-1").decision, "SETTLE");
+  assert.equal(prisma.__state.auditLogs.length, 2);
 }
 
 await main();

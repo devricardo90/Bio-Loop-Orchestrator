@@ -14,6 +14,8 @@ import {
   normalizeRecordPickupInput,
   normalizeSchedulePickupInput
 } from "./trades.validators";
+import type { MutationContext } from "../mutations/mutation-context";
+import { runIdempotentMutation, writeAuditLog } from "../mutations/mutation-guards";
 import type {
   BuyerAuctionDetailResult,
   BuyerFeedResult,
@@ -471,63 +473,85 @@ export class TradesService {
     });
   }
 
-  async placeBid(input: PlaceBidInput) {
+  async placeBid(input: PlaceBidInput, context?: MutationContext | null) {
     const parsed = normalizePlaceBidInput(input);
 
     return this.prisma.$transaction(async (tx) => {
-      const auction = await tx.auction.findUnique({
-        where: { id: parsed.auctionId },
-        include: {
-          lot: true,
-          highestBid: true
+      return runIdempotentMutation({
+        tx,
+        scope: "buyer.auction.bid",
+        context,
+        request: parsed,
+        execute: async () => {
+          const auction = await tx.auction.findUnique({
+            where: { id: parsed.auctionId },
+            include: {
+              lot: true,
+              highestBid: true
+            }
+          });
+
+          if (!auction) {
+            notFoundError("AUCTION_NOT_FOUND", "Auction not found", { auctionId: parsed.auctionId });
+          }
+
+          if (auction.status !== "LIVE") {
+            conflictError("AUCTION_NOT_LIVE", "Bid is only accepted while auction is LIVE", {
+              auctionId: auction.id,
+              status: auction.status
+            });
+          }
+
+          const buyer = await tx.buyer.findUnique({
+            where: { id: parsed.buyerId }
+          });
+
+          if (!buyer) {
+            notFoundError("BUYER_NOT_FOUND", "Buyer not found", { buyerId: parsed.buyerId });
+          }
+
+          if (!buyer.approved) {
+            conflictError("BUYER_NOT_APPROVED", "Buyer is not approved to bid", { buyerId: buyer.id });
+          }
+
+          const highestBidValue = auction.highestBid ? toNumber(auction.highestBid.priceSekPerKg) : 0;
+          if (parsed.priceSekPerKg <= highestBidValue) {
+            unprocessableError("BID_TOO_LOW", "Bid must be higher than current highest bid", {
+              currentHighestBidSekPerKg: highestBidValue,
+              priceSekPerKg: parsed.priceSekPerKg
+            });
+          }
+
+          const bid = await tx.bid.create({
+            data: {
+              auctionId: auction.id,
+              buyerId: buyer.id,
+              priceSekPerKg: new Prisma.Decimal(parsed.priceSekPerKg)
+            }
+          });
+
+          await tx.auction.update({
+            where: { id: auction.id },
+            data: { highestBidId: bid.id }
+          });
+
+          await writeAuditLog(tx, {
+            actorUserId: context?.actor?.id ?? null,
+            entityType: "Auction",
+            entityId: auction.id,
+            action: "bid_placed",
+            payload: {
+              bidId: bid.id,
+              buyerId: buyer.id,
+              priceSekPerKg: parsed.priceSekPerKg,
+              requestId: context?.requestId ?? null,
+              idempotencyKey: context?.idempotencyKey ?? null
+            }
+          });
+
+          return bidToDto(bid);
         }
       });
-
-      if (!auction) {
-        notFoundError("AUCTION_NOT_FOUND", "Auction not found", { auctionId: parsed.auctionId });
-      }
-
-      if (auction.status !== "LIVE") {
-        conflictError("AUCTION_NOT_LIVE", "Bid is only accepted while auction is LIVE", {
-          auctionId: auction.id,
-          status: auction.status
-        });
-      }
-
-      const buyer = await tx.buyer.findUnique({
-        where: { id: parsed.buyerId }
-      });
-
-      if (!buyer) {
-        notFoundError("BUYER_NOT_FOUND", "Buyer not found", { buyerId: parsed.buyerId });
-      }
-
-      if (!buyer.approved) {
-        conflictError("BUYER_NOT_APPROVED", "Buyer is not approved to bid", { buyerId: buyer.id });
-      }
-
-      const highestBidValue = auction.highestBid ? toNumber(auction.highestBid.priceSekPerKg) : 0;
-      if (parsed.priceSekPerKg <= highestBidValue) {
-        unprocessableError("BID_TOO_LOW", "Bid must be higher than current highest bid", {
-          currentHighestBidSekPerKg: highestBidValue,
-          priceSekPerKg: parsed.priceSekPerKg
-        });
-      }
-
-      const bid = await tx.bid.create({
-        data: {
-          auctionId: auction.id,
-          buyerId: buyer.id,
-          priceSekPerKg: new Prisma.Decimal(parsed.priceSekPerKg)
-        }
-      });
-
-      await tx.auction.update({
-        where: { id: auction.id },
-        data: { highestBidId: bid.id }
-      });
-
-      return bidToDto(bid);
     });
   }
 
@@ -608,7 +632,7 @@ export class TradesService {
     });
   }
 
-  async schedulePickup(input: SchedulePickupInput): Promise<SchedulePickupResult> {
+  async schedulePickup(input: SchedulePickupInput, context?: MutationContext | null): Promise<SchedulePickupResult> {
     const parsed = normalizeSchedulePickupInput(input);
     const now = new Date();
     const pickupWindowStartAt = new Date(parsed.pickupWindow.startAt);
@@ -627,150 +651,234 @@ export class TradesService {
     }
 
     return this.prisma.$transaction(async (tx) => {
-      const order = await tx.order.findUnique({
-        where: { id: parsed.orderId },
-        include: {
-          dispute: true
+      return runIdempotentMutation({
+        tx,
+        scope: "buyer.order.schedule_pickup",
+        context,
+        request: {
+          orderId: parsed.orderId,
+          pickupWindow: parsed.pickupWindow
+        },
+        execute: async () => {
+          const order = await tx.order.findUnique({
+            where: { id: parsed.orderId },
+            include: {
+              dispute: true
+            }
+          });
+
+          if (!order) {
+            notFoundError("ORDER_NOT_FOUND", "Order not found", { orderId: parsed.orderId });
+          }
+
+          if (order.status === "CANCELLED" || order.status === "SETTLED") {
+            conflictError("ORDER_NOT_SCHEDULABLE", "Order cannot schedule pickup in its current state", {
+              orderId: order.id,
+              status: order.status
+            });
+          }
+
+          if (order.status === "IN_DISPUTE") {
+            conflictError("ORDER_IN_DISPUTE", "Order cannot schedule pickup while in dispute", {
+              orderId: order.id
+            });
+          }
+
+          const updatedOrder = await tx.order.update({
+            where: { id: order.id },
+            data: {
+              pickupWindowStartAt,
+              pickupWindowEndAt,
+              pickupScheduledAt: now,
+              status: "CONFIRMED",
+              pickupStatus: "SCHEDULED"
+            }
+          });
+
+          await writeAuditLog(tx, {
+            actorUserId: context?.actor?.id ?? null,
+            entityType: "Order",
+            entityId: order.id,
+            action: "pickup_scheduled",
+            payload: {
+              pickupWindow: parsed.pickupWindow,
+              requestId: context?.requestId ?? null,
+              idempotencyKey: context?.idempotencyKey ?? null
+            }
+          });
+
+          return {
+            order: orderToDto(updatedOrder)
+          };
         }
       });
-
-      if (!order) {
-        notFoundError("ORDER_NOT_FOUND", "Order not found", { orderId: parsed.orderId });
-      }
-
-      if (order.status === "CANCELLED" || order.status === "SETTLED") {
-        conflictError("ORDER_NOT_SCHEDULABLE", "Order cannot schedule pickup in its current state", {
-          orderId: order.id,
-          status: order.status
-        });
-      }
-
-      if (order.status === "IN_DISPUTE") {
-        conflictError("ORDER_IN_DISPUTE", "Order cannot schedule pickup while in dispute", {
-          orderId: order.id
-        });
-      }
-
-      const updatedOrder = await tx.order.update({
-        where: { id: order.id },
-        data: {
-          pickupWindowStartAt,
-          pickupWindowEndAt,
-          pickupScheduledAt: now,
-          status: "CONFIRMED",
-          pickupStatus: "SCHEDULED"
-        }
-      });
-
-      return {
-        order: orderToDto(updatedOrder)
-      };
     });
   }
 
-  async recordPickupProof(input: RecordPickupProofInput): Promise<RecordPickupProofResult> {
+  async recordPickupProof(input: RecordPickupProofInput, context?: MutationContext | null): Promise<RecordPickupProofResult> {
     const parsed = normalizeRecordPickupInput(input);
     const now = new Date();
 
     return this.prisma.$transaction(async (tx) => {
-      const order = await tx.order.findUnique({
-        where: { id: parsed.orderId },
-        include: {
-          dispute: true
+      return runIdempotentMutation({
+        tx,
+        scope: "buyer.order.record_pod",
+        context,
+        request: parsed,
+        execute: async () => {
+          const order = await tx.order.findUnique({
+            where: { id: parsed.orderId },
+            include: {
+              dispute: true
+            }
+          });
+
+          if (!order) {
+            notFoundError("ORDER_NOT_FOUND", "Order not found", { orderId: parsed.orderId });
+          }
+
+          if (order.status === "CANCELLED" || order.status === "SETTLED" || order.status === "IN_DISPUTE") {
+            conflictError("ORDER_NOT_ACCEPTING_POD", "Order cannot receive POD in its current state", {
+              orderId: order.id,
+              status: order.status
+            });
+          }
+
+          const pickupWindowStartAt = toDateValue(
+            (order as PrismaOrder & { pickupWindowStartAt?: Date | string | null }).pickupWindowStartAt
+          );
+          const pickupWindowEndAt = toDateValue(
+            (order as PrismaOrder & { pickupWindowEndAt?: Date | string | null }).pickupWindowEndAt
+          );
+
+          if (!pickupWindowStartAt || !pickupWindowEndAt) {
+            conflictError("PICKUP_NOT_SCHEDULED", "Pickup must be scheduled before POD upload", { orderId: order.id });
+          }
+
+          if (now.getTime() > pickupWindowEndAt.getTime()) {
+            return this.markNoShowWithinTransaction(tx, order.id, context);
+          }
+
+          const proof = await tx.pickupProof.create({
+            data: {
+              orderId: order.id,
+              type: parsed.type,
+              url: parsed.url
+            }
+          });
+
+          const updatedOrder = await tx.order.update({
+            where: { id: order.id },
+            data: {
+              pickupCompletedAt: now,
+              status: "SETTLED",
+              pickupStatus: "COMPLETED"
+            }
+          });
+
+          await writeAuditLog(tx, {
+            actorUserId: context?.actor?.id ?? null,
+            entityType: "Order",
+            entityId: order.id,
+            action: "pickup_pod_recorded",
+            payload: {
+              proofId: proof.id,
+              type: parsed.type,
+              url: parsed.url,
+              requestId: context?.requestId ?? null,
+              idempotencyKey: context?.idempotencyKey ?? null
+            }
+          });
+
+          return {
+            order: orderToDto(updatedOrder),
+            proof: pickupProofToDto(proof)
+          };
         }
       });
-
-      if (!order) {
-        notFoundError("ORDER_NOT_FOUND", "Order not found", { orderId: parsed.orderId });
-      }
-
-      if (order.status === "CANCELLED" || order.status === "SETTLED" || order.status === "IN_DISPUTE") {
-        conflictError("ORDER_NOT_ACCEPTING_POD", "Order cannot receive POD in its current state", {
-          orderId: order.id,
-          status: order.status
-        });
-      }
-
-      const pickupWindowStartAt = toDateValue((order as PrismaOrder & { pickupWindowStartAt?: Date | string | null }).pickupWindowStartAt);
-      const pickupWindowEndAt = toDateValue((order as PrismaOrder & { pickupWindowEndAt?: Date | string | null }).pickupWindowEndAt);
-
-      if (!pickupWindowStartAt || !pickupWindowEndAt) {
-        conflictError("PICKUP_NOT_SCHEDULED", "Pickup must be scheduled before POD upload", { orderId: order.id });
-      }
-
-      if (now.getTime() > pickupWindowEndAt.getTime()) {
-        return this.markNoShowWithinTransaction(tx, order.id);
-      }
-
-      const proof = await tx.pickupProof.create({
-        data: {
-          orderId: order.id,
-          type: parsed.type,
-          url: parsed.url
-        }
-      });
-
-      const updatedOrder = await tx.order.update({
-        where: { id: order.id },
-        data: {
-          pickupCompletedAt: now,
-          status: "SETTLED",
-          pickupStatus: "COMPLETED"
-        }
-      });
-
-      return {
-        order: orderToDto(updatedOrder),
-        proof: pickupProofToDto(proof)
-      };
     });
   }
 
-  async markNoShow(orderId: string): Promise<RecordPickupProofResult> {
-    return this.prisma.$transaction(async (tx) => this.markNoShowWithinTransaction(tx, orderId));
+  async markNoShow(orderId: string, context: MutationContext = { source: "job" }): Promise<RecordPickupProofResult> {
+    return this.prisma.$transaction(async (tx) => this.markNoShowWithinTransaction(tx, orderId, context));
   }
 
-  private async markNoShowWithinTransaction(tx: Prisma.TransactionClient, orderId: string): Promise<RecordPickupProofResult> {
-    const order = await tx.order.findUnique({
-      where: { id: orderId },
-      include: {
-        dispute: true
-      }
-    });
-
-    if (!order) {
-      notFoundError("ORDER_NOT_FOUND", "Order not found", { orderId });
-    }
-
-    const dispute = order.dispute
-      ? await tx.dispute.update({
-          where: { orderId: order.id },
-          data: {
-            status: "OPEN",
-            reason: "NO_SHOW",
-            resolvedAt: null
-          }
-        })
-      : await tx.dispute.create({
-          data: {
-            orderId: order.id,
-            status: "OPEN",
-            reason: "NO_SHOW"
+  private async markNoShowWithinTransaction(
+    tx: Prisma.TransactionClient,
+    orderId: string,
+    context?: MutationContext | null
+  ): Promise<RecordPickupProofResult> {
+    return runIdempotentMutation({
+      tx,
+      scope: "order.no_show",
+      context,
+      request: {
+        orderId,
+        source: context?.source ?? "job"
+      },
+      execute: async () => {
+        const order = await tx.order.findUnique({
+          where: { id: orderId },
+          include: {
+            dispute: true
           }
         });
 
-    const updatedOrder = await tx.order.update({
-      where: { id: order.id },
-      data: {
-        status: "IN_DISPUTE",
-        pickupStatus: "NO_SHOW"
+        if (!order) {
+          notFoundError("ORDER_NOT_FOUND", "Order not found", { orderId });
+        }
+
+        if (order.status === "IN_DISPUTE" && order.pickupStatus === "NO_SHOW" && order.dispute?.status === "OPEN") {
+          return {
+            order: orderToDto(order),
+            ...(order.dispute ? { dispute: disputeToDto(order.dispute) } : {})
+          };
+        }
+
+        const dispute = order.dispute
+          ? await tx.dispute.update({
+              where: { orderId: order.id },
+              data: {
+                status: "OPEN",
+                reason: "NO_SHOW",
+                resolvedAt: null
+              }
+            })
+          : await tx.dispute.create({
+              data: {
+                orderId: order.id,
+                status: "OPEN",
+                reason: "NO_SHOW"
+              }
+            });
+
+        const updatedOrder = await tx.order.update({
+          where: { id: order.id },
+          data: {
+            status: "IN_DISPUTE",
+            pickupStatus: "NO_SHOW"
+          }
+        });
+
+        await writeAuditLog(tx, {
+          actorUserId: context?.actor?.id ?? null,
+          entityType: "Order",
+          entityId: order.id,
+          action: "order_marked_no_show",
+          payload: {
+            disputeId: dispute.id,
+            source: context?.source ?? "job",
+            requestId: context?.requestId ?? null,
+            idempotencyKey: context?.idempotencyKey ?? null
+          }
+        });
+
+        return {
+          order: orderToDto(updatedOrder),
+          dispute: disputeToDto(dispute)
+        };
       }
     });
-
-    return {
-      order: orderToDto(updatedOrder),
-      dispute: disputeToDto(dispute)
-    };
   }
 
   private async loadWorkspaceBuyers(): Promise<BuyerWorkspaceBuyerDto[]> {

@@ -368,6 +368,20 @@ model AuditLog {
   @@index([entityType, entityId, createdAt])
 }
 
+model MutationIdempotency {
+  id          String   @id @default(cuid())
+  scope       String
+  actorKey    String
+  key         String
+  requestHash String
+  response    Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([scope, actorKey, key])
+  @@index([scope, actorKey, createdAt])
+}
+
 model Invoice {
   id             String        @id @default(cuid())
   orderId         String        @unique

@@ -1,6 +1,7 @@
-import { BadRequestException, Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Param, Post, Req } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { BUYER_ROLES, Roles } from "../auth/roles.decorator";
+import { getMutationContextFromRequest } from "../mutations/mutation-context";
 import { normalizePlaceBidInput } from "./trades.validators";
 import { TradesService } from "./trades.service";
 
@@ -90,7 +91,7 @@ export class TradesController {
     description: "Request validation error or auction mismatch",
     schema: { type: "object" }
   })
-  async placeBid(@Param("auctionId") auctionId: string, @Body() body: unknown) {
+  async placeBid(@Param("auctionId") auctionId: string, @Body() body: unknown, @Req() req: any) {
     const parsed = normalizePlaceBidInput(body);
 
     if (parsed.auctionId !== auctionId) {
@@ -104,7 +105,7 @@ export class TradesController {
       });
     }
 
-    const bid = await this.tradesService.placeBid(parsed);
+    const bid = await this.tradesService.placeBid(parsed, getMutationContextFromRequest(req));
     return { bid };
   }
 }
