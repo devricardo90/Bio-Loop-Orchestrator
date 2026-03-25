@@ -30,6 +30,7 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 - seed v2 idempotente orientado a cenarios
 - persistencia real de invoices, fees e billing export
 - pacote real dos supermercados da Suecia anexado e mapeado para onboarding controlado
+- import controlado do pacote da Suecia validado em `dry-run` e `apply`, sem sobrescrever o seed demo
 
 ### API
 
@@ -59,7 +60,7 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 
 ## Pontos ainda em aberto
 
-- `DATA-02`: import controlado do dataset real da Suecia
+- `DATA-03`: catalogo operacional misto demo + real sem quebrar navegacao e QA manual/e2e
 - `WEB-14+`: seller/admin mais orientados a dados reais e piloto
 - `INFRA-06`: split de CI entre gates rapidos e gates pesados
 
@@ -67,7 +68,7 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 
 - a suite Playwright depende do ambiente permitir spawn/browser sem bloqueio local
 - seller ainda depende mais de estado derivado local do que buyer/admin
-- import real ainda nao foi ligado ao schema/runtime principal
+- import real ainda nao esta exposto por uma API operacional dedicada
 - jobs precisam de locking e visibilidade melhores antes de exposicao menos assistida
 
 ## Onde estamos indo
@@ -83,8 +84,8 @@ Objetivo dessa fase:
 
 ## Ultimo avancado
 
-- `API-16` fechou paginacao/filtros nas listagens admin, envelope de erro HTTP consistente e flags de exposicao para `/openapi.json` e `/reference`
+- `DATA-02` fechou o import controlado do pacote real da Suecia com script dedicado, `dry-run`, `apply`, validacao referencial e coexistencia segura com o dataset demo
 
 ## Proxima task sugerida
 
-- `DATA-02` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)
+- `DATA-03` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)

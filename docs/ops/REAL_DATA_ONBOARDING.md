@@ -197,3 +197,18 @@ Estrutura pronta:
 ## Observacao importante
 
 Enquanto `API-12`, `API-13` e `WEB-09` nao estiverem concluidas, os dados reais devem entrar primeiro como **dataset controlado de onboarding**, e nao como mudanca improvisada no seed principal de demo.
+
+## Estado atual apos DATA-02
+
+`DATA-02` agora existe como trilha operacional concreta:
+
+- script: `apps/api/prisma/import-real-data.mjs`
+- validacao: `pnpm.cmd --filter @bio-loop/api db:import-real:dry-run`
+- import: `pnpm.cmd --filter @bio-loop/api db:import-real`
+
+O processo atual:
+
+- le os CSVs oficiais em `data/real-data/sweden-supermarkets/incoming/`
+- valida colunas, duplicidades e integridade referencial
+- importa stores, categories, buyers, approvals, interests e lots em transacao unica
+- preserva o dataset demo e marca os registros reais com `metadata.dataset = "sweden-supermarkets"`

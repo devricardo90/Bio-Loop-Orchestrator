@@ -29,13 +29,13 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
   - output: indices/read models para buyers, disputes, reports e buyer feed
   - gate: queries criticas com indice explicito e sem regressao nos endpoints principais
 
-- [READY] (DATA-02) Import controlado dos supermercados da Suecia
+- [DONE] (DATA-02) Import controlado dos supermercados da Suecia
   - owner: DB Agent
   - deps: DB-04, API-16
   - output: import script/processo reprodutivel para stores, contacts, pickup windows, categories, buyers e lots iniciais
   - gate: pacote real entra sem sobrescrever seed de demo e com validacao de integridade
 
-- [BLOCKED] (DATA-03) Catalogo operacional misto demo + real
+- [READY] (DATA-03) Catalogo operacional misto demo + real
   - owner: DB Agent
   - deps: DATA-02
   - output: estrategia clara para coexistencia entre dataset demo e dataset real controlado
@@ -61,7 +61,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
   - output: paginacao, filtros, erros tipados e bootstrap/config seguro para exposicao menos assistida
   - gate: endpoints administrativos/listagens com shape consistente e `/reference` sem drift
 
-- [BLOCKED] (API-17) Ingest API para dados reais
+- [READY] (API-17) Ingest API para dados reais
   - owner: API Agent
   - deps: DATA-02, API-16
   - output: ponto seguro para ingestao/importacao e reprocessamento controlado do dataset real
@@ -75,7 +75,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
   - output: seller lots/results menos dependentes do estado derivado local
   - gate: seller opera com dados reais ou read-model dedicado, sem ambiguidade de origem
 
-- [BLOCKED] (WEB-15) Admin operational clarity for real data
+- [READY] (WEB-15) Admin operational clarity for real data
   - owner: Frontend Agent
   - deps: API-16, DATA-02
   - output: labels, filtros e contexto melhores para buyers/disputes reais
@@ -95,7 +95,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
   - output: pipeline separado entre typecheck/unit e gates de db/e2e mais pesados
   - gate: feedback rapido continua curto e gates pesados continuam obrigatorios antes de merge/release
 
-- [BLOCKED] (INFRA-07) Runtime profile para piloto
+- [READY] (INFRA-07) Runtime profile para piloto
   - owner: Infra Agent
   - deps: API-16, DATA-02
   - output: profile/env documentado para rodar stack com dados reais controlados
@@ -122,15 +122,16 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 3. `API-15`
 4. `API-16`
 5. `DATA-02`
-6. `API-17`
-7. `WEB-14`
-8. `WEB-15`
-9. `INFRA-06`
-10. `QA-06`
+6. `DATA-03`
+7. `API-17`
+8. `WEB-14`
+9. `WEB-15`
+10. `INFRA-06`
 11. `INFRA-07`
-12. `WEB-16`
-13. `QA-07`
+12. `QA-06`
+13. `WEB-16`
+14. `QA-07`
 
 ## Proxima READY
 
-- `DATA-02`
+- `DATA-03`

@@ -49,6 +49,24 @@ Formatos aceitos:
 - toda decisao de limpeza ou coercao deve entrar em `mapping/field-mapping.md`
 - toda ausencia de dado obrigatorio deve entrar em `validation/open-issues.md`
 
+## Import controlado
+
+O pacote agora pode ser validado e importado pelo script dedicado em `apps/api/prisma/import-real-data.mjs`.
+
+Comandos oficiais:
+
+- `pnpm.cmd --filter @bio-loop/api db:import-real:dry-run`
+- `pnpm.cmd --filter @bio-loop/api db:import-real`
+
+Contrato operacional atual:
+
+- o import e transacional e idempotente por IDs externos estaveis
+- registros importados recebem `metadata.dataset = "sweden-supermarkets"`
+- o dataset demo nao e sobrescrito
+- `price_sek` fica preservado apenas em `Lot.metadata.sourcePriceSek`
+- `pickupWindowStartAt` e derivado por janela da loja no mesmo dia local do `expiry_timestamp`
+- quando nao existe janela compativel, o import usa fallback deterministico de `expiry - 2h -> expiry` e marca isso em `Lot.metadata.pickupWindowDerivation`
+
 ## Fechamento de DATA-01
 
 `DATA-01` so fecha quando:
