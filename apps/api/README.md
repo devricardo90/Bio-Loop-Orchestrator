@@ -45,6 +45,8 @@ For the full local walkthrough, demo fixtures, and Scalar reference entrypoint, 
 
 ```bash
 pnpm --filter @bio-loop/api prisma:generate
+pnpm --filter @bio-loop/api prisma:drift
+pnpm --filter @bio-loop/api db:verify-clean
 pnpm --filter @bio-loop/api db:seed
 pnpm --filter @bio-loop/api typecheck
 pnpm --filter @bio-loop/api test
@@ -56,8 +58,10 @@ pnpm --filter @bio-loop/api build
 If you change `apps/api/prisma/**`, Prisma schema, migrations, or API code that depends on the Prisma Client:
 
 1. Run `pnpm --filter @bio-loop/api prisma:generate`
-2. Only then run build/test
-3. Do not commit or push before `prisma:generate` succeeds
+2. Run `pnpm --filter @bio-loop/api prisma:drift`
+3. Run `pnpm --filter @bio-loop/api db:verify-clean`
+4. Only then run build/test
+5. Do not commit or push before `prisma:generate` succeeds
 
 ## Jobs
 

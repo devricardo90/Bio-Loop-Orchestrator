@@ -91,5 +91,6 @@
 - `WEB-13` fechou o polish final de manual ops no web com labels mais claras, navegação mais consistente, limpeza de copy residual de demo/cockpit/hub e um loading padronizado para seller.
 - `QA-05` fechou o gate pos-M7 com um checklist unico para auth real, buyer real-data, seller/admin review e docs vivas, alem de endurecer as assertions browser para `source=api`, `/reference` e sessao expirada.
 - `INFRA-05` fechou a previsibilidade operacional do runtime com bootstrap automatico de `.env`, separacao entre `API_PORT` e `WEB_PORT`, script de web dev orientado por env e docs alinhadas ao stack real.
-- A fila unificada agora deixa `DB-05` como a proxima task `READY`.
+- `DB-05` fechou a hygiene de migracao com gate explicito de drift, verify-clean cross-platform e validacao no pipeline contra Postgres limpo.
+- Nao ha task `READY` restante no backlog atual.
 - O momento correto para o usuario enviar os dados reais dos supermercados da Suecia e logo apos `DB-03`; os campos/documentos necessarios ficam em [REAL_DATA_ONBOARDING.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/REAL_DATA_ONBOARDING.md).

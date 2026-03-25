@@ -7,6 +7,39 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: bio_loop
+          POSTGRES_PASSWORD: bio_loop_dev
+          POSTGRES_DB: bio_loop
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U bio_loop -d bio_loop"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      API_PORT: 4000
+      WEB_PORT: 3001
+      APP_URL: http://localhost:3001
+      API_URL: http://localhost:4000
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      ALLOWED_ORIGINS: http://localhost:3001
+      DATABASE_URL: postgresql://bio_loop:bio_loop_dev@localhost:5432/bio_loop
+      SHADOW_DATABASE_URL: postgresql://bio_loop:bio_loop_dev@localhost:5432/bio_loop_shadow
+      REDIS_URL: redis://localhost:6379
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,6 +60,15 @@ jobs:
 
       - name: Generate Prisma Client
         run: pnpm --filter @bio-loop/api run prisma:generate
+
+      - name: Create shadow database
+        run: PGPASSWORD=bio_loop_dev psql -h localhost -U bio_loop -d postgres -c "CREATE DATABASE bio_loop_shadow;"
+
+      - name: Prisma drift check
+        run: pnpm --filter @bio-loop/api run prisma:drift
+
+      - name: Clean migrate + seed verification
+        run: pnpm --filter @bio-loop/api run db:verify-clean
 
       - name: Lint
         run: pnpm lint

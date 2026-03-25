@@ -143,7 +143,7 @@
   - deps: DB-02, API-13
   - output: indices/read models para buyers, disputes, reports e buyer feed
   - gate: queries criticas com indice explicito e sem regressao nos endpoints principais
-- [READY] (DB-05) Hygiene de migracao e drift
+- [DONE] (DB-05) Hygiene de migracao e drift
   - owner: DB Agent
   - deps: DB-01, INFRA-05
   - output: verificacao de drift e migrate-deploy em banco limpo no pipeline

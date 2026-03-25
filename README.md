@@ -40,6 +40,8 @@ pnpm env:bootstrap
 pnpm dev:api
 pnpm dev:web
 pnpm dev
+pnpm --filter @bio-loop/api prisma:drift
+pnpm --filter @bio-loop/api db:verify-clean
 pnpm build
 pnpm lint
 pnpm typecheck
@@ -50,3 +52,13 @@ pnpm typecheck
 - [Developer quickstart + demo guide](docs/ops/DEVELOPER_QUICKSTART.md)
 - [Local runtime runbook](docs/ops/LOCAL_RUNTIME_STACK.md)
 - [API README](apps/api/README.md)
+
+## Prisma drift hygiene
+
+When validating Prisma migrations locally:
+
+```bash
+$env:SHADOW_DATABASE_URL="postgresql://bio_loop:bio_loop_dev@localhost:5432/bio_loop_shadow"
+pnpm --filter @bio-loop/api prisma:drift
+pnpm --filter @bio-loop/api db:verify-clean
+```

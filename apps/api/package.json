@@ -9,6 +9,8 @@
     "test": "pnpm build && node test/run.mjs",
     "db:seed": "powershell -ExecutionPolicy Bypass -File ../../tools/run-with-local-env.ps1 -Command \"pnpm exec prisma migrate deploy --schema prisma/schema.prisma; node prisma/seed.mjs\"",
     "prisma:generate": "prisma generate --schema prisma/schema.prisma",
+    "prisma:drift": "node ../../tools/prisma-drift-check.mjs",
+    "db:verify-clean": "node ../../tools/db-verify-clean.mjs",
     "prisma:migrate": "prisma migrate dev --schema prisma/schema.prisma",
     "start": "node dist/main.js"
   },
