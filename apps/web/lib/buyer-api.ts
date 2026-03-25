@@ -1,13 +1,9 @@
 import type { BidDto } from "@bio-loop/domain";
-import type { DemoAuctionRecord, DemoBuyer } from "./demo-auctions";
+import type { DemoAuctionRecord, DemoBuyer, DemoState } from "./demo-auctions";
 
 const apiBaseUrl = process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:4000";
 
-export type BuyerFeedResponse = {
-  buyers: DemoBuyer[];
-  activeBuyerId: string;
-  auctions: DemoAuctionRecord[];
-  lastSyncedAt: string;
+export type BuyerFeedResponse = DemoState & {
   source: "api";
 };
 

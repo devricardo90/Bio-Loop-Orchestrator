@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import type { BidDto, Dispute, PickupProof, PickupWindow } from "@bio-loop/domain";
 import { submitBidToApi } from "../lib/bid-api";
 import { schedulePickupToApi, submitPodToApi } from "../lib/pickup-api";
+import { fetchBuyerFeed } from "../lib/buyer-api";
 import {
   createDemoState,
   DEMO_STORAGE_KEY,
@@ -106,6 +107,29 @@ export function AuctionStoreProvider({
   useEffect(() => {
     setState(loadState());
     setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function refreshFromApi() {
+      try {
+        const feed = await fetchBuyerFeed();
+        if (cancelled) {
+          return;
+        }
+
+        setState(feed);
+      } catch {
+        // keep demo state when API is unavailable
+      }
+    }
+
+    refreshFromApi();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
