@@ -89,11 +89,11 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ### Infra / QA support lane
 
-- [READY] (INFRA-06) CI split para gates rapidos e gates pesados
-  - owner: Infra Agent
-  - deps: DB-05
-  - output: pipeline separado entre typecheck/unit e gates de db/e2e mais pesados
-  - gate: feedback rapido continua curto e gates pesados continuam obrigatorios antes de merge/release
+  - [DONE] (INFRA-06) CI split para gates rapidos e gates pesados
+    - owner: Infra Agent
+    - deps: DB-05
+    - output: pipelines distintos: gate rápido com lint/typecheck/test e gate pesado com drift/verify + browser e2e
+    - gate: gate rápido fornece feedback imediato e gate pesado certifica a estabilidade de DB + e2e antes de merge/release
 
 - [READY] (INFRA-07) Runtime profile para piloto
   - owner: Infra Agent
@@ -134,4 +134,4 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ## Proxima READY
 
-- `INFRA-06`
+- `INFRA-07`

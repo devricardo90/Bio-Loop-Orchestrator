@@ -52,6 +52,7 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 - UX conectada ao `/reference`
 - seller lots, results e billing agora consomem o buyer feed real via o `AuctionStoreProvider` (WEB-14)
 - admin buyers e disputes agora evidenciam catálogos demo x real com filtros `catalogScope` e badges de dataset (WEB-15)
+- pipeline agora divide gates rápidos (lint/typecheck/test) e gates pesados (drift/db/e2e) para acelerar feedbacks (INFRA-06)
 
 ### QA e docs
 
@@ -64,7 +65,6 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 
 - `API-17`: ingest API para importar/reprocessar o dataset real de forma exposta e auditavel
 - `WEB-16`: pilot-ready dashboard handoff com contexto executivo
-- `INFRA-06`: split de CI entre gates rapidos e gates pesados
 - `INFRA-07`: runtime profile e docs para piloto com dados reais controlados
 - `QA-06`: suite browser real expandida para buyer real-data (bloqueado por dependencias)
 
@@ -91,7 +91,8 @@ Objetivo dessa fase:
 - `DATA-03` fechou a segmentacao operacional do catalogo misto com `catalogScope=demo|real|all`, default conservador em `demo` e docs para preservar QA manual/e2e
 - `WEB-14` entregou superfícies de seller vinculadas ao fluxo real de lotes/resultados no buyer feed
 - `WEB-15` esclareceu o contexto admin com filtros catalogScope e badges que destacam registros reais vs demo
+- `INFRA-06` separou o CI em gate rápido (lint/typecheck/test) e gate pesado (drift + db verify + browser e2e) para feedbacks previsíveis
 
 ## Proxima task sugerida
 
-- `INFRA-06` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)
+- `INFRA-07` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)
