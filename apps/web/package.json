@@ -2,7 +2,7 @@
   "name": "@bio-loop/web",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3001",
+    "dev": "node ../../tools/run-next-dev.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "tsc -p tsconfig.json --noEmit",

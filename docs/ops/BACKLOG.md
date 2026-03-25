@@ -143,7 +143,7 @@
   - deps: DB-02, API-13
   - output: indices/read models para buyers, disputes, reports e buyer feed
   - gate: queries criticas com indice explicito e sem regressao nos endpoints principais
-- [BLOCKED] (DB-05) Hygiene de migracao e drift
+- [READY] (DB-05) Hygiene de migracao e drift
   - owner: DB Agent
   - deps: DB-01, INFRA-05
   - output: verificacao de drift e migrate-deploy em banco limpo no pipeline
@@ -207,7 +207,7 @@
 
 ### Infra / QA support lane
 
-- [READY] (INFRA-05) Runtime scripts e portas previsiveis para API/Web/DB
+- [DONE] (INFRA-05) Runtime scripts e portas previsiveis para API/Web/DB
   - owner: Infra Agent
   - deps: DB-03
   - output: scripts de dev padronizados, sem colisao de portas e com bootstrap consistente de env

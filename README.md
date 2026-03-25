@@ -23,6 +23,8 @@ pnpm dev
 The API runs on `http://localhost:4000`.
 The web app runs on `http://localhost:3001`.
 
+The first `compose:up`, `dev`, `dev:api`, or `dev:web` run now bootstraps `.env` from `.env.example` automatically if the file is missing.
+
 ## Useful URLs
 
 - `http://localhost:4000/health`
@@ -34,6 +36,7 @@ The web app runs on `http://localhost:3001`.
 
 ```bash
 pnpm compose:down
+pnpm env:bootstrap
 pnpm dev:api
 pnpm dev:web
 pnpm dev

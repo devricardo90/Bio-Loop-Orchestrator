@@ -10,6 +10,12 @@ For the broader developer path, demo credentials, fixtures, and `/reference` usa
 Copy-Item .env.example .env
 ```
 
+Or let the workspace bootstrap it automatically:
+
+```bash
+pnpm env:bootstrap
+```
+
 If you want to keep API-specific overrides separate, you can still use:
 
 ```bash
@@ -54,6 +60,13 @@ If you want split terminals:
 pnpm dev:api
 pnpm dev:web
 ```
+
+The runtime now uses:
+
+- `API_PORT=4000`
+- `WEB_PORT=3001`
+
+This avoids the old collision where a shared `PORT` leaked into both apps.
 
 ## 6. Verify the runtime
 

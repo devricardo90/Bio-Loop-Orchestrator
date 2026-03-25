@@ -6,6 +6,12 @@ param(
 $ErrorActionPreference = "Stop"
 
 $root = Split-Path -Parent $PSScriptRoot
+$envPath = Join-Path $root ".env"
+$envExamplePath = Join-Path $root ".env.example"
+
+if (!(Test-Path $envPath) -and (Test-Path $envExamplePath)) {
+  Copy-Item $envExamplePath $envPath
+}
 
 function Import-EnvFile([string]$path) {
   if (!(Test-Path $path)) {
@@ -36,6 +42,7 @@ function Import-EnvFile([string]$path) {
 }
 
 $envFiles = @(
+  (Join-Path $root ".env.example")
   (Join-Path $root ".env")
   (Join-Path $root ".env.local")
   (Join-Path $root "apps\api\.env")

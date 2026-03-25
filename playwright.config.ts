@@ -9,6 +9,8 @@ const appUrl = "http://localhost:3101";
 const apiUrl = "http://localhost:4101";
 const e2eEnv = {
   ...env,
+  API_PORT: "4101",
+  WEB_PORT: "3101",
   PORT: "4101",
   APP_URL: appUrl,
   API_URL: apiUrl,
