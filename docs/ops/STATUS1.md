@@ -50,6 +50,7 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 - admin buyers e disputes operacionais
 - estados de loading/error/empty padronizados
 - UX conectada ao `/reference`
+- seller lots, results e billing agora consomem o buyer feed real via o `AuctionStoreProvider` (WEB-14)
 
 ### QA e docs
 
@@ -61,8 +62,10 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 ## Pontos ainda em aberto
 
 - `API-17`: ingest API para importar/reprocessar o dataset real de forma exposta e auditavel
-- `WEB-14+`: seller/admin mais orientados a dados reais e piloto
+- `WEB-15`: admin operacional mais claro para registros reais e labels distintivos
 - `INFRA-06`: split de CI entre gates rapidos e gates pesados
+- `INFRA-07`: runtime profile e docs para piloto com dados reais controlados
+- `QA-06`: suite browser real expandida para buyer real-data (bloqueado por dependencias)
 
 ## Riscos reais remanescentes
 
@@ -85,7 +88,8 @@ Objetivo dessa fase:
 ## Ultimo avancado
 
 - `DATA-03` fechou a segmentacao operacional do catalogo misto com `catalogScope=demo|real|all`, default conservador em `demo` e docs para preservar QA manual/e2e
+- `WEB-14` entregou superfícies de seller vinculadas ao fluxo real de lotes/resultados no buyer feed
 
 ## Proxima task sugerida
 
-- `API-17` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)
+- `WEB-15` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)
