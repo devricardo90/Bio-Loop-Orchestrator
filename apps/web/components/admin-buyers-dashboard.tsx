@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { useAuthSession } from "./auth-session";
 import {
   approveBuyerOnApi,
   listAdminBuyers,
   type BuyerApprovalDecision,
   type BuyerApprovalReason,
-  type BuyerRecordDto
+  type BuyerRecordDto,
+  type CatalogScope
 } from "../lib/admin-api";
 import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
@@ -23,6 +24,12 @@ const actions: BuyerAction[] = [
   { decision: "REJECT", label: "Reject" },
   { decision: "SUSPEND", label: "Suspend" },
   { decision: "REINSTATE", label: "Reinstate" }
+];
+
+const scopeFilters: Array<{ value: CatalogScope; label: string }> = [
+  { value: "all", label: "All catalogs" },
+  { value: "demo", label: "Demo only" },
+  { value: "real", label: "Real data only" }
 ];
 
 function defaultBuyerReasonForDecision(decision: BuyerApprovalDecision): BuyerApprovalReason {
@@ -47,6 +54,7 @@ export function AdminBuyersDashboard() {
   const [loadingBuyerId, setLoadingBuyerId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [catalogScope, setCatalogScope] = useState<CatalogScope>("all");
 
   const statusCounts = useMemo(() => {
     return buyers.reduce(
@@ -58,13 +66,41 @@ export function AdminBuyersDashboard() {
     );
   }, [buyers]);
 
+  const scopeCounts = useMemo(
+    () =>
+      buyers.reduce(
+        (acc, buyer) => {
+          acc[buyer.catalog.scope] += 1;
+          return acc;
+        },
+        { demo: 0, real: 0 }
+      ),
+    [buyers]
+  );
+
+  const refreshBuyers = useCallback(async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const result = await listAdminBuyers({ catalogScope });
+
+      setBuyers(result.buyers);
+    } catch (err) {
+      setBuyers([]);
+      setError(err instanceof Error ? err.message : "Unable to load admin buyers.");
+    } finally {
+      setLoading(false);
+    }
+  }, [catalogScope]);
+
   useEffect(() => {
     if (!hydrated) {
       return;
     }
 
     void refreshBuyers();
-  }, [hydrated]);
+  }, [hydrated, refreshBuyers]);
 
   if (!hydrated) {
     return (
@@ -77,21 +113,6 @@ export function AdminBuyersDashboard() {
         />
       </main>
     );
-  }
-
-  async function refreshBuyers() {
-    setLoading(true);
-    setError("");
-
-    try {
-      const result = await listAdminBuyers();
-      setBuyers(result.buyers);
-    } catch (err) {
-      setBuyers([]);
-      setError(err instanceof Error ? err.message : "Unable to load admin buyers.");
-    } finally {
-      setLoading(false);
-    }
   }
 
   async function handleAction(buyer: BuyerRecordDto, decision: BuyerApprovalDecision) {
@@ -140,13 +161,37 @@ export function AdminBuyersDashboard() {
         <div className="hero-copy">
           <p className="eyebrow">Admin buyers</p>
           <h1>Approve and review buyers before they hit the trade surface.</h1>
-          <p className="lead">The buyer registry is loaded from the admin API and reflects the seeded dataset.</p>
+          <p className="lead">
+            The buyer registry is loaded from the admin API and can surface both seeded demo records and the imported Sweden
+            Supermarkets dataset when you choose.
+          </p>
           <div className="hero-meta">
             <span className="chip chip-accent">{session ? session.roleLabel : "Admin session"}</span>
             <span className="chip">{loading ? "Loading buyers..." : `${buyers.length} buyers loaded`}</span>
             <span className="chip">{buyers.length} buyers tracked</span>
             <span className="chip">Reviewer: {reviewerId}</span>
+            <span className="chip chip-muted">{scopeCounts.demo} demo</span>
+            <span className="chip chip-muted">{scopeCounts.real} real</span>
           </div>
+          <div className="filter-row">
+            {scopeFilters.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={`filter-chip ${catalogScope === option.value ? "filter-chip-active" : ""}`}
+                onClick={() => setCatalogScope(option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+          <p className="muted">
+            {catalogScope === "real"
+              ? "Showing buyers flagged as real data by the Sweden Supermarkets import."
+              : catalogScope === "demo"
+              ? "Showing seeded demo buyers only."
+              : "Showing demo and real buyers together; use the filters to focus on one catalog."}
+          </p>
           <div className="hero-meta">
             <Link href="/admin" className="button button-secondary">
               Admin hub
@@ -241,6 +286,16 @@ export function AdminBuyersDashboard() {
                     <span className="label">Status note</span>
                     <strong>{buyer.notes}</strong>
                   </div>
+                </div>
+
+                <div className="catalog-row">
+                  <span className={`catalog-chip catalog-chip-${buyer.catalog.scope}`}>
+                    {buyer.catalog.scope === "real" ? "Real data" : "Demo data"}
+                    <small>{buyer.catalog.dataset}</small>
+                  </span>
+                  <p className="muted catalog-context">
+                    Source: {buyer.catalog.source} · {buyer.catalog.visibleByDefault ? "Visible by default" : "Visible when catalogScope matches"}
+                  </p>
                 </div>
 
                 {buyer.approval ? (

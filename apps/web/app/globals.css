@@ -282,6 +282,49 @@ h3 {
   background: rgba(26, 29, 31, 0.04);
 }
 
+.catalog-row {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.catalog-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(26, 29, 31, 0.12);
+  font-size: 0.82rem;
+  background: rgba(255, 255, 255, 0.82);
+  font-weight: 600;
+}
+
+.catalog-chip small {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.catalog-chip-demo {
+  border-color: rgba(15, 93, 75, 0.2);
+  color: rgba(15, 93, 75, 0.9);
+}
+
+.catalog-chip-real {
+  border-color: rgba(181, 107, 45, 0.35);
+  color: rgba(181, 107, 45, 0.9);
+}
+
+.catalog-context {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
 .buyer-switcher {
   display: grid;
   gap: 16px;

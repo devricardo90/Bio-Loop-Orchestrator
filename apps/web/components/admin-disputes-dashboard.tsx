@@ -1,24 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { useAuthSession } from "./auth-session";
 import {
   listAdminDisputes,
   resolveDisputeOnApi,
+  type CatalogScope,
+  type DisputeDto,
   type DisputeResolutionDecision,
   type DisputeStatus
 } from "../lib/admin-api";
 import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
 
-type AdminDisputeRecord = {
-  id: string;
-  orderId: string;
-  reason: "NO_SHOW" | "QUALITY_ISSUE";
-  status: "OPEN" | "RESOLVED" | "CANCELLED";
-  openedAt: string;
-  resolvedAt: string | null;
+type AdminDisputeRecord = DisputeDto & {
   note: string;
 };
 
@@ -34,6 +30,12 @@ const actions: DisputeAction[] = [
   { decision: "ESCALATE", label: "Escalate", helper: "Keep open for deeper review" }
 ];
 
+const scopeFilters: Array<{ value: CatalogScope; label: string }> = [
+  { value: "all", label: "All catalogs" },
+  { value: "demo", label: "Demo only" },
+  { value: "real", label: "Real data only" }
+];
+
 const filters: Array<DisputeStatus | "ALL"> = ["ALL", "OPEN", "RESOLVED", "CANCELLED"];
 
 export function AdminDisputesDashboard() {
@@ -47,6 +49,7 @@ export function AdminDisputesDashboard() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [catalogScope, setCatalogScope] = useState<CatalogScope>("all");
 
   useEffect(() => {
     if (!hydrated) {
@@ -54,7 +57,7 @@ export function AdminDisputesDashboard() {
     }
 
     void refreshDisputes(filter);
-  }, [hydrated, filter]);
+  }, [hydrated, filter, refreshDisputes]);
 
   const visibleDisputes = useMemo(() => {
     if (filter === "ALL") {
@@ -74,31 +77,44 @@ export function AdminDisputesDashboard() {
     );
   }, [disputes]);
 
-  async function refreshDisputes(nextFilter: (typeof filters)[number]) {
-    setLoading(true);
-    setMessage("");
-    setError("");
+  const scopeCounts = useMemo(
+    () =>
+      disputes.reduce(
+        (acc, dispute) => {
+          acc[dispute.catalog.scope] += 1;
+          return acc;
+        },
+        { demo: 0, real: 0 }
+      ),
+    [disputes]
+  );
 
-    try {
-      const payload = await listAdminDisputes(nextFilter === "ALL" ? undefined : nextFilter);
-      setDisputes(
-        payload.disputes.map((item) => ({
-          id: item.id,
-          orderId: item.orderId,
-          reason: item.reason,
-          status: item.status,
-          openedAt: item.openedAt,
-          resolvedAt: item.resolvedAt,
-          note: item.status === "OPEN" ? "Live admin dispute from API." : "Resolved or cancelled on the API."
-        }))
-      );
-    } catch (err) {
-      setDisputes([]);
-      setError(err instanceof Error ? err.message : "Unable to load admin disputes.");
-    } finally {
-      setLoading(false);
-    }
-  }
+  const refreshDisputes = useCallback(
+    async (nextFilter: (typeof filters)[number]) => {
+      setLoading(true);
+      setMessage("");
+      setError("");
+
+      try {
+        const payload = await listAdminDisputes({
+          status: nextFilter === "ALL" ? undefined : nextFilter,
+          catalogScope
+        });
+        setDisputes(
+          payload.disputes.map((item) => ({
+            ...item,
+            note: item.status === "OPEN" ? "Live admin dispute from API." : "Resolved or cancelled on the API."
+          }))
+        );
+      } catch (err) {
+        setDisputes([]);
+        setError(err instanceof Error ? err.message : "Unable to load admin disputes.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [catalogScope]
+  );
 
   async function handleResolution(dispute: AdminDisputeRecord, decision: DisputeResolutionDecision) {
     setLoadingDisputeId(dispute.id);
@@ -160,12 +176,36 @@ export function AdminDisputesDashboard() {
         <div className="hero-copy">
           <p className="eyebrow">Admin disputes</p>
           <h1>Resolve and monitor disputes without leaving the cockpit.</h1>
-          <p className="lead">The disputes panel uses the live admin API and reflects the seeded dispute queue.</p>
+          <p className="lead">
+            The disputes panel uses the live admin API and can reveal both seeded disputes and the imported queue from the
+            Sweden Supermarkets dataset.
+          </p>
           <div className="hero-meta">
             <span className="chip chip-accent">{session ? session.roleLabel : "Admin session"}</span>
             <span className="chip">{visibleDisputes.length} visible</span>
             <span className="chip">{loading ? "Loading disputes..." : "Live API"}</span>
+            <span className="chip chip-muted">{scopeCounts.demo} demo</span>
+            <span className="chip chip-muted">{scopeCounts.real} real</span>
           </div>
+          <div className="filter-row">
+            {scopeFilters.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={`filter-chip ${catalogScope === option.value ? "filter-chip-active" : ""}`}
+                onClick={() => setCatalogScope(option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+          <p className="muted">
+            {catalogScope === "real"
+              ? "Showing disputes tied to the real Sweden Supermarkets catalog."
+              : catalogScope === "demo"
+              ? "Showing disputes that originate from the seeded demo catalog."
+              : "Showing both demo and real disputes so you can compare how each catalog behaves."}
+          </p>
           <div className="hero-meta">
             <Link href="/admin" className="button button-secondary">
               Admin hub
@@ -271,6 +311,17 @@ export function AdminDisputesDashboard() {
                     <span className="label">Note</span>
                     <strong>{dispute.note}</strong>
                   </div>
+                </div>
+
+                <div className="catalog-row">
+                  <span className={`catalog-chip catalog-chip-${dispute.catalog.scope}`}>
+                    {dispute.catalog.scope === "real" ? "Real data" : "Demo data"}
+                    <small>{dispute.catalog.dataset}</small>
+                  </span>
+                  <p className="muted catalog-context">
+                    Source: {dispute.catalog.source} ·{" "}
+                    {dispute.catalog.visibleByDefault ? "Visible by default" : "Visible when catalogScope matches"}
+                  </p>
                 </div>
 
                 <div className="admin-action-row">

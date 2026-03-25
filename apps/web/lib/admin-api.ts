@@ -1,12 +1,17 @@
 const apiBaseUrl = process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:4000";
 
+export type CatalogScope = "demo" | "real" | "all";
+
+export type CatalogDescriptor = {
+  scope: "demo" | "real";
+  dataset: string;
+  source: string;
+  visibleByDefault: boolean;
+};
+
 export type BuyerApprovalDecision = "APPROVE" | "REJECT" | "SUSPEND" | "REINSTATE";
 export type BuyerApprovalReason = "AUTO_APPROVAL" | "LOW_REPUTATION" | "PAYMENT_RISK" | "COMPLIANCE" | "MANUAL_REVIEW";
 export type BuyerApprovalStatus = "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
-
-export type DisputeStatus = "OPEN" | "RESOLVED" | "CANCELLED";
-export type DisputeReason = "NO_SHOW" | "QUALITY_ISSUE";
-export type DisputeResolutionDecision = "SETTLE" | "CANCEL_ORDER" | "ESCALATE";
 
 export type BuyerApprovalDto = {
   id: string;
@@ -31,15 +36,21 @@ export type BuyerRecordDto = {
   notes: string;
   approval: BuyerApprovalDto | null;
   updatedAt: string;
-};
-
-export type ApproveBuyerResult = {
-  approval: BuyerApprovalDto;
+  catalog: CatalogDescriptor;
 };
 
 export type ListBuyersResult = {
   buyers: BuyerRecordDto[];
+  pagination: {
+    limit: number;
+    offset: number;
+    total: number;
+    hasMore: boolean;
+  };
 };
+
+export type DisputeStatus = "OPEN" | "RESOLVED" | "CANCELLED";
+export type DisputeReason = "NO_SHOW" | "QUALITY_ISSUE";
 
 export type DisputeDto = {
   id: string;
@@ -48,10 +59,21 @@ export type DisputeDto = {
   status: DisputeStatus;
   openedAt: string;
   resolvedAt: string | null;
+  catalog: CatalogDescriptor;
 };
 
 export type ListDisputesResult = {
   disputes: DisputeDto[];
+  pagination: {
+    limit: number;
+    offset: number;
+    total: number;
+    hasMore: boolean;
+  };
+};
+
+export type ApproveBuyerResult = {
+  approval: BuyerApprovalDto;
 };
 
 export type ResolveDisputeResult = {
@@ -89,8 +111,13 @@ export async function approveBuyerOnApi(input: {
   return (await response.json()) as ApproveBuyerResult;
 }
 
-export async function listAdminBuyers(): Promise<ListBuyersResult> {
-  const response = await fetch(`${apiBaseUrl}/admin/buyers`, {
+export async function listAdminBuyers(query?: { catalogScope?: CatalogScope }): Promise<ListBuyersResult> {
+  const url = new URL(`${apiBaseUrl}/admin/buyers`);
+  if (query?.catalogScope) {
+    url.searchParams.set("catalogScope", query.catalogScope);
+  }
+
+  const response = await fetch(url, {
     method: "GET",
     credentials: "include"
   });
@@ -103,10 +130,16 @@ export async function listAdminBuyers(): Promise<ListBuyersResult> {
   return (await response.json()) as ListBuyersResult;
 }
 
-export async function listAdminDisputes(status?: DisputeStatus): Promise<ListDisputesResult> {
+export async function listAdminDisputes(query?: {
+  status?: DisputeStatus;
+  catalogScope?: CatalogScope;
+}): Promise<ListDisputesResult> {
   const url = new URL(`${apiBaseUrl}/admin/disputes`);
-  if (status) {
-    url.searchParams.set("status", status);
+  if (query?.status) {
+    url.searchParams.set("status", query.status);
+  }
+  if (query?.catalogScope) {
+    url.searchParams.set("catalogScope", query.catalogScope);
   }
 
   const response = await fetch(url, {
@@ -124,7 +157,7 @@ export async function listAdminDisputes(status?: DisputeStatus): Promise<ListDis
 
 export async function resolveDisputeOnApi(input: {
   disputeId: string;
-  decision: DisputeResolutionDecision;
+  decision: "SETTLE" | "CANCEL_ORDER" | "ESCALATE";
   reviewerId: string;
   note?: string;
 }): Promise<ResolveDisputeResult> {

@@ -69,16 +69,16 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ### Frontend / Web lane
 
-- [READY] (WEB-14) Seller surfaces em dados reais da API
+- [DONE] (WEB-14) Seller surfaces em dados reais da API
   - owner: Frontend Agent
   - deps: DB-04, API-16
   - output: seller lots/results menos dependentes do estado derivado local
   - gate: seller opera com dados reais ou read-model dedicado, sem ambiguidade de origem
 
-- [READY] (WEB-15) Admin operational clarity for real data
+- [DONE] (WEB-15) Admin operational clarity for real data
   - owner: Frontend Agent
   - deps: API-16, DATA-02
-  - output: labels, filtros e contexto melhores para buyers/disputes reais
+  - output: labels, filtros e badges de catálogo que deixam claro o contexto real vs demo nos buyers/disputes
   - gate: admin distingue claramente registros demo e reais quando coexistirem
 
 - [BLOCKED] (WEB-16) Pilot-ready dashboard handoff
@@ -134,4 +134,4 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ## Proxima READY
 
-- `WEB-15`
+- `INFRA-06`
