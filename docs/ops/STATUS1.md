@@ -60,7 +60,7 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 
 ## Pontos ainda em aberto
 
-- `DATA-03`: catalogo operacional misto demo + real sem quebrar navegacao e QA manual/e2e
+- `API-17`: ingest API para importar/reprocessar o dataset real de forma exposta e auditavel
 - `WEB-14+`: seller/admin mais orientados a dados reais e piloto
 - `INFRA-06`: split de CI entre gates rapidos e gates pesados
 
@@ -84,8 +84,8 @@ Objetivo dessa fase:
 
 ## Ultimo avancado
 
-- `DATA-02` fechou o import controlado do pacote real da Suecia com script dedicado, `dry-run`, `apply`, validacao referencial e coexistencia segura com o dataset demo
+- `DATA-03` fechou a segmentacao operacional do catalogo misto com `catalogScope=demo|real|all`, default conservador em `demo` e docs para preservar QA manual/e2e
 
 ## Proxima task sugerida
 
-- `DATA-03` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)
+- `API-17` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)

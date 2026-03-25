@@ -14,6 +14,8 @@ import type {
   ApproveBuyerAdminInput,
   ApproveBuyerAdminResult,
   ListBuyersQuery,
+  CatalogDescriptorDto,
+  CatalogScope,
   BuyerApprovalDecision,
   BuyerApprovalReason,
   BuyerApprovalStatus,
@@ -55,6 +57,7 @@ const adminBuyerListSelect = Prisma.validator<Prisma.BuyerSelect>()({
   approved: true,
   reputation: true,
   updatedAt: true,
+  metadata: true,
   approval: true
 });
 
@@ -70,6 +73,22 @@ type AdminDisputeResolutionRecord = {
   reviewerId: string | null;
   resolvedAt: Date | string;
 };
+
+const adminDisputeListInclude = Prisma.validator<Prisma.DisputeInclude>()({
+  order: {
+    include: {
+      lot: {
+        select: {
+          metadata: true
+        }
+      }
+    }
+  }
+});
+
+type AdminDisputeListRecord = Prisma.DisputeGetPayload<{
+  include: typeof adminDisputeListInclude;
+}>;
 
 type AdminTransactionClient = {
   buyer: {
@@ -117,7 +136,8 @@ type AdminTransactionClient = {
       orderBy: { openedAt: "desc" };
       skip?: number;
       take?: number;
-    }) => Promise<PrismaDispute[]>;
+      include?: typeof adminDisputeListInclude;
+    }) => Promise<AdminDisputeListRecord[]>;
     count?: (args: { where?: Record<string, unknown> }) => Promise<number>;
     update: (args: { where: { id: string }; data: Record<string, unknown> }) => Promise<PrismaDispute>;
   };
@@ -193,6 +213,59 @@ function toIso(value: Date | string | null | undefined): string | null {
   return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
 }
 
+function getJsonStringField(value: Prisma.JsonValue | null | undefined, key: string): string | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  return typeof record[key] === "string" ? record[key] : null;
+}
+
+function catalogDescriptorFromMetadata(metadata: Prisma.JsonValue | null | undefined): CatalogDescriptorDto {
+  const source = getJsonStringField(metadata, "source");
+  const dataset = getJsonStringField(metadata, "dataset");
+
+  if (dataset === "sweden-supermarkets" || source === "sweden_real_import") {
+    return {
+      scope: "real",
+      dataset: dataset ?? "sweden-supermarkets",
+      source: source ?? "sweden_real_import",
+      visibleByDefault: false
+    };
+  }
+
+  return {
+    scope: "demo",
+    dataset: dataset ?? "scenario-seed",
+    source: source ?? "scenario_seed",
+    visibleByDefault: true
+  };
+}
+
+function buildCatalogWhere(scope: CatalogScope, metadataField = "metadata"): Record<string, unknown> | undefined {
+  if (scope === "all") {
+    return undefined;
+  }
+
+  const metadataSelector = (path: string[], equals: string) => ({
+    [metadataField]: {
+      path,
+      equals
+    }
+  });
+
+  if (scope === "real") {
+    return {
+      OR: [metadataSelector(["dataset"], "sweden-supermarkets"), metadataSelector(["source"], "sweden_real_import")]
+    };
+  }
+
+  return {
+    OR: [metadataSelector(["source"], "scenario_seed"), metadataSelector(["dataset"], "scenario-seed")]
+  };
+}
+
 function buyerApprovalToDto(approval: AdminBuyerApprovalRecord) {
   return {
     id: approval.id,
@@ -208,14 +281,20 @@ function buyerApprovalToDto(approval: AdminBuyerApprovalRecord) {
   };
 }
 
-function disputeToDto(dispute: PrismaDispute) {
+function disputeToDto(
+  dispute: PrismaDispute | (PrismaDispute & { order?: { lot?: { metadata?: Prisma.JsonValue | null } | null } | null })
+) {
+  const orderMetadata =
+    "order" in dispute && dispute.order && typeof dispute.order === "object" ? dispute.order.lot?.metadata : null;
+
   return {
     id: dispute.id,
     orderId: dispute.orderId,
     reason: (dispute.reason ?? "NO_SHOW") as DisputeReason,
     status: dispute.status,
     openedAt: toIso(dispute.openedAt) ?? new Date(0).toISOString(),
-    resolvedAt: toIso(dispute.resolvedAt)
+    resolvedAt: toIso(dispute.resolvedAt),
+    catalog: catalogDescriptorFromMetadata(orderMetadata)
   };
 }
 
@@ -245,7 +324,8 @@ function buyerApprovalToBuyerDto(buyer: AdminBuyerListRecord): BuyerRecordDto {
     riskLabel: thisBuyerRiskLabel(buyer, approval),
     notes: thisBuyerNotes(buyer, approval),
     approval: mappedApproval,
-    updatedAt: toIso(buyer.updatedAt) ?? new Date(0).toISOString()
+    updatedAt: toIso(buyer.updatedAt) ?? new Date(0).toISOString(),
+    catalog: catalogDescriptorFromMetadata(buyer.metadata)
   };
 }
 
@@ -300,6 +380,10 @@ export class AdminService {
   async listBuyers(query: ListBuyersQuery = {}): Promise<ListBuyersResult> {
     const pagination = this.normalizePagination(query.limit, query.offset);
     const filters: Record<string, unknown>[] = [];
+    const catalogWhere = buildCatalogWhere(query.catalogScope ?? "demo");
+    if (catalogWhere) {
+      filters.push(catalogWhere);
+    }
     if (query.search) {
       filters.push({
         OR: [{ id: { contains: query.search } }, { name: { contains: query.search, mode: "insensitive" } }]
@@ -418,13 +502,22 @@ export class AdminService {
 
   async listDisputes(query: ListDisputesQuery): Promise<ListDisputesResult> {
     const pagination = this.normalizePagination(query.limit, query.offset);
-    const where: Record<string, unknown> = {};
+    const filters: Record<string, unknown>[] = [];
     if (query.status) {
-      where["status"] = query.status;
+      filters.push({ status: query.status });
     }
     if (query.reason) {
-      where["reason"] = query.reason;
+      filters.push({ reason: query.reason });
     }
+    const catalogWhere = buildCatalogWhere(query.catalogScope ?? "demo");
+    if (catalogWhere) {
+      filters.push({
+        order: {
+          lot: catalogWhere
+        }
+      });
+    }
+    const where = filters.length === 0 ? undefined : filters.length === 1 ? filters[0] : { AND: filters };
 
     const disputeClient = this.prisma.dispute as unknown as {
       findMany: (args: {
@@ -432,18 +525,20 @@ export class AdminService {
         orderBy: { openedAt: "desc" };
         skip?: number;
         take?: number;
-      }) => Promise<PrismaDispute[]>;
+        include?: typeof adminDisputeListInclude;
+      }) => Promise<AdminDisputeListRecord[]>;
       count?: (args: { where?: Record<string, unknown> }) => Promise<number>;
     };
     const disputes = await disputeClient.findMany({
-      ...(Object.keys(where).length > 0 ? { where } : {}),
+      ...(where ? { where } : {}),
+      include: adminDisputeListInclude,
       orderBy: { openedAt: "desc" },
       skip: pagination.offset,
       take: pagination.limit
     });
     const total =
       typeof disputeClient.count === "function"
-        ? await disputeClient.count(Object.keys(where).length > 0 ? { where } : {})
+        ? await disputeClient.count(where ? { where } : {})
         : disputes.length;
 
     return {

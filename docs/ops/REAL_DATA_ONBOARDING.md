@@ -212,3 +212,11 @@ O processo atual:
 - valida colunas, duplicidades e integridade referencial
 - importa stores, categories, buyers, approvals, interests e lots em transacao unica
 - preserva o dataset demo e marca os registros reais com `metadata.dataset = "sweden-supermarkets"`
+
+## Estado atual apos DATA-03
+
+O runtime local agora opera com catalogo misto sob uma regra conservadora:
+
+- APIs administrativas usam `catalogScope=demo` por padrao
+- `catalogScope=all` e `catalogScope=real` ficam disponiveis para revisao controlada do dataset importado
+- isso preserva QA manual/e2e e evita que o import real desloque os fluxos seeded por padrao

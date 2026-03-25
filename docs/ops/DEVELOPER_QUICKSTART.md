@@ -113,6 +113,10 @@ This gives you real API-backed data for:
 - admin buyers and disputes
 - pickup/POD and billing-oriented verification
 
+If you also import the Sweden supermarket package with `pnpm.cmd --filter @bio-loop/api db:import-real`, the dataset coexists with the demo seed.
+The admin API keeps `catalogScope=demo` as the default so local QA and seeded flows stay stable.
+To inspect the mixed catalog directly, query `/admin/buyers?catalogScope=all` or `/admin/buyers?catalogScope=real`.
+
 ## Recommended manual walkthrough
 
 1. Sign in as `buyer` and open `/buyer/feed`.

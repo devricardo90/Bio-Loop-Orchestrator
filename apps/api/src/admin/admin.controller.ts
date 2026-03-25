@@ -12,6 +12,7 @@ import {
   BUYER_APPROVAL_DECISIONS,
   BUYER_APPROVAL_REASONS,
   BUYER_APPROVAL_STATUSES,
+  CATALOG_SCOPES,
   DISPUTE_RESOLUTION_DECISIONS,
   DISPUTE_REASONS,
   DISPUTE_STATUSES,
@@ -37,6 +38,7 @@ export class AdminController {
   @Get("buyers")
   @ApiOperation({ summary: "List buyers for admin review" })
   @ApiQuery({ name: "status", required: false, enum: [...BUYER_APPROVAL_STATUSES] })
+  @ApiQuery({ name: "catalogScope", required: false, enum: [...CATALOG_SCOPES] })
   @ApiQuery({ name: "search", required: false, type: String })
   @ApiQuery({ name: "limit", required: false, type: Number })
   @ApiQuery({ name: "offset", required: false, type: Number })
@@ -57,6 +59,16 @@ export class AdminController {
               reputationScore: { type: "number" },
               riskLabel: { type: "string" },
               notes: { type: "string" },
+              catalog: {
+                type: "object",
+                properties: {
+                  scope: { type: "string", enum: ["demo", "real"] },
+                  dataset: { type: "string" },
+                  source: { type: "string" },
+                  visibleByDefault: { type: "boolean" }
+                },
+                required: ["scope", "dataset", "source", "visibleByDefault"]
+              },
               approval: {
                 type: "object",
                 nullable: true,
@@ -75,7 +87,7 @@ export class AdminController {
               },
               updatedAt: { type: "string", format: "date-time" }
             },
-            required: ["id", "buyerId", "name", "status", "reputationScore", "riskLabel", "notes", "approval", "updatedAt"]
+            required: ["id", "buyerId", "name", "status", "reputationScore", "riskLabel", "notes", "catalog", "approval", "updatedAt"]
           }
         },
         pagination: {
@@ -155,6 +167,7 @@ export class AdminController {
     required: false,
     enum: [...DISPUTE_REASONS]
   })
+  @ApiQuery({ name: "catalogScope", required: false, enum: [...CATALOG_SCOPES] })
   @ApiQuery({ name: "limit", required: false, type: Number })
   @ApiQuery({ name: "offset", required: false, type: Number })
   @ApiOkResponse({
@@ -172,9 +185,19 @@ export class AdminController {
               reason: { type: "string", enum: ["NO_SHOW", "QUALITY_ISSUE"] },
               status: { type: "string", enum: ["OPEN", "RESOLVED", "CANCELLED"] },
               openedAt: { type: "string", format: "date-time" },
-              resolvedAt: { type: "string", format: "date-time", nullable: true }
+              resolvedAt: { type: "string", format: "date-time", nullable: true },
+              catalog: {
+                type: "object",
+                properties: {
+                  scope: { type: "string", enum: ["demo", "real"] },
+                  dataset: { type: "string" },
+                  source: { type: "string" },
+                  visibleByDefault: { type: "boolean" }
+                },
+                required: ["scope", "dataset", "source", "visibleByDefault"]
+              }
             },
-            required: ["id", "orderId", "reason", "status", "openedAt", "resolvedAt"]
+            required: ["id", "orderId", "reason", "status", "openedAt", "resolvedAt", "catalog"]
           }
         },
         pagination: {
@@ -192,7 +215,9 @@ export class AdminController {
     }
   })
   @ApiBadRequestResponse({ description: "Validation error", schema: { type: "object" } })
-  async listDisputes(@Query() query: { status?: DisputeStatus; reason?: string; limit?: number; offset?: number }) {
+  async listDisputes(
+    @Query() query: { status?: DisputeStatus; reason?: string; catalogScope?: string; limit?: number; offset?: number }
+  ) {
     const parsed = normalizeListDisputesQuery(query);
     return this.adminService.listDisputes(parsed);
   }

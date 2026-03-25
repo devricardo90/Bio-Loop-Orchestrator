@@ -22,6 +22,16 @@ export type DisputeReason = (typeof DISPUTE_REASONS)[number];
 export const DISPUTE_RESOLUTION_DECISIONS = ["SETTLE", "CANCEL_ORDER", "ESCALATE"] as const;
 export type DisputeResolutionDecision = (typeof DISPUTE_RESOLUTION_DECISIONS)[number];
 
+export const CATALOG_SCOPES = ["demo", "real", "all"] as const;
+export type CatalogScope = (typeof CATALOG_SCOPES)[number];
+
+export interface CatalogDescriptorDto {
+  scope: Exclude<CatalogScope, "all">;
+  dataset: string;
+  source: string;
+  visibleByDefault: boolean;
+}
+
 export interface BuyerApprovalDto {
   id: string;
   buyerId: string;
@@ -42,6 +52,7 @@ export interface DisputeDto {
   status: DisputeStatus;
   openedAt: string;
   resolvedAt: string | null;
+  catalog: CatalogDescriptorDto;
 }
 
 export interface BuyerRecordDto {
@@ -54,6 +65,7 @@ export interface BuyerRecordDto {
   notes: string;
   approval: BuyerApprovalDto | null;
   updatedAt: string;
+  catalog: CatalogDescriptorDto;
 }
 
 export interface ApproveBuyerAdminInput {
@@ -72,6 +84,7 @@ export interface ResolveDisputeAdminInput {
 export interface ListDisputesQuery {
   status?: DisputeStatus;
   reason?: DisputeReason;
+  catalogScope?: CatalogScope;
   limit?: number;
   offset?: number;
 }
@@ -79,6 +92,7 @@ export interface ListDisputesQuery {
 export interface ListBuyersQuery {
   status?: BuyerApprovalStatus;
   search?: string;
+  catalogScope?: CatalogScope;
   limit?: number;
   offset?: number;
 }

@@ -2,6 +2,7 @@ import {
   BUYER_APPROVAL_DECISIONS,
   BUYER_APPROVAL_REASONS,
   BUYER_APPROVAL_STATUSES,
+  CATALOG_SCOPES,
   DISPUTE_RESOLUTION_DECISIONS,
   DISPUTE_REASONS,
   DISPUTE_STATUSES,
@@ -144,6 +145,7 @@ export function normalizeListDisputesQuery(input: unknown): ListDisputesQuery {
 
   const status = toOptionalString(input["status"]);
   const reason = toOptionalString(input["reason"]);
+  const catalogScope = toOptionalString(input["catalogScope"]);
   const limit = toOptionalPositiveInteger(
     input["limit"],
     "INVALID_DISPUTE_LIST_QUERY",
@@ -180,6 +182,17 @@ export function normalizeListDisputesQuery(input: unknown): ListDisputesQuery {
           )
         }
       : {}),
+    ...(catalogScope
+      ? {
+          catalogScope: ensureEnum(
+            catalogScope,
+            CATALOG_SCOPES,
+            "INVALID_DISPUTE_LIST_QUERY",
+            "Invalid dispute list query",
+            "catalogScope"
+          )
+        }
+      : { catalogScope: "demo" }),
     ...(limit !== undefined ? { limit } : {}),
     ...(offset !== undefined ? { offset } : {})
   };
@@ -192,6 +205,7 @@ export function normalizeListBuyersQuery(input: unknown): ListBuyersQuery {
 
   const status = toOptionalString(input["status"]);
   const search = toOptionalString(input["search"]);
+  const catalogScope = toOptionalString(input["catalogScope"]);
   const limit = toOptionalPositiveInteger(
     input["limit"],
     "INVALID_BUYER_LIST_QUERY",
@@ -217,6 +231,17 @@ export function normalizeListBuyersQuery(input: unknown): ListBuyersQuery {
           )
         }
       : {}),
+    ...(catalogScope
+      ? {
+          catalogScope: ensureEnum(
+            catalogScope,
+            CATALOG_SCOPES,
+            "INVALID_BUYER_LIST_QUERY",
+            "Invalid buyer list query",
+            "catalogScope"
+          )
+        }
+      : { catalogScope: "demo" }),
     ...(search ? { search } : {}),
     ...(limit !== undefined ? { limit } : {}),
     ...(offset !== undefined ? { offset } : {})

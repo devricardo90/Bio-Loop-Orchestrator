@@ -35,7 +35,7 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
   - output: import script/processo reprodutivel para stores, contacts, pickup windows, categories, buyers e lots iniciais
   - gate: pacote real entra sem sobrescrever seed de demo e com validacao de integridade
 
-- [READY] (DATA-03) Catalogo operacional misto demo + real
+- [DONE] (DATA-03) Catalogo operacional misto demo + real
   - owner: DB Agent
   - deps: DATA-02
   - output: estrategia clara para coexistencia entre dataset demo e dataset real controlado
@@ -134,4 +134,4 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ## Proxima READY
 
-- `DATA-03`
+- `API-17`

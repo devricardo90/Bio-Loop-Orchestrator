@@ -75,19 +75,41 @@ function createFakePrisma() {
         return clone(record);
       },
       findMany: async ({ where, skip, take }) => {
-        let items = [...state.disputes.values()].filter((dispute) =>
-          where?.status ? dispute.status === where.status : true
-        );
-        items = items.filter((dispute) => (where?.reason ? dispute.reason === where.reason : true));
+        let items = [...state.disputes.values()];
+        const applyDisputeFilter = (filter, entries) => {
+          let next = entries;
+          if (filter.status) {
+            next = next.filter((dispute) => dispute.status === filter.status);
+          }
+          if (filter.reason) {
+            next = next.filter((dispute) => dispute.reason === filter.reason);
+          }
+          if (filter.order?.lot?.OR) {
+            next = next.filter((dispute) =>
+              filter.order.lot.OR.some((entry) => {
+                const metadata = state.orders.get(dispute.orderId)?.lot?.metadata ?? {};
+                const [path] = entry.metadata.path;
+                return metadata[path] === entry.metadata.equals;
+              })
+            );
+          }
+          return next;
+        };
+
+        if (where?.AND) {
+          for (const filter of where.AND) {
+            items = applyDisputeFilter(filter, items);
+          }
+        } else if (where) {
+          items = applyDisputeFilter(where, items);
+        }
         items = items.slice(skip ?? 0, (skip ?? 0) + (take ?? items.length));
 
         return clone(items);
       },
-      count: async ({ where }) => {
-        const items = [...state.disputes.values()].filter((dispute) =>
-          where?.status ? dispute.status === where.status : true
-        );
-        return items.filter((dispute) => (where?.reason ? dispute.reason === where.reason : true)).length;
+      count: async ({ where } = {}) => {
+        const items = await prisma.dispute.findMany({ where });
+        return items.length;
       },
       findUnique: async ({ where, include }) => {
         const dispute = state.disputes.get(where.id);
@@ -136,6 +158,7 @@ function createFakePrisma() {
           updatedAt: new Date().toISOString(),
           pickupStatus: "PENDING",
           status: "CREATED",
+          lot: { metadata: { source: "scenario_seed" } },
           ...data
         };
         state.orders.set(record.id, clone(record));
