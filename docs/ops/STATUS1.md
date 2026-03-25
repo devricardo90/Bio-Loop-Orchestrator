@@ -59,7 +59,6 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 
 ## Pontos ainda em aberto
 
-- `API-15`: hardening dos jobs
 - `API-16`: pack de readiness de producao
 - `DATA-02`: import controlado do dataset real da Suecia
 - `WEB-14+`: seller/admin mais orientados a dados reais e piloto
@@ -84,8 +83,8 @@ Objetivo dessa fase:
 
 ## Ultimo avancado
 
-- `API-14` fechou idempotencia persistida e auditoria expandida para bid, approval, dispute, pickup, POD e no-show
+- `API-15` fechou locking basico de worker, retry por item, visibilidade operacional dos sweeps e degradacao refletida em `/health` e `/readiness`
 
 ## Proxima task sugerida
 
-- sem nova task `READY` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md) ate destravar as dependencias de `API-15`
+- `API-16` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)

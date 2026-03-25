@@ -49,13 +49,13 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
   - output: protecao contra replay/double-submit em bid, approval, dispute, pickup e POD
   - gate: repeticao nao gera efeito indevido; trilha de auditoria cobre actor, entidade e timestamp
 
-- [BLOCKED] (API-15) Jobs runtime hardening
+- [DONE] (API-15) Jobs runtime hardening
   - owner: API Agent
   - deps: API-14, INFRA-03
   - output: locking basico, retry e visibilidade de `end_auction` e `no_show`
   - gate: scheduler nao duplica processamento e health/readiness distinguem degradacao de worker
 
-- [BLOCKED] (API-16) API production readiness pack
+- [READY] (API-16) API production readiness pack
   - owner: API Agent
   - deps: API-13, API-15
   - output: paginacao, filtros, erros tipados e bootstrap/config seguro para exposicao menos assistida
@@ -133,4 +133,4 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 
 ## Proxima READY
 
-- `API-15` apos `INFRA-03`, portanto sem task `READY` adicional neste recorte
+- `API-16`

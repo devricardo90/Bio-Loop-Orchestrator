@@ -14,6 +14,7 @@ function createFakePrisma() {
 
   const prisma = {
     $transaction: async (fn) => fn(prisma),
+    $queryRawUnsafe: async () => [{ locked: true }],
     lot: {
       create: async ({ data }) => {
         const record = {
@@ -202,11 +203,21 @@ async function main() {
 
   assert.equal(sweepResult.endAuction.scanned, 1);
   assert.equal(sweepResult.endAuction.processed, 1);
+  assert.equal(sweepResult.endAuction.failed, 0);
+  assert.equal(sweepResult.endAuction.retried, 0);
+  assert.equal(sweepResult.endAuction.skipped, 0);
   assert.equal(sweepResult.noShow.scanned, 1);
   assert.equal(sweepResult.noShow.processed, 1);
+  assert.equal(sweepResult.noShow.failed, 0);
+  assert.equal(sweepResult.noShow.retried, 0);
+  assert.equal(sweepResult.noShow.skipped, 0);
   assert.equal(prisma.__state.auctions.get("auction-1").status, "VOID");
   assert.equal(prisma.__state.lots.get("lot-1").status, "EXPIRED");
   assert.equal(prisma.__state.orders.get("order-1").pickupStatus, "NO_SHOW");
+
+  const worker = jobs.getWorkerStatus(new Date("2026-03-24T11:00:01.000Z"));
+  assert.equal(worker.status, "healthy");
+  assert.equal(worker.failureStreak, 0);
 }
 
 await main();
