@@ -1,4 +1,6 @@
+
 "use client";
+
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
@@ -14,10 +16,12 @@ import {
 import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
 
+
 type BuyerAction = {
   decision: BuyerApprovalDecision;
   label: string;
 };
+
 
 const actions: BuyerAction[] = [
   { decision: "APPROVE", label: "Approve" },
@@ -26,23 +30,28 @@ const actions: BuyerAction[] = [
   { decision: "REINSTATE", label: "Reinstate" }
 ];
 
+
 const scopeFilters: Array<{ value: CatalogScope; label: string }> = [
   { value: "all", label: "All catalogs" },
   { value: "demo", label: "Demo only" },
   { value: "real", label: "Real data only" }
 ];
 
+
 function defaultBuyerReasonForDecision(decision: BuyerApprovalDecision): BuyerApprovalReason {
   if (decision === "APPROVE" || decision === "REINSTATE") {
     return "MANUAL_REVIEW";
   }
 
+
   if (decision === "REJECT") {
     return "COMPLIANCE";
   }
 
+
   return "PAYMENT_RISK";
 }
+
 
 export function AdminBuyersDashboard() {
   const { session, hydrated } = useAuthSession();
@@ -56,6 +65,7 @@ export function AdminBuyersDashboard() {
   const [isPending, startTransition] = useTransition();
   const [catalogScope, setCatalogScope] = useState<CatalogScope>("all");
 
+
   const statusCounts = useMemo(() => {
     return buyers.reduce(
       (acc, buyer) => {
@@ -65,6 +75,7 @@ export function AdminBuyersDashboard() {
       { PENDING: 0, APPROVED: 0, REJECTED: 0, SUSPENDED: 0 }
     );
   }, [buyers]);
+
 
   const scopeCounts = useMemo(
     () =>
@@ -78,12 +89,15 @@ export function AdminBuyersDashboard() {
     [buyers]
   );
 
+
   const refreshBuyers = useCallback(async () => {
     setLoading(true);
     setError("");
 
+
     try {
       const result = await listAdminBuyers({ catalogScope });
+
 
       setBuyers(result.buyers);
     } catch (err) {
@@ -94,13 +108,16 @@ export function AdminBuyersDashboard() {
     }
   }, [catalogScope]);
 
+
   useEffect(() => {
     if (!hydrated) {
       return;
     }
 
+
     void refreshBuyers();
   }, [hydrated, refreshBuyers]);
+
 
   if (!hydrated) {
     return (
@@ -115,11 +132,13 @@ export function AdminBuyersDashboard() {
     );
   }
 
+
   async function handleAction(buyer: BuyerRecordDto, decision: BuyerApprovalDecision) {
     const reason = defaultBuyerReasonForDecision(decision);
     setLoadingBuyerId(buyer.buyerId);
     setError("");
     setMessage("");
+
 
     try {
       const request = {
@@ -130,9 +149,11 @@ export function AdminBuyersDashboard() {
         ...(notes.trim() ? { notes: notes.trim() } : {})
       };
 
+
       const result = await approveBuyerOnApi({
         ...request
       });
+
 
       setBuyers((current) =>
         current.map((entry) =>
@@ -154,6 +175,7 @@ export function AdminBuyersDashboard() {
       setLoadingBuyerId(null);
     }
   }
+
 
   return (
     <main className="app-shell">
@@ -202,6 +224,7 @@ export function AdminBuyersDashboard() {
           </div>
         </div>
 
+
         <div className="hero-side">
           <div className="panel admin-control-panel">
             <p className="label">Review context</p>
@@ -226,6 +249,7 @@ export function AdminBuyersDashboard() {
         </div>
       </section>
 
+
       <section className="metrics">
         {[
           ["Pending", statusCounts.PENDING],
@@ -240,6 +264,7 @@ export function AdminBuyersDashboard() {
         ))}
       </section>
 
+
       <section className="panel">
         <div className="panel-head">
           <div>
@@ -247,6 +272,7 @@ export function AdminBuyersDashboard() {
             <h2>Review and update buyer access.</h2>
           </div>
         </div>
+
 
         <div className="compact-list admin-list">
           {buyers.length === 0 ? (
@@ -269,6 +295,7 @@ export function AdminBuyersDashboard() {
                   <span className={`status-badge status-${buyer.status.toLowerCase()}`}>{buyer.status}</span>
                 </div>
 
+
                 <div className="seller-card-grid">
                   <div>
                     <span className="label">Reputation</span>
@@ -288,6 +315,7 @@ export function AdminBuyersDashboard() {
                   </div>
                 </div>
 
+
                 <div className="catalog-row">
                   <span className={`catalog-chip catalog-chip-${buyer.catalog.scope}`}>
                     {buyer.catalog.scope === "real" ? "Real data" : "Demo data"}
@@ -297,6 +325,7 @@ export function AdminBuyersDashboard() {
                     Source: {buyer.catalog.source} · {buyer.catalog.visibleByDefault ? "Visible by default" : "Visible when catalogScope matches"}
                   </p>
                 </div>
+
 
                 {buyer.approval ? (
                   <div className="admin-note">
@@ -312,6 +341,7 @@ export function AdminBuyersDashboard() {
                     <p className="muted">{buyer.approval.notes}</p>
                   </div>
                 ) : null}
+
 
                 <div className="admin-action-row">
                   {actions.map((action) => (
@@ -335,6 +365,7 @@ export function AdminBuyersDashboard() {
           )}
         </div>
 
+
         <p className={`message ${error ? "message-visible" : ""}`} aria-live="polite">
           {error ? `API unavailable: ${error}` : ""}
         </p>
@@ -346,6 +377,7 @@ export function AdminBuyersDashboard() {
         </p>
       </section>
 
+
       <ApiReferencePanel
         workspace="admin-buyers"
         title="Verify buyer approval contracts"
@@ -354,3 +386,6 @@ export function AdminBuyersDashboard() {
     </main>
   );
 }
+
+
+

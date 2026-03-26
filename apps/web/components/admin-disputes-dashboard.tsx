@@ -51,6 +51,39 @@ export function AdminDisputesDashboard() {
   const [isPending, startTransition] = useTransition();
   const [catalogScope, setCatalogScope] = useState<CatalogScope>("all");
 
+  const refreshDisputes = useCallback(
+    async (nextFilter: (typeof filters)[number]) => {
+      setLoading(true);
+      setMessage("");
+      setError("");
+
+      try {
+        const query: { status?: DisputeStatus; catalogScope?: CatalogScope } = {
+          catalogScope
+        };
+
+        if (nextFilter !== "ALL") {
+          query.status = nextFilter;
+        }
+
+        const payload = await listAdminDisputes(query);
+
+        setDisputes(
+          payload.disputes.map((item) => ({
+            ...item,
+            note: item.status === "OPEN" ? "Live admin dispute from API." : "Resolved or cancelled on the API."
+          }))
+        );
+      } catch (err) {
+        setDisputes([]);
+        setError(err instanceof Error ? err.message : "Unable to load admin disputes.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [catalogScope]
+  );
+
   useEffect(() => {
     if (!hydrated) {
       return;
@@ -89,33 +122,6 @@ export function AdminDisputesDashboard() {
     [disputes]
   );
 
-  const refreshDisputes = useCallback(
-    async (nextFilter: (typeof filters)[number]) => {
-      setLoading(true);
-      setMessage("");
-      setError("");
-
-      try {
-        const payload = await listAdminDisputes({
-          status: nextFilter === "ALL" ? undefined : nextFilter,
-          catalogScope
-        });
-        setDisputes(
-          payload.disputes.map((item) => ({
-            ...item,
-            note: item.status === "OPEN" ? "Live admin dispute from API." : "Resolved or cancelled on the API."
-          }))
-        );
-      } catch (err) {
-        setDisputes([]);
-        setError(err instanceof Error ? err.message : "Unable to load admin disputes.");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [catalogScope]
-  );
-
   async function handleResolution(dispute: AdminDisputeRecord, decision: DisputeResolutionDecision) {
     setLoadingDisputeId(dispute.id);
     setMessage("");
@@ -129,9 +135,7 @@ export function AdminDisputesDashboard() {
         ...(note.trim() ? { note: note.trim() } : {})
       };
 
-      const result = await resolveDisputeOnApi({
-        ...request
-      });
+      const result = await resolveDisputeOnApi(request);
 
       setDisputes((current) =>
         current.map((entry) =>
@@ -145,6 +149,7 @@ export function AdminDisputesDashboard() {
             : entry
         )
       );
+
       setMessage(
         decision === "ESCALATE"
           ? "Dispute escalated. The API keeps it open for follow-up."
@@ -180,6 +185,7 @@ export function AdminDisputesDashboard() {
             The disputes panel uses the live admin API and can reveal both seeded disputes and the imported queue from the
             Sweden Supermarkets dataset.
           </p>
+
           <div className="hero-meta">
             <span className="chip chip-accent">{session ? session.roleLabel : "Admin session"}</span>
             <span className="chip">{visibleDisputes.length} visible</span>
@@ -187,6 +193,7 @@ export function AdminDisputesDashboard() {
             <span className="chip chip-muted">{scopeCounts.demo} demo</span>
             <span className="chip chip-muted">{scopeCounts.real} real</span>
           </div>
+
           <div className="filter-row">
             {scopeFilters.map((option) => (
               <button
@@ -199,13 +206,15 @@ export function AdminDisputesDashboard() {
               </button>
             ))}
           </div>
+
           <p className="muted">
             {catalogScope === "real"
               ? "Showing disputes tied to the real Sweden Supermarkets catalog."
               : catalogScope === "demo"
-              ? "Showing disputes that originate from the seeded demo catalog."
-              : "Showing both demo and real disputes so you can compare how each catalog behaves."}
+                ? "Showing disputes that originate from the seeded demo catalog."
+                : "Showing both demo and real disputes so you can compare how each catalog behaves."}
           </p>
+
           <div className="hero-meta">
             <Link href="/admin" className="button button-secondary">
               Admin hub
@@ -219,10 +228,12 @@ export function AdminDisputesDashboard() {
         <div className="hero-side">
           <div className="panel admin-control-panel">
             <p className="label">Review context</p>
+
             <label className="field">
               <span>Reviewer ID</span>
               <input className="input" value={reviewerId} onChange={(event) => setReviewerId(event.target.value)} />
             </label>
+
             <label className="field">
               <span>Resolution note</span>
               <textarea
@@ -232,6 +243,7 @@ export function AdminDisputesDashboard() {
                 rows={4}
               />
             </label>
+
             <div className="filter-row">
               {filters.map((item) => (
                 <button
@@ -255,9 +267,9 @@ export function AdminDisputesDashboard() {
           ["Cancelled", counts.CANCELLED],
           ["Source", "API"]
         ].map(([label, value]) => (
-          <article key={label as string} className="metric-card">
-            <span className="label">{label as string}</span>
-            <strong>{value as string | number}</strong>
+          <article key={String(label)} className="metric-card">
+            <span className="label">{label}</span>
+            <strong>{value}</strong>
           </article>
         ))}
       </section>
@@ -289,6 +301,7 @@ export function AdminDisputesDashboard() {
                     <h3>{dispute.reason.replace("_", " ").toLowerCase()}</h3>
                     <p className="muted">Opened {new Date(dispute.openedAt).toLocaleString("en-GB")}</p>
                   </div>
+
                   <span className={`status-badge status-${dispute.status.toLowerCase()}`}>
                     {dispute.status}
                   </span>
@@ -318,6 +331,7 @@ export function AdminDisputesDashboard() {
                     {dispute.catalog.scope === "real" ? "Real data" : "Demo data"}
                     <small>{dispute.catalog.dataset}</small>
                   </span>
+
                   <p className="muted catalog-context">
                     Source: {dispute.catalog.source} ·{" "}
                     {dispute.catalog.visibleByDefault ? "Visible by default" : "Visible when catalogScope matches"}
@@ -351,9 +365,11 @@ export function AdminDisputesDashboard() {
         <p className={`message ${error ? "message-visible" : ""}`} aria-live="polite">
           {error ? `API unavailable: ${error}` : ""}
         </p>
+
         <p className={`message ${loading ? "message-visible" : ""}`} aria-live="polite">
           {loading ? "Loading disputes from the API..." : ""}
         </p>
+
         <p className={`message ${message ? "message-visible" : ""}`} aria-live="polite">
           {message}
         </p>

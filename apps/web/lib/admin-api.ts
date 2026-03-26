@@ -1,3 +1,4 @@
+
 const apiBaseUrl = process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:4000";
 
 export type CatalogScope = "demo" | "real" | "all";
@@ -51,6 +52,7 @@ export type ListBuyersResult = {
 
 export type DisputeStatus = "OPEN" | "RESOLVED" | "CANCELLED";
 export type DisputeReason = "NO_SHOW" | "QUALITY_ISSUE";
+export type DisputeResolutionDecision = "SETTLE" | "CANCEL_ORDER" | "ESCALATE";
 
 export type DisputeDto = {
   id: string;
@@ -88,6 +90,7 @@ export async function approveBuyerOnApi(input: {
   notes?: string;
 }): Promise<ApproveBuyerResult> {
   const csrfToken = await fetchAuthCsrfToken();
+
   const response = await fetch(`${apiBaseUrl}/admin/buyers/${input.buyerId}/approve`, {
     method: "POST",
     credentials: "include",
@@ -113,6 +116,7 @@ export async function approveBuyerOnApi(input: {
 
 export async function listAdminBuyers(query?: { catalogScope?: CatalogScope }): Promise<ListBuyersResult> {
   const url = new URL(`${apiBaseUrl}/admin/buyers`);
+
   if (query?.catalogScope) {
     url.searchParams.set("catalogScope", query.catalogScope);
   }
@@ -135,9 +139,11 @@ export async function listAdminDisputes(query?: {
   catalogScope?: CatalogScope;
 }): Promise<ListDisputesResult> {
   const url = new URL(`${apiBaseUrl}/admin/disputes`);
+
   if (query?.status) {
     url.searchParams.set("status", query.status);
   }
+
   if (query?.catalogScope) {
     url.searchParams.set("catalogScope", query.catalogScope);
   }
@@ -157,11 +163,12 @@ export async function listAdminDisputes(query?: {
 
 export async function resolveDisputeOnApi(input: {
   disputeId: string;
-  decision: "SETTLE" | "CANCEL_ORDER" | "ESCALATE";
+  decision: DisputeResolutionDecision;
   reviewerId: string;
   note?: string;
 }): Promise<ResolveDisputeResult> {
   const csrfToken = await fetchAuthCsrfToken();
+
   const response = await fetch(`${apiBaseUrl}/admin/disputes/${input.disputeId}/resolve`, {
     method: "POST",
     credentials: "include",
@@ -195,6 +202,7 @@ async function fetchAuthCsrfToken() {
   }
 
   const payload = (await response.json()) as { csrfToken?: unknown };
+
   if (typeof payload.csrfToken !== "string" || payload.csrfToken.length === 0) {
     throw new Error("CSRF token missing from admin auth response");
   }
