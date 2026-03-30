@@ -225,6 +225,22 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
             The buyer feed and auction detail are loaded from the live API. Bids stay disabled until the auction is
             live and the active buyer is approved.
           </p>
+          <div className="journey-banner">
+            <div className="journey-banner-copy">
+              <span className="journey-badge">Primary product proof</span>
+              <strong>{mode === "feed" ? "Feed -> live auction -> pickup" : "Auction detail inside the buyer path"}</strong>
+              <p>
+                {mode === "feed"
+                  ? "Use this workspace first in the demo. It shows where buyers discover lots, verify source=api, and continue into pickup."
+                  : "This detail view is where the buyer path proves contract-safe bidding without leaving the validated runtime."}
+              </p>
+            </div>
+            <div className="journey-banner-steps">
+              <span className="journey-step journey-step-active">1. Feed</span>
+              <span className={`journey-step ${mode === "auction" ? "journey-step-active" : ""}`}>2. Auction</span>
+              <span className="journey-step">3. Pickup</span>
+            </div>
+          </div>
           <div className="hero-meta">
             <span className="chip chip-accent">{formatSyncTime(workspace.lastSyncedAt)}</span>
             <span className="chip">{workspace.auctions.length} auctions tracked</span>
@@ -278,6 +294,26 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
           </article>
         ))}
       </section>
+      {mode === "feed" ? (
+        <section className="buyer-context-strip" aria-label="Buyer feed context">
+          <article className="panel context-card">
+            <p className="eyebrow">Why this comes first</p>
+            <h2>Buyer is the clearest proof of product continuity.</h2>
+            <p className="muted">
+              The feed explains discovery, the auction explains price action, and pickup explains operational closure
+              without changing workspace.
+            </p>
+          </article>
+          <article className="panel context-card">
+            <p className="eyebrow">What to verify</p>
+            <ul className="feature-list">
+              <li>Confirm `source=api` before discussing the rest of the demo</li>
+              <li>Open a live auction from the spotlight or feed list</li>
+              <li>Use pickup queue as the operational continuation after award</li>
+            </ul>
+          </article>
+        </section>
+      ) : null}
 
       {mode === "feed" ? (
         <section className="feed-layout">

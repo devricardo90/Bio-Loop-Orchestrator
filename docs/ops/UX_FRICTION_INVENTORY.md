@@ -55,7 +55,7 @@ Registrar as principais friccoes e ambiguidades de interface observaveis na base
 
 - seller esta claro como segundo passo da demo, mas o valor de negocio de `lots`, `results` e `reports` ainda depende de narrativa do operador
 - a diferenca entre visao operacional corrente e visao de resultado historico pode nao ficar obvia de primeira
-- a jornada seller e mais consultiva do que orientada a acao, o que pode fazer a experiencia parecer menos “viva” que buyer
+- a jornada seller e mais consultiva do que orientada a acao, o que pode fazer a experiencia parecer menos "viva" que buyer
 
 #### Leitura de impacto
 
@@ -69,7 +69,7 @@ Registrar as principais friccoes e ambiguidades de interface observaveis na base
 
 - admin fecha bem a narrativa, mas exige contexto previo para entender por que `catalogScope` e badges de dataset importam
 - buyer approvals e dispute queue sao bons pontos finais, porem a relacao entre governanca e operacao pode ficar implicita demais
-- o papel do admin como “fechamento do loop” esta melhor no discurso da demo do que na autoexplicacao da tela
+- o papel do admin como "fechamento do loop" esta melhor no discurso da demo do que na autoexplicacao da tela
 
 #### Leitura de impacto
 
@@ -82,7 +82,7 @@ Registrar as principais friccoes e ambiguidades de interface observaveis na base
 ### Hierarquia de contexto
 
 - o produto ja tem boa navegacao por role, mas ainda depende do operador para conectar as tres areas como partes de uma mesma historia
-- falta uma camada mais explicita de “onde estou nesta historia” em algumas superficies internas
+- falta uma camada mais explicita de "onde estou nesta historia" em algumas superficies internas
 
 ### Assimetria entre jornadas
 

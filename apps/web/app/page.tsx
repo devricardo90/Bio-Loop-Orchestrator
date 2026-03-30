@@ -45,6 +45,16 @@ export default function HomePage() {
             buyer path first, move through seller review, then finish in admin with contracts and dataset clarity still
             anchored to the validated runtime.
           </p>
+          <div className="hero-callout">
+            <span className="hero-callout-step">Step 1</span>
+            <div>
+              <strong>Start with buyer.</strong>
+              <p>
+                This is the strongest proof of product value: API-backed feed, live auction continuity, and pickup
+                readiness in one path.
+              </p>
+            </div>
+          </div>
           <div className="tag-row">
             <span className="chip chip-accent">Guided pilot demo</span>
             <span className="chip">Buyer source=api first</span>
@@ -67,6 +77,20 @@ export default function HomePage() {
         <div className="hero-side">
           <div className="panel">
             <p className="label">Executive handoff sequence</p>
+            <ol className="sequence-list">
+              <li>
+                <strong>Buyer first</strong>
+                <span>Prove the API-backed path and live buyer continuity before anything else.</span>
+              </li>
+              <li>
+                <strong>Seller second</strong>
+                <span>Shift to lots, results, and reports once the operational baseline is clear.</span>
+              </li>
+              <li>
+                <strong>Admin last</strong>
+                <span>Close with approvals, disputes, and dataset clarity while contracts stay traceable.</span>
+              </li>
+            </ol>
             <ul className="feature-list">
               <li>Sign in once and keep the same authenticated session across the whole demo</li>
               <li>Start with buyer to prove source=api, live auction continuity, and pickup access</li>

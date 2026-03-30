@@ -62,12 +62,38 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
   - relatorio registrado em `docs/ops/done/B6-02.done.md`
 
 ### B6-03 - Criterio de Figma Ready formal
-- status proposto: READY
+- status proposto: DONE
 - objetivo: declarar o que pode entrar em redesign e o que deve permanecer congelado
 - camada: ux + orchestration
 - dependencia-chave: B6-01 e B6-02
+- criterio adicional de fechamento:
+  - checkpoint registrado em `docs/ops/FIGMA_READY_CHECKPOINT.md`
+  - relatorio registrado em `docs/ops/done/B6-03.done.md`
+
+### B6-04 - Refinar handoff principal e buyer shell como primeiro slice de UX/Figma
+- status proposto: DONE
+- objetivo: refinar hierarquia, narrativa e consistencia visual do handoff principal, login e buyer shell sem alterar comportamento funcional
+- camada: ux + frontend
+- dependencia-chave: checkpoint formal de `Figma Ready` e aprovacao do gatilho
+- criterio adicional de fechamento:
+  - relatorio registrado em `docs/ops/done/B6-04.done.md`
+  - gates de `typecheck`, `test` e `build` do web fechados
+
+### B6-05 - Refinar seller overview como segundo slice de UX/Figma
+- status proposto: READY
+- objetivo: elevar hierarquia visual e leitura de valor do seller overview sem tocar resultados, reports ou admin
+- camada: ux + frontend
+- dependencia-chave: conclusao de `B6-04`
 - motivo para entrar em READY:
-  - as jornadas e as friccoes ja foram registradas e agora o checkpoint formal pode ser definido sem redesign ainda
+  - o primeiro slice handoff + buyer foi fechado e o seller continua sendo a proxima superficie madura com impacto visual relevante
+
+### B6-06 - Refinar admin closeout como terceiro slice de UX/Figma
+- status proposto: BLOCKED
+- objetivo: melhorar a narrativa de fechamento e governanca do admin sem redesign amplo
+- camada: ux + frontend
+- dependencia-chave: conclusao de `B6-05`
+- motivo para bloqueio:
+  - o gate de prioridade aprovado coloca seller antes de admin nesta frente
 
 ## DONE
 
@@ -77,30 +103,37 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - `B6-02` - Inventario de friccoes e ambiguidades de interface
   - evidencia final: `docs/ops/UX_FRICTION_INVENTORY.md`
   - gate/evidencia: `docs/ops/done/B6-02.done.md`
+- `B6-03` - Criterio de Figma Ready formal
+  - evidencia final: `docs/ops/FIGMA_READY_CHECKPOINT.md`
+  - gate/evidencia: `docs/ops/done/B6-03.done.md`
+- `B6-04` - Refinar handoff principal e buyer shell como primeiro slice de UX/Figma
+  - evidencia final: ajustes em `apps/web/app/page.tsx`, `apps/web/components/login-panel.tsx`, `apps/web/components/buyer-dashboard.tsx` e `apps/web/app/globals.css`
+  - gate/evidencia: `docs/ops/done/B6-04.done.md`
 
 ## READY
 
-- `B6-03` - Criterio de Figma Ready formal
-  - motivo explicito: a jornada atual e as friccoes principais ja foram registradas sem abrir redesign
+- `B6-05` - Refinar seller overview como segundo slice de UX/Figma
+  - motivo explicito: handoff principal + buyer shell fecharam com gates reais, e seller segue como a proxima superficie madura sem exigir redesign amplo
 
 ## BLOCKED
 
-- nenhuma task `BLOCKED` neste momento
+- `B6-06`
+  - motivo explicito: a prioridade aprovada desta frente coloca seller antes de admin
 
 ## FUTURO
 
-- redesigns por modulo e eventuais implementacoes guiadas por Figma, depois do checkpoint formal
+- redesigns por modulo e eventuais implementacoes guiadas por Figma, depois da aprovacao do gatilho sobre a proxima mini-fase
 
 ## Proxima task pequena escolhida
 
-- `B6-03`
-- objetivo: declarar o que pode entrar em redesign e o que deve permanecer congelado
-- camada: ux + orchestration
+- `B6-05`
+- objetivo: refinar hierarquia visual e leitura de valor do seller overview sem abrir redesign de seller inteiro
+- camada: ux + frontend
 - aceitacao:
-  - modulos maduros e modulos sensiveis classificados
-  - ordem recomendada de entrada no Figma declarada
-  - sem abrir redesign nem implementacao visual ainda
+  - seller overview fica mais claro como segunda etapa do fluxo
+  - lots/results/reports nao mudam de escopo nesta task
+  - admin permanece fora do escopo
 
 ## Observacao operacional
 
-`BACKLOG6` foi aberta depois do fechamento operacional de `BACKLOG4`. A frente segue em modo de leitura estruturada de experiencia e checkpoint, ainda sem redesign amplo.
+`BACKLOG6` foi aberta depois do fechamento operacional de `BACKLOG4`. `B6-01`, `B6-02` e `B6-03` fecharam o checkpoint formal de UX/Figma sem abrir redesign amplo nem tocar a base tecnica validada. `B6-04` fechou o primeiro slice real de implementacao em handoff principal + buyer shell sem tocar seller/admin.

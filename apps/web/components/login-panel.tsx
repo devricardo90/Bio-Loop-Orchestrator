@@ -92,6 +92,13 @@ export function LoginPanel() {
             The browser keeps only httpOnly cookies. This page requests a CSRF token first, posts your role-specific
             credentials to the API, and returns you to the correct operational route.
           </p>
+          <div className="login-bridge">
+            <span className="status-badge status-live">Buyer-first demo flow</span>
+            <p className="muted">
+              Use buyer as the default handoff, then move through seller and admin only after the API-backed flow is
+              clear.
+            </p>
+          </div>
 
           <div className="persona-stack">
             {personaActions.map((action) => (
@@ -149,6 +156,10 @@ export function LoginPanel() {
               <h2>{activeAction.title}</h2>
             </div>
             <span className={`status-badge status-${persona === "buyer" ? "live" : "scheduled"}`}>{persona}</span>
+          </div>
+          <div className="login-route-note">
+            <span className="label">Next route</span>
+            <strong>{nextRoute || activeAction.route}</strong>
           </div>
 
           <label className="field">
