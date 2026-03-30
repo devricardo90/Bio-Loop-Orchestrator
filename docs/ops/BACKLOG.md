@@ -138,11 +138,12 @@
   - deps: DB-01, API-07
   - output: entidades persistidas de invoice/export/fees e compatibilidade com seller reports
   - gate: schema + migration + Prisma Client gerado; billing segue funcional com dados persistidos
-- [BLOCKED] (DB-04) Read models e indices para queries reais
+- [DONE] (DB-04) Read models e indices para queries reais
   - owner: DB Agent
   - deps: DB-02, API-13
   - output: indices/read models para buyers, disputes, reports e buyer feed
   - gate: queries criticas com indice explicito e sem regressao nos endpoints principais
+  - evidencia final: `docs/ops/done/DB-04.done.md`
 - [DONE] (DB-05) Hygiene de migracao e drift
   - owner: DB Agent
   - deps: DB-01, INFRA-05
@@ -161,21 +162,24 @@
   - deps: DB-03, API-12
   - output: endpoints reais para buyer feed, auction detail e runtime de bids/pickup
   - gate: OpenAPI atualizado; responses validadas; buyer flow deixa de depender de ids locais inventados
-- [BLOCKED] (API-14) Idempotencia e auditoria para mutacoes criticas
+- [DONE] (API-14) Idempotencia e auditoria para mutacoes criticas
   - owner: API Agent
   - deps: API-12, API-13
   - output: protecao contra replay/double-submit em bid, approval, dispute, pickup e POD
   - gate: repeticao nao gera efeito indevido; trilha de auditoria cobre actor, entidade e timestamp
-- [BLOCKED] (API-15) Jobs runtime hardening
+  - evidencia final: `docs/ops/done/API-14.done.md`
+- [DONE] (API-15) Jobs runtime hardening
   - owner: API Agent
   - deps: API-14, INFRA-03
   - output: locking basico, retry e visibilidade de `end_auction` e `no_show`
   - gate: scheduler nao duplica processamento e health/readiness distinguem degradacao de worker
-- [BLOCKED] (API-16) API production readiness pack
+  - evidencia final: `docs/ops/done/API-15.done.md`
+- [DONE] (API-16) API production readiness pack
   - owner: API Agent
   - deps: API-13, API-15
   - output: paginacao, filtros, erros tipados e bootstrap/config seguro para exposicao menos assistida
   - gate: endpoints administrativos/listagens com shape consistente e `/reference` sem drift
+  - evidencia final: `docs/ops/done/API-16.done.md`
 
 ### Frontend / Web lane
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { loginWithPersona, type WebAuthPersona } from "../lib/auth-api";
 import { getWorkspaceHomeRoute } from "../lib/route-access";
@@ -35,6 +35,7 @@ const personaActions: Array<{
 
 export function LoginPanel() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const { session, sessionExpired, signIn } = useAuthSession();
   const [persona, setPersona] = useState<WebAuthPersona>("buyer");
@@ -56,9 +57,20 @@ export function LoginPanel() {
       return;
     }
 
-    router.replace(signedInHomeRoute ?? "/");
+    const destination = signedInHomeRoute ?? "/";
+    router.replace(destination);
     router.refresh();
-  }, [router, session, signedInHomeRoute]);
+
+    const fallbackTimer = window.setTimeout(() => {
+      if (window.location.pathname === pathname) {
+        window.location.assign(destination);
+      }
+    }, 150);
+
+    return () => {
+      window.clearTimeout(fallbackTimer);
+    };
+  }, [pathname, router, session, signedInHomeRoute]);
 
   useEffect(() => {
     if (message) {
@@ -122,7 +134,7 @@ export function LoginPanel() {
                 .then((nextSession) => {
                   signIn(nextSession);
                   setMessage(`Signed in as ${nextSession.roleLabel}. Redirecting...`);
-                  router.push(nextRoute || getWorkspaceHomeRoute(nextSession.role));
+                  router.replace(nextRoute || getWorkspaceHomeRoute(nextSession.role));
                   router.refresh();
                 })
                 .catch((error: unknown) => {

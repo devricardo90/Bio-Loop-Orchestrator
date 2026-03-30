@@ -81,11 +81,12 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
   - output: labels, filtros e badges de catálogo que deixam claro o contexto real vs demo nos buyers/disputes
   - gate: admin distingue claramente registros demo e reais quando coexistirem
 
-- [BLOCKED] (WEB-16) Pilot-ready dashboard handoff
+- [DONE] (WEB-16) Pilot-ready dashboard handoff
   - owner: Frontend Agent
   - deps: WEB-14, WEB-15
   - output: entrada unica para buyer/seller/admin com handoff mais executivo
   - gate: uso recorrente por operador humano sem precisar conhecer rotas internas
+  - evidencia final: `docs/ops/done/WEB-16.done.md`
 
 ### Infra / QA support lane
 
@@ -107,11 +108,12 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
   - output: suite cobrindo buyer feed/detail/pickup com dados reais e nao apenas seed de demo
   - gate: browser e2e prova origem real dos dados no caminho principal buyer
 
-- [BLOCKED] (QA-07) Pilot release checklist
+- [DONE] (QA-07) Pilot release checklist
   - owner: QA Agent
   - deps: API-17, WEB-16, INFRA-07
   - output: checklist consolidado para demonstracao/piloto com dados reais controlados
   - gate: buyer, seller, admin, docs e import real passam checklist unico
+  - evidencia final: `docs/ops/done/QA-07.done.md`
 
 ---
 
@@ -135,3 +137,8 @@ Continuacao operacional do backlog apos o fechamento de `M8` em [BACKLOG.md](C:/
 ## Proxima READY
 
 - nenhuma task `READY` restante
+
+## Nota de reconciliacao
+
+- o estado operacional final de `M9` foi consolidado em `docs/ops/BACKLOG2.md`
+- este arquivo fica mantido como snapshot historico da fila da fase, agora reconciliado com os gates realmente fechados

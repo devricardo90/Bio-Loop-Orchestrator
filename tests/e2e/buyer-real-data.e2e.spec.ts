@@ -40,7 +40,10 @@ test("buyer feed, auction detail, and pickup stay anchored to API-backed data", 
     pickupOrderRecord.order.pickupStatus
   );
 
-  await page.locator("article").filter({ hasText: pickupOrderRecord.storeName }).getByRole("link", { name: "Open pickup detail" }).click();
+  await Promise.all([
+    page.waitForURL(new RegExp(`/buyer/orders/${pickupOrderRecord.order.id}$`)),
+    page.locator("article").filter({ hasText: pickupOrderRecord.storeName }).getByRole("link", { name: "Open pickup detail" }).click()
+  ]);
 
   await expect(page.getByRole("heading", { name: "Pickup detail with proof upload and dispute state." })).toBeVisible();
   await expect(page.locator(".detail-sidebar").getByText(pickupOrderRecord.order.id, { exact: true })).toBeVisible();

@@ -29,7 +29,7 @@ pnpm compose:up
 ```
 
 This starts:
-- Postgres on `localhost:5432`
+- Postgres on `localhost:5453`
 - Redis on `localhost:6379`
 
 ## 3. Generate Prisma client
@@ -51,7 +51,7 @@ This applies the existing Prisma migrations and then loads buyers, lots, auction
 ## 4B. Verify migration hygiene
 
 ```bash
-$env:SHADOW_DATABASE_URL="postgresql://bio_loop:bio_loop_dev@localhost:5432/bio_loop_shadow"
+$env:SHADOW_DATABASE_URL="postgresql://bio_loop:bio_loop_dev@localhost:5453/bio_loop_shadow"
 pnpm --filter @bio-loop/api prisma:drift
 pnpm --filter @bio-loop/api db:verify-clean
 ```

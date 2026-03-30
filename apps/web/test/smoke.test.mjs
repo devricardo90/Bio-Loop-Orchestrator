@@ -34,9 +34,12 @@ const adminDisputesDashboard = readFileSync(new URL("../components/admin-dispute
 const sellerView = readFileSync(new URL("../lib/seller-view.ts", import.meta.url), "utf8");
 const pickupView = readFileSync(new URL("../lib/pickup-view.ts", import.meta.url), "utf8");
 
-assert.match(page, /buyer feed/i);
+assert.match(page, /pilot-ready dashboard handoff/i);
+assert.match(page, /buyer operations/i);
+assert.match(page, /seller operations/i);
+assert.match(page, /admin operations/i);
 assert.match(page, /Sign in/);
-assert.match(page, /Admin overview/);
+assert.match(page, /API reference/);
 assert.match(layout, /AuctionStoreProvider/);
 assert.match(layout, /AuthSessionProvider/);
 assert.match(feedPage, /BuyerDashboard/);

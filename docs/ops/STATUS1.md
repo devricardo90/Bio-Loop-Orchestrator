@@ -63,15 +63,12 @@ Snapshot consolidado do projeto apos o fechamento de `M8`.
 
 ## Pontos ainda em aberto
 
-- `API-17`: ingest API para importar/reprocessar o dataset real de forma exposta e auditavel
-- `WEB-16`: pilot-ready dashboard handoff com contexto executivo
-- `QA-06`: suite browser real expandida para buyer real-data (dependencias cumpridas, pronto para gate)
+- nenhum item `READY` restante em `M9`; o proximo trabalho e reconciliacao documental dos snapshots historicos
 
 ## Riscos reais remanescentes
 
 - a suite Playwright depende do ambiente permitir spawn/browser sem bloqueio local
 - seller ainda depende mais de estado derivado local do que buyer/admin
-- import real ainda nao esta exposto por uma API operacional dedicada
 - jobs precisam de locking e visibilidade melhores antes de exposicao menos assistida
 
 ## Onde estamos indo
@@ -93,6 +90,12 @@ Objetivo dessa fase:
 - `INFRA-06` separou o CI em gate rápido (lint/typecheck/test) e gate pesado (drift + db verify + browser e2e) para feedbacks previsíveis
 - `INFRA-07` documentou o perfil pilot (`docs/ops/PILOT_RUNTIME_PROFILE.md`) com as portas, o import real e as verificações necessárias
 
+## Fechamento adicional de M9
+
+- `QA-06` fechou o browser gate buyer real-data no fluxo feed -> auction -> pickup detail
+- `WEB-16` consolidou o `/` como handoff executivo unico para buyer, seller e admin
+- `QA-07` fechou o checklist consolidado do piloto com `typecheck`, testes de web/api e `test:e2e` verde
+
 ## Proxima task sugerida
 
-- `QA-06` em [BACKLOG1.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG1.md)
+- `M9 clean-up documental` em [BACKLOG2.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/BACKLOG2.md)

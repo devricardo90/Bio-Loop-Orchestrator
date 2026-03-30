@@ -872,6 +872,28 @@ h3 {
   color: var(--muted);
 }
 
+.handoff-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.handoff-card {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.handoff-checklist {
+  margin: 0;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(15, 93, 75, 0.08);
+  border: 1px solid rgba(15, 93, 75, 0.14);
+  color: var(--text);
+  line-height: 1.55;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -890,6 +912,7 @@ h3 {
   .detail-layout,
   .seller-layout,
   .pickup-layout,
+  .handoff-grid,
   .pickup-action-grid {
     grid-template-columns: 1fr;
   }

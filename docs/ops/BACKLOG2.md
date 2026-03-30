@@ -141,9 +141,10 @@ Observacoes:
   - gate documentado
 - evidencia encontrada:
   - alteracoes em `apps/web/components/seller-dashboard.tsx` e `apps/web/components/auction-store.tsx`
-  - sem relatorio `done` dedicado
-  - sem teste dedicado identificado no repo para esse fechamento especifico
-- status real: PARTIAL
+  - o runtime seller consome o estado compartilhado do `AuctionStoreProvider`, que e reidratado via `fetchBuyerFeed()` da API real
+  - validacao executada em `2026-03-30`: `pnpm.cmd --filter @bio-loop/web test` PASS, `pnpm.cmd --filter @bio-loop/web build` PASS, `pnpm.cmd --filter @bio-loop/web typecheck` PASS, `node apps/api/test/api-16.integration.test.mjs` PASS
+  - relatorio registrado em `docs/ops/done/WEB-14.done.md`
+- status real: DONE
 
 ### WEB-15 - Admin operational clarity for real data
 - descricao: filtros e badges para distinguir catalogo demo vs real em buyers/disputes
@@ -170,8 +171,10 @@ Observacoes:
   - resultado documentado
 - evidencia encontrada:
   - workflow em `.github/workflows/ci.yml`
-  - sem relatorio `done` dedicado
-- status real: PARTIAL
+  - `quick` executa install, `prisma:generate`, `lint`, `typecheck` e `test`
+  - `heavy` depende de `quick` e executa `prisma:drift`, `db:verify-clean` e `test:e2e`
+  - relatorio registrado em `docs/ops/done/INFRA-06.done.md`
+- status real: DONE
 
 ### INFRA-07 - Runtime profile para piloto
 - descricao: documentacao operacional do profile de piloto com dados reais
@@ -183,8 +186,9 @@ Observacoes:
   - validacao operacional registrada
 - evidencia encontrada:
   - documento em `docs/ops/PILOT_RUNTIME_PROFILE.md`
-  - sem relatorio `done` dedicado
-- status real: PARTIAL
+  - `.env.example`, `docker-compose.yml`, `docs/ops/DEVELOPER_QUICKSTART.md` e `docs/ops/LOCAL_RUNTIME_STACK.md` reconciliados para Postgres em `5453`
+  - relatorio registrado em `docs/ops/done/INFRA-07.done.md`
+- status real: DONE
 
 ### QA-06 - Browser e2e expandido para buyer real-data
 - descricao: suite browser para buyer feed/detail/pickup com origem real de dados
@@ -196,45 +200,48 @@ Observacoes:
   - gate browser documentado
 - evidencia encontrada:
   - teste em `tests/e2e/buyer-real-data.e2e.spec.ts`
-  - `STATUS.md` afirma fechado, mas `STATUS1.md` afirma que ainda e a proxima task sugerida
-  - sem relatorio `done` dedicado
-- status real: PARTIAL
+  - gate browser executado com `pnpm.cmd exec playwright test tests/e2e/buyer-real-data.e2e.spec.ts`: PASS
+  - ajuste necessario no redirect de login em `apps/web/components/login-panel.tsx` para o fluxo sair de `/login` no e2e real
+  - relatorio registrado em `docs/ops/done/QA-06.done.md`
+- status real: DONE
+
+### WEB-16 - Pilot-ready dashboard handoff
+- descricao: entrada unica para buyer/seller/admin com handoff mais executivo
+- camada: web
+- dependencias: WEB-14, WEB-15
+- criterios de aceitacao:
+  - uso recorrente por operador humano sem precisar conhecer rotas internas
+  - handoff executivo coerente com o estado atual do produto
+  - gates de frontend pertinentes executados
+- evidencia encontrada:
+  - home consolidada em `apps/web/app/page.tsx` com trilhas explicitas de buyer, seller e admin
+  - smoke test atualizado em `apps/web/test/smoke.test.mjs`
+  - estilos de handoff adicionados em `apps/web/app/globals.css`
+  - validacao executada em `2026-03-30`: `pnpm.cmd --filter @bio-loop/web test` PASS, `pnpm.cmd --filter @bio-loop/web build` PASS, `pnpm.cmd --filter @bio-loop/web typecheck` PASS
+  - relatorio registrado em `docs/ops/done/WEB-16.done.md`
+- status real: DONE
+
+### QA-07 - Pilot release checklist
+- descricao: checklist consolidado para demonstracao/piloto com dados reais controlados
+- camada: qa
+- dependencias: API-17, WEB-16, INFRA-07
+- criterios de aceitacao:
+  - buyer, seller, admin, docs e import real passam checklist unico
+  - checklist pode ser executado por operador humano sem improviso
+  - evidencias finais de piloto ficam rastreaveis
+- evidencia encontrada:
+  - gate consolidado executado a partir de `docs/ops/POST_M7_RELEASE_GATE.md` e `docs/ops/PILOT_RUNTIME_PROFILE.md`
+  - `pnpm.cmd typecheck` PASS
+  - `pnpm.cmd --filter @bio-loop/web test` PASS
+  - `pnpm.cmd --filter @bio-loop/api test` PASS
+  - `pnpm.cmd test:e2e` PASS com 7/7 specs browser
+  - spec `tests/e2e/buyer-real-data.e2e.spec.ts` endurecida para aguardar a navegacao de pickup detail antes das assertions
+  - relatorio registrado em `docs/ops/done/QA-07.done.md`
+- status real: DONE
 
 ## READY
 
-### VAL-INFRA-06 - Validar e fechar o split de CI
-- descricao: confirmar que o workflow rapido/pesado atual corresponde ao gate pretendido e registrar o fechamento
-- camada: infra
-- dependencias: DB-05
-- criterios de aceitacao:
-  - workflow revisado sem drift documental
-  - gates rapido/pesado descritos no backlog/status
-  - relatorio `done` e backlog atualizados
-- status real: READY
-
-### VAL-WEB-14 - Validar e fechar WEB-14
-- descricao: reexecutar gate real das surfaces seller em dados reais e registrar evidencia de fechamento
-- camada: web
-- dependencias: DB-04, API-16
-- criterios de aceitacao:
-  - seller lots/results usam dados reais sem ambiguidade de origem
-  - gates de frontend e integracao pertinentes executados
-  - relatorio `done` criado
-- status real: READY
-
 ## BLOCKED
-
-### QA-06 - Fechamento final bloqueado
-- motivo explicito: depende de `API-16` e `WEB-14` validadas; hoje existe spec de Playwright, mas o gate final permanece sem evidencia consistente e a documentacao esta contraditoria
-- status real: BLOCKED
-
-### WEB-16 - Pilot-ready dashboard handoff
-- motivo explicito: depende do fechamento real de `WEB-14` e `WEB-15`; o backlog anterior marcou `BLOCKED` sem explicitar isso corretamente
-- status real: BLOCKED
-
-### QA-07 - Pilot release checklist
-- motivo explicito: depende de `WEB-16` concluida e de `INFRA-07` fechada; o checklist unico de piloto ainda nao tem base final estavel
-- status real: BLOCKED
 
 ## FUTURO
 
@@ -246,11 +253,12 @@ Observacoes:
 
 ## Proxima task pequena escolhida
 
-### VAL-INFRA-06
-- objetivo: confirmar o fechamento real do split de CI rapido/pesado ja implementado, sem abrir novo escopo
-- camada: infra
-- dependencias: DB-05
+### M9 clean-up documental
+- objetivo: reconciliar os snapshots historicos (`STATUS.md`, `STATUS1.md`, `BACKLOG.md`, `BACKLOG1.md`) com o estado final validado de `BACKLOG2`
+- camada: docs + orchestration
+- dependencias: fechamento de `QA-07`
 - aceitacao:
-  - gate tecnico executado
+  - snapshots historicos sem contradicoes materiais
+  - backlog operacional e status de milestone coerentes
   - evidencias registradas
-  - `INFRA-06` promovida para `DONE` ou rebaixada com motivo explicito
+  - itens historicos reconciliados sem promover `DONE` sem gate real

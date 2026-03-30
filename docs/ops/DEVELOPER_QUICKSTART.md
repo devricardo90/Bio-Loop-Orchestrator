@@ -19,7 +19,7 @@ The root `.env` already contains the local defaults for:
 
 - API: `http://localhost:4000`
 - Web: `http://localhost:3001`
-- Postgres: `postgresql://bio_loop:bio_loop_dev@localhost:5432/bio_loop`
+- Postgres: `postgresql://bio_loop:bio_loop_dev@localhost:5453/bio_loop`
 - Redis: `redis://localhost:6379`
 
 ## 2. Start Postgres and Redis

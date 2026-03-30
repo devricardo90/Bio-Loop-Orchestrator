@@ -95,3 +95,8 @@
 - `DB-05` fechou a hygiene de migracao com gate explicito de drift, verify-clean cross-platform e validacao no pipeline contra Postgres limpo.
 - Nao ha task `READY` restante no backlog atual.
 - O momento correto para o usuario enviar os dados reais dos supermercados da Suecia e logo apos `DB-03`; os campos/documentos necessarios ficam em [REAL_DATA_ONBOARDING.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/REAL_DATA_ONBOARDING.md).
+
+## Nota historica
+
+- este snapshot fecha o recorte ate o fim de `M8`
+- o fechamento validado de `M9` foi consolidado depois em `docs/ops/BACKLOG2.md` e nos relatórios de `docs/ops/done/`
