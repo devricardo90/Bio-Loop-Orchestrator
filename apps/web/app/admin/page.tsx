@@ -6,10 +6,10 @@ export default function AdminHomePage() {
       <section className="hero">
         <div className="hero-copy">
           <p className="eyebrow">Admin overview</p>
-          <h1>Operational review for buyers and disputes.</h1>
+          <h1>Admin closeout for approvals, disputes, and dataset clarity.</h1>
           <p className="lead">
-            The admin area supports manual review of buyer approvals and dispute resolution with the same live API
-            contracts exposed in `/reference`.
+            Use admin as the final step of the guided demo. This workspace closes the loop with buyer approvals,
+            dispute handling, and clear separation between demo and real catalog records.
           </p>
           <div className="hero-meta">
             <Link href="/admin/buyers" className="button button-primary">
@@ -28,10 +28,10 @@ export default function AdminHomePage() {
           <div className="panel">
             <p className="label">Operational checklist</p>
             <ul className="feature-list">
-              <li>Review buyer approvals against live API state</li>
-              <li>Resolve or escalate disputes from the same queue used in e2e</li>
-              <li>Use consistent loading, empty, and error states during manual checks</li>
-              <li>Jump to `/reference` from the workspaces when troubleshooting</li>
+              <li>Open buyers first to show approvals on the live admin surface</li>
+              <li>Use `catalogScope` and dataset badges to explain real versus demo records</li>
+              <li>Move to disputes to show the operational loop closing without dead-ends</li>
+              <li>Jump to `/reference` whenever the audience asks for contract-level confirmation</li>
             </ul>
           </div>
         </div>

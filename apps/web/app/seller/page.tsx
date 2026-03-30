@@ -11,10 +11,10 @@ export default function SellerHomePage() {
       <section className="hero hero-home">
         <div className="hero-copy">
           <p className="eyebrow">Seller overview</p>
-          <h1>Operational control for lots, outcomes, and billing.</h1>
+          <h1>Seller review for lots, outcomes, and reports.</h1>
           <p className="lead">
-            The seller area is tuned for manual review of listed lots, terminal states, and billing outputs tied to
-            the current API-backed runtime.
+            Use seller as the second step of the guided demo. This workspace shows how the same validated baseline
+            supports listed lots, terminal states, and report-ready outputs from the supply side.
           </p>
           <div className="hero-meta">
             <Link href="/seller/lots" className="button button-primary">
@@ -33,11 +33,11 @@ export default function SellerHomePage() {
           <div className="panel">
             <p className="label">Operational checklist</p>
             <ul className="feature-list">
-              <li>Review listed lots and current auction states</li>
-              <li>Inspect results and settlement-ready outcomes</li>
-              <li>Export billing snapshots for settled orders</li>
-              <li>Open lot detail pages for specific auction outcomes</li>
-              <li>Validate seller behavior against the same runtime seen by buyer and admin</li>
+              <li>Review listed lots after the buyer path has already proved source=api</li>
+              <li>Inspect results and settlement-ready outcomes as the seller-side continuation of the story</li>
+              <li>Open reports to show export-ready operational evidence</li>
+              <li>Use lot and result detail pages to answer follow-up questions without leaving the seller flow</li>
+              <li>Keep the narrative tied to the same runtime later reused by admin</li>
             </ul>
           </div>
         </div>
