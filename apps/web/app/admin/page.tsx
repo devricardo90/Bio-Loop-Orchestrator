@@ -21,6 +21,21 @@ export default function AdminHomePage() {
               </p>
             </div>
           </div>
+          <div className="journey-banner admin-journey-banner">
+            <div className="journey-banner-copy">
+              <span className="journey-badge">Operational governance</span>
+              <strong>Approvals -> disputes -> dataset clarity</strong>
+              <p>
+                Admin should read like the closing layer of the product: who gets access, how exceptions are handled,
+                and how real versus demo data stays explicit.
+              </p>
+            </div>
+            <div className="journey-banner-steps">
+              <span className="journey-step journey-step-active">1. Buyers</span>
+              <span className="journey-step">2. Disputes</span>
+              <span className="journey-step">3. Catalog scope</span>
+            </div>
+          </div>
           <div className="hero-meta">
             <Link href="/admin/buyers" className="button button-primary">
               Buyer approvals

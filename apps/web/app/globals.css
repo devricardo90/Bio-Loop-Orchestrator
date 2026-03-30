@@ -642,6 +642,11 @@ h3 {
   background: rgba(181, 107, 45, 0.06);
 }
 
+.admin-journey-banner {
+  border-color: rgba(26, 29, 31, 0.12);
+  background: rgba(26, 29, 31, 0.05);
+}
+
 .journey-banner-steps {
   display: flex;
   flex-wrap: wrap;
