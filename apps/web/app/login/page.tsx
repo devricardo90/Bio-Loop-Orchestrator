@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { LoginPanel } from "../../components/login-panel";
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function LoginPage() {
-  return <LoginPanel />;
+  return (
+    <Suspense fallback={null}>
+      <LoginPanel />
+    </Suspense>
+  );
 }
