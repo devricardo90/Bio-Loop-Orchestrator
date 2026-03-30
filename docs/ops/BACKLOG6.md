@@ -6,8 +6,8 @@ DOCUMENTED-NEXT
 
 ## Estado operacional
 
-- frente ativa principal: nao
-- prioridade relativa: imediatamente seguinte a `BACKLOG4`
+- frente ativa principal: sim
+- frente de origem da transicao: `BACKLOG4`
 - leitura obrigatoria antes de executar: `docs/agents/CONTEXT_SHARED.md`
 
 ## Papel desta frente
@@ -45,39 +45,47 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 ## Candidatas registradas para fase seguinte
 
 ### B6-01 - Mapa de jornadas reais buyer / seller / admin
-- status proposto: CANDIDATA-NEXT
+- status proposto: DONE
 - objetivo: registrar a jornada atual como base para checkpoint de UX
 - camada: ux + produto
 - dependencia-chave: consolidacao da narrativa de demo/piloto em `BACKLOG4`
+- criterio adicional de fechamento:
+  - relatorio registrado em `docs/ops/done/B6-01.done.md`
 
 ### B6-02 - Inventario de friccoes e ambiguidades de interface
-- status proposto: CANDIDATA-NEXT
+- status proposto: DONE
 - objetivo: listar os pontos de confusao reais observados nos fluxos principais
 - camada: ux + frontend
 - dependencia-chave: resultado do uso guiado definido em `BACKLOG4`
+- criterio adicional de fechamento:
+  - inventario registrado em `docs/ops/UX_FRICTION_INVENTORY.md`
+  - relatorio registrado em `docs/ops/done/B6-02.done.md`
 
 ### B6-03 - Criterio de Figma Ready formal
-- status proposto: CANDIDATA-NEXT
+- status proposto: READY
 - objetivo: declarar o que pode entrar em redesign e o que deve permanecer congelado
 - camada: ux + orchestration
 - dependencia-chave: B6-01 e B6-02
+- motivo para entrar em READY:
+  - as jornadas e as friccoes ja foram registradas e agora o checkpoint formal pode ser definido sem redesign ainda
 
 ## DONE
 
-- nenhuma task executada ainda nesta frente
+- `B6-01` - Mapa de jornadas reais buyer / seller / admin
+  - evidencia final: `docs/ops/UX_JOURNEY_MAP.md`
+  - gate/evidencia: `docs/ops/done/B6-01.done.md`
+- `B6-02` - Inventario de friccoes e ambiguidades de interface
+  - evidencia final: `docs/ops/UX_FRICTION_INVENTORY.md`
+  - gate/evidencia: `docs/ops/done/B6-02.done.md`
 
 ## READY
 
-- nenhuma task `READY`
+- `B6-03` - Criterio de Figma Ready formal
+  - motivo explicito: a jornada atual e as friccoes principais ja foram registradas sem abrir redesign
 
 ## BLOCKED
 
-- `B6-01`
-  - motivo explicito: depende da consolidacao da narrativa operacional principal em `BACKLOG4`
-- `B6-02`
-  - motivo explicito: depende de uso guiado ou roteiro aprovado em `BACKLOG4`
-- `B6-03`
-  - motivo explicito: depende da conclusao de `B6-01` e `B6-02`
+- nenhuma task `BLOCKED` neste momento
 
 ## FUTURO
 
@@ -85,9 +93,14 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## Proxima task pequena escolhida
 
-- nenhuma task escolhida
-- esta frente so deve abrir depois da primeira rodada controlada de `BACKLOG4`
+- `B6-03`
+- objetivo: declarar o que pode entrar em redesign e o que deve permanecer congelado
+- camada: ux + orchestration
+- aceitacao:
+  - modulos maduros e modulos sensiveis classificados
+  - ordem recomendada de entrada no Figma declarada
+  - sem abrir redesign nem implementacao visual ainda
 
 ## Observacao operacional
 
-`BACKLOG6` e a frente imediatamente seguinte, mas nao deve ser executada enquanto `BACKLOG4` estiver em definicao inicial.
+`BACKLOG6` foi aberta depois do fechamento operacional de `BACKLOG4`. A frente segue em modo de leitura estruturada de experiencia e checkpoint, ainda sem redesign amplo.
