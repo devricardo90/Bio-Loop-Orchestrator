@@ -7,6 +7,7 @@ type WorkspaceStateProps = {
   title: string;
   description: string;
   tone?: "loading" | "error" | "empty";
+  statusLabel?: string;
   primaryAction?: {
     label: string;
     href: string;
@@ -23,13 +24,29 @@ export function WorkspaceState({
   title,
   description,
   tone = "empty",
+  statusLabel,
   primaryAction,
   secondaryAction
 }: WorkspaceStateProps) {
+  const resolvedStatusLabel =
+    statusLabel ??
+    (tone === "loading" ? "Loading" : tone === "error" ? "Needs attention" : "No records");
+
+  const titlePrefix =
+    tone === "loading"
+      ? "Syncing the workspace"
+      : tone === "error"
+        ? "The runtime needs attention"
+        : "The current view has no records";
+
   return (
     <section className={`panel empty-state workspace-state workspace-state-${tone}`}>
-      <p className="eyebrow">{eyebrow}</p>
+      <div className="workspace-state-head">
+        <p className="eyebrow">{eyebrow}</p>
+        <span className={`status-badge workspace-state-badge workspace-state-badge-${tone}`}>{resolvedStatusLabel}</span>
+      </div>
       <h2>{title}</h2>
+      <p className="workspace-state-context">{titlePrefix}</p>
       <p className="muted">{description}</p>
       <div className="login-actions">
         {primaryAction ? (

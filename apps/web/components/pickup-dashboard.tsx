@@ -155,6 +155,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
           title="Loading pickup workspace."
           description="The buyer pickup queue and order detail are loading from the live API."
           tone="loading"
+          statusLabel="Pickup sync"
         />
       </main>
     );
@@ -168,6 +169,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
           title="Unable to load the pickup workspace."
           description={error}
           tone="error"
+          statusLabel="Pickup API error"
           primaryAction={{ label: "Buyer feed", href: "/buyer/feed" }}
           secondaryAction={{ label: "Retry", onClick: () => void reloadWorkspace() }}
         />
@@ -183,6 +185,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
           title="No pickup data available."
           description="The live buyer API returned no pickup-ready orders for the current workspace."
           tone="empty"
+          statusLabel="No pickup orders"
           primaryAction={{ label: "Buyer feed", href: "/buyer/feed" }}
           secondaryAction={{ label: "Reload workspace", onClick: () => void reloadWorkspace() }}
         />
@@ -281,6 +284,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                   title="No pickup orders for the active buyer."
                   description="Switch buyer profiles or return to the buyer feed to open a different runtime path."
                   tone="empty"
+                  statusLabel="Queue empty"
                   primaryAction={{ label: "Back to feed", href: "/buyer/feed" }}
                 />
               )}
@@ -477,6 +481,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                 title="Pickup order not found."
                 description="Return to the pickup queue and open an active order from the live buyer workspace."
                 tone="empty"
+                statusLabel="Order unavailable"
                 primaryAction={{ label: "Back to pickup queue", href: "/buyer/orders" }}
               />
             )}

@@ -281,6 +281,7 @@ export function AdminBuyersDashboard() {
               title="No buyer records available."
               description="The admin API returned no buyers for the current workspace."
               tone={error ? "error" : "empty"}
+              statusLabel={error ? "Admin API error" : "Buyer registry empty"}
               primaryAction={{ label: "Admin hub", href: "/admin" }}
               secondaryAction={{ label: "Retry", onClick: () => void refreshBuyers(), disabled: loading }}
             />
@@ -366,13 +367,13 @@ export function AdminBuyersDashboard() {
         </div>
 
 
-        <p className={`message ${error ? "message-visible" : ""}`} aria-live="polite">
+        <p className={`message status-message status-message-error ${error ? "message-visible" : ""}`} aria-live="polite">
           {error ? `API unavailable: ${error}` : ""}
         </p>
-        <p className={`message ${loading ? "message-visible" : ""}`} aria-live="polite">
+        <p className={`message status-message status-message-loading ${loading ? "message-visible" : ""}`} aria-live="polite">
           {loading ? "Loading buyer registry from the API..." : ""}
         </p>
-        <p className={`message ${message ? "message-visible" : ""}`} aria-live="polite">
+        <p className={`message status-message status-message-success ${message ? "message-visible" : ""}`} aria-live="polite">
           {message}
         </p>
       </section>
@@ -386,6 +387,5 @@ export function AdminBuyersDashboard() {
     </main>
   );
 }
-
 
 

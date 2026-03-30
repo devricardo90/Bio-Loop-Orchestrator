@@ -289,6 +289,7 @@ export function AdminDisputesDashboard() {
               title="No disputes match the current filter."
               description="Switch filters or create a new dispute in the API."
               tone={error ? "error" : "empty"}
+              statusLabel={error ? "Dispute API error" : "Dispute queue empty"}
               primaryAction={{ label: "Admin hub", href: "/admin" }}
               secondaryAction={{ label: "Retry", onClick: () => void refreshDisputes(filter), disabled: loading }}
             />
@@ -362,15 +363,15 @@ export function AdminDisputesDashboard() {
           )}
         </div>
 
-        <p className={`message ${error ? "message-visible" : ""}`} aria-live="polite">
+        <p className={`message status-message status-message-error ${error ? "message-visible" : ""}`} aria-live="polite">
           {error ? `API unavailable: ${error}` : ""}
         </p>
 
-        <p className={`message ${loading ? "message-visible" : ""}`} aria-live="polite">
+        <p className={`message status-message status-message-loading ${loading ? "message-visible" : ""}`} aria-live="polite">
           {loading ? "Loading disputes from the API..." : ""}
         </p>
 
-        <p className={`message ${message ? "message-visible" : ""}`} aria-live="polite">
+        <p className={`message status-message status-message-success ${message ? "message-visible" : ""}`} aria-live="polite">
           {message}
         </p>
       </section>

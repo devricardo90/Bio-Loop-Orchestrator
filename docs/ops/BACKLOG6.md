@@ -97,6 +97,31 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
   - relatorio registrado em `docs/ops/done/B6-06.done.md`
   - gates de `typecheck`, `test` e `build` do web fechados
 
+### B6-07 - Alinhar estados compartilhados de loading / empty / error / success
+- status proposto: DONE
+- objetivo: aumentar a consistencia percebida entre buyer, seller, admin e pickup por meio do tratamento visual e textual dos estados compartilhados
+- camada: ux + frontend
+- dependencia-chave: conclusao da primeira rodada de slices `B6-04` a `B6-06`
+- criterio adicional de fechamento:
+  - relatorio registrado em `docs/ops/done/B6-07.done.md`
+  - gates de `typecheck`, `test` e `build` do web fechados
+
+### B6-08 - Design layer minimo reutilizavel
+- status proposto: FUTURO
+- objetivo: consolidar um pequeno layer reutilizavel somente quando os padroes visuais ja tiverem maturado o suficiente
+- camada: ux + frontend
+- dependencia-chave: mais uma rodada de validacao pratica antes de formalizar base reutilizavel
+- motivo para nao priorizar agora:
+  - o gatilho aprovou manter esta task documentada, mas ainda nao priorizada
+
+### B6-09 - Buyer detail + pickup continuity
+- status proposto: READY
+- objetivo: reforcar a continuidade de experiencia entre buyer feed, auction detail e pickup sem abrir redesign amplo do fluxo inteiro
+- camada: ux + frontend
+- dependencia-chave: conclusao de `B6-07`
+- motivo para entrar em READY:
+  - os estados compartilhados foram alinhados e o proximo ganho mais inteligente volta para o fluxo buyer mais importante do produto
+
 ## DONE
 
 - `B6-01` - Mapa de jornadas reais buyer / seller / admin
@@ -117,10 +142,14 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - `B6-06` - Refinar admin closeout como terceiro slice de UX/Figma
   - evidencia final: ajustes em `apps/web/app/admin/page.tsx` e `apps/web/app/globals.css`
   - gate/evidencia: `docs/ops/done/B6-06.done.md`
+- `B6-07` - Alinhar estados compartilhados de loading / empty / error / success
+  - evidencia final: ajustes em `apps/web/components/workspace-state.tsx`, `apps/web/components/admin-buyers-dashboard.tsx`, `apps/web/components/admin-disputes-dashboard.tsx`, `apps/web/components/pickup-dashboard.tsx` e `apps/web/app/globals.css`
+  - gate/evidencia: `docs/ops/done/B6-07.done.md`
 
 ## READY
 
-- nenhuma task `READY` neste momento
+- `B6-09` - Buyer detail + pickup continuity
+  - motivo explicito: `B6-07` fechou a consistencia transversal e o proximo ganho aprovado volta para a continuidade do fluxo buyer
 
 ## BLOCKED
 
@@ -128,13 +157,19 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## FUTURO
 
+- `B6-08` - Design layer minimo reutilizavel
 - redesigns por modulo e eventuais implementacoes guiadas por Figma, depois da aprovacao do gatilho sobre a proxima mini-fase
 
 ## Proxima task pequena escolhida
 
-- nenhuma task escolhida
-- a proxima mini-fase desta frente depende de nova decisao do gatilho
+- `B6-09`
+- objetivo: reforcar a continuidade de experiencia entre buyer feed, auction detail e pickup sem abrir redesign amplo do fluxo inteiro
+- camada: ux + frontend
+- aceitacao:
+  - buyer detail e pickup passam a parecer uma mesma jornada
+  - o fluxo principal ganha continuidade sem alterar comportamento
+  - `B6-08` continua fora da execucao
 
 ## Observacao operacional
 
-`BACKLOG6` foi aberta depois do fechamento operacional de `BACKLOG4`. `B6-01`, `B6-02` e `B6-03` fecharam o checkpoint formal de UX/Figma sem abrir redesign amplo nem tocar a base tecnica validada. `B6-04`, `B6-05` e `B6-06` fecharam a primeira rodada completa de slices em handoff/buyer, seller e admin.
+`BACKLOG6` foi aberta depois do fechamento operacional de `BACKLOG4`. `B6-01`, `B6-02` e `B6-03` fecharam o checkpoint formal de UX/Figma sem abrir redesign amplo nem tocar a base tecnica validada. `B6-04`, `B6-05` e `B6-06` fecharam a primeira rodada completa de slices em handoff/buyer, seller e admin. `B6-07` consolidou a linguagem compartilhada de loading, empty, error e success sem abrir design system amplo. `B6-09` passa a ser a proxima continuidade aprovada do fluxo buyer.
