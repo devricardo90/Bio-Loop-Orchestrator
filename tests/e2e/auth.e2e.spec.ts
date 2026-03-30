@@ -22,7 +22,7 @@ test("seller is redirected away from the admin workspace by the route guard", as
   await page.goto("/admin/buyers");
 
   await expect(page).toHaveURL(/\/seller$/);
-  await expect(page.getByRole("heading", { name: "Operational control for lots, outcomes, and billing." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Seller review for lots, outcomes, and reports." })).toBeVisible();
 });
 
 test("expired-session redirect preserves the sign-in handoff", async ({ page }) => {

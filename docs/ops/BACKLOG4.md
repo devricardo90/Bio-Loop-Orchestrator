@@ -97,6 +97,44 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
   - `B4-01` e `B4-02` consolidaram narrativa e preflight, reduzindo risco de retrabalho de copy
   - relatorio registrado em `docs/ops/done/B4-03.done.md`
 
+### B4-04 - Dry-run assistido da demo com finding log
+- status proposto: DONE
+- objetivo: executar um ensaio controlado da demo e registrar friccoes reais antes de ampliar a frente
+- camada: qa + produto/operacao
+- dependencias: `B4-01`, `B4-02`, `B4-03`
+- criterios de aceitacao:
+  - ensaio registrado com evidencias rastreaveis
+  - achados objetivos registrados
+  - nenhum blocker silencioso deixado sem classificacao
+- motivo para entrar em READY:
+  - usa a narrativa e o checklist ja consolidados para validar a frente com uso quase real
+  - relatorio registrado em `docs/ops/done/B4-04.done.md`
+
+### B4-05 - Operator handoff card de 1 pagina
+- status proposto: DONE
+- objetivo: condensar roteiro e checklist em um artefato unico e ultra-curto para uso ao vivo
+- camada: docs + produto/operacao
+- dependencias: `B4-04`
+- criterios de aceitacao:
+  - artefato de uma pagina ou equivalente curto
+  - buyer, seller, admin, links e preflight em formato de consulta rapida
+  - sem contradicao com `PILOT_DEMO_SCRIPT.md` e `PILOT_DEMO_READINESS_CHECKLIST.md`
+- motivo para entrar em READY:
+  - `B4-04` fechou o ensaio e estabilizou a leitura pratica do roteiro
+  - relatorio registrado em `docs/ops/done/B4-05.done.md`
+
+### B4-06 - Ajustes cirurgicos de fluxo a partir do ensaio
+- status proposto: BLOCKED
+- objetivo: corrigir apenas friccoes concretas observadas no dry-run, sem expandir escopo
+- camada: web + qa + produto
+- dependencias: achados relevantes em `B4-04`
+- criterios de aceitacao:
+  - cada ajuste responde a finding real documentado
+  - gates pertinentes executados
+  - sem abrir redesign nem refactor estrutural
+- motivo para bloqueio:
+  - o dry-run atual nao deixou friccao funcional aberta que justifique execucao imediata
+
 ## DONE
 
 - `B4-01` - Demo script operacional por role
@@ -108,6 +146,12 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - `B4-03` - Copy e narrativa operacional do handoff principal
   - evidencia final: ajustes em `apps/web/app/page.tsx`, `apps/web/app/seller/page.tsx` e `apps/web/app/admin/page.tsx`
   - gate/evidencia: `docs/ops/done/B4-03.done.md`
+- `B4-04` - Dry-run assistido da demo com finding log
+  - evidencia final: `docs/ops/PILOT_DEMO_DRY_RUN.md`
+  - gate/evidencia: `docs/ops/done/B4-04.done.md`
+- `B4-05` - Operator handoff card de 1 pagina
+  - evidencia final: `docs/ops/PILOT_OPERATOR_HANDOFF_CARD.md`
+  - gate/evidencia: `docs/ops/done/B4-05.done.md`
 
 ## READY
 
@@ -115,7 +159,8 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## BLOCKED
 
-- nenhuma task bloqueada registrada neste momento
+- `B4-06`
+  - motivo explicito: depende de finding relevante em `B4-04`; o dry-run atual nao deixou correcao funcional aberta
 
 ## FUTURO
 
@@ -130,9 +175,10 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## Observacao operacional
 
-`B4-01`, `B4-02` e `B4-03` fecharam a primeira rodada curta desta frente sem alterar a base tecnica validada em M9.
+`B4-01`, `B4-02`, `B4-03` e `B4-04` fecharam a rodada atual desta frente sem alterar a base tecnica validada em M9. O dry-run encontrou apenas drifts de teste, nao falhas abertas de fluxo do produto.
+`B4-05` consolidou o artefato rapido de consulta para uso ao vivo.
 
 ## Proxima task pequena escolhida
 
 - nenhuma task escolhida
-- a continuidade desta frente depende de novo recorte aprovado pelo gatilho
+- a proxima mini-fase desta frente depende de novo recorte aprovado pelo gatilho

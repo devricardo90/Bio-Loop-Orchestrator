@@ -3,6 +3,7 @@ import { expect, type Page } from "@playwright/test";
 export async function loginAs(page: Page, persona: "buyer" | "seller" | "admin") {
   await page.goto("/login");
   await page.getByRole("button", { name: workspaceTitle(persona) }).click();
+  await expect(page.getByLabel("Email")).toHaveValue(workspaceEmail(persona));
   await page.getByRole("button", { name: `Sign in as ${persona}` }).click();
 
   await expect(page).toHaveURL(workspacePath(persona));
@@ -30,6 +31,18 @@ function workspacePath(persona: "buyer" | "seller" | "admin") {
   }
 
   return /\/admin$/;
+}
+
+function workspaceEmail(persona: "buyer" | "seller" | "admin") {
+  if (persona === "buyer") {
+    return "buyer.admin@bioloop.dev";
+  }
+
+  if (persona === "seller") {
+    return "seller.admin@bioloop.dev";
+  }
+
+  return "platform.admin@bioloop.dev";
 }
 
 export type BuyerFeedSnapshot = {
