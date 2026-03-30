@@ -218,6 +218,22 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
             <span className="chip">{summary.disputed} disputed</span>
             <span className="chip">source=api</span>
           </div>
+          <div className="journey-banner pickup-journey-banner">
+            <div className="journey-banner-copy">
+              <span className="journey-badge">Buyer closeout</span>
+              <strong>{mode === "list" ? "Pickup is the operational close of the buyer journey." : "Order detail is the last visible handoff in the buyer path."}</strong>
+              <p>
+                {mode === "list"
+                  ? "Use this queue after feed and auction detail to confirm the award really becomes scheduling and POD work."
+                  : "This detail view keeps schedule, proof, and dispute handling connected to the same buyer flow that started in the feed."}
+              </p>
+            </div>
+            <div className="journey-banner-steps">
+              <span className="journey-step">1. Feed</span>
+              <span className="journey-step">2. Auction</span>
+              <span className="journey-step journey-step-active">3. Pickup</span>
+            </div>
+          </div>
           <div className="hero-meta">
             <Link href="/buyer/feed" className="button button-secondary">
               Buyer feed
@@ -356,6 +372,19 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                   <div>
                     <span className="label">Pickup status</span>
                     <strong>{spotlight.order.pickupStatus}</strong>
+                  </div>
+                </div>
+
+                <div className="journey-detail-strip">
+                  <div>
+                    <span className="label">Journey continuity</span>
+                    <strong>Buyer feed to auction detail to pickup closeout</strong>
+                  </div>
+                  <div>
+                    <span className="label">Auction link</span>
+                    <Link href={`/buyer/auctions/${spotlight.id}`} className="journey-inline-link">
+                      Return to the awarded auction
+                    </Link>
                   </div>
                 </div>
 

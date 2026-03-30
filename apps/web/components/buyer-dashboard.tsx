@@ -128,6 +128,8 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
     }) ?? [];
   const spotlight = detailAuction ?? featuredAuction;
   const activeBuyerApproved = Boolean(activeBuyer?.approved);
+  const pickupHref = spotlight?.order ? `/buyer/orders/${spotlight.order.id}` : "/buyer/orders";
+  const pickupLabel = spotlight?.order ? "Open pickup detail" : "Open pickup queue";
 
   async function reloadWorkspace() {
     if (mode === "auction" && auctionId) {
@@ -378,6 +380,22 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
       ) : (
         <section className="detail-layout">
           <div className="panel detail-panel">
+            <div className="journey-banner">
+              <div className="journey-banner-copy">
+                <span className="journey-badge">Buyer continuity</span>
+                <strong>Auction detail keeps the buyer path connected to pickup.</strong>
+                <p>
+                  Use this screen to validate bid safety, then continue into pickup without leaving the buyer runtime
+                  when an order is awarded.
+                </p>
+              </div>
+              <div className="journey-banner-steps">
+                <span className="journey-step">1. Feed</span>
+                <span className="journey-step journey-step-active">2. Auction</span>
+                <span className={`journey-step ${spotlight.order ? "journey-step-active" : ""}`}>3. Pickup</span>
+              </div>
+            </div>
+
             <div className="panel-head">
               <div>
                 <p className="eyebrow">Auction view</p>
@@ -427,6 +445,24 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
 
           <div className="detail-sidebar">
             <BidPanel auction={spotlight} buyer={activeBuyer} now={now} onSubmit={submitBid} />
+
+            <div className="panel journey-next-card">
+              <p className="eyebrow">Next operational step</p>
+              <h3>{spotlight.order ? "This auction is already connected to pickup." : "Pickup becomes the next step after award."}</h3>
+              <p className="muted">
+                {spotlight.order
+                  ? "The buyer path can continue directly into scheduling, POD, and operational closure for this awarded order."
+                  : "Once the auction is awarded, the buyer journey continues into pickup scheduling and proof handling in the same workspace."}
+              </p>
+              <div className="hero-meta">
+                <Link href={pickupHref} className="button button-secondary">
+                  {pickupLabel}
+                </Link>
+                <Link href="/buyer/feed" className="button button-secondary">
+                  Back to buyer feed
+                </Link>
+              </div>
+            </div>
 
             <div className="panel">
               <p className="eyebrow">Other auctions</p>

@@ -115,12 +115,13 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
   - o gatilho aprovou manter esta task documentada, mas ainda nao priorizada
 
 ### B6-09 - Buyer detail + pickup continuity
-- status proposto: READY
+- status proposto: DONE
 - objetivo: reforcar a continuidade de experiencia entre buyer feed, auction detail e pickup sem abrir redesign amplo do fluxo inteiro
 - camada: ux + frontend
 - dependencia-chave: conclusao de `B6-07`
-- motivo para entrar em READY:
-  - os estados compartilhados foram alinhados e o proximo ganho mais inteligente volta para o fluxo buyer mais importante do produto
+- criterio adicional de fechamento:
+  - relatorio registrado em `docs/ops/done/B6-09.done.md`
+  - gates de `typecheck`, `test` e `build` do web fechados
 
 ## DONE
 
@@ -145,11 +146,13 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - `B6-07` - Alinhar estados compartilhados de loading / empty / error / success
   - evidencia final: ajustes em `apps/web/components/workspace-state.tsx`, `apps/web/components/admin-buyers-dashboard.tsx`, `apps/web/components/admin-disputes-dashboard.tsx`, `apps/web/components/pickup-dashboard.tsx` e `apps/web/app/globals.css`
   - gate/evidencia: `docs/ops/done/B6-07.done.md`
+- `B6-09` - Buyer detail + pickup continuity
+  - evidencia final: ajustes em `apps/web/components/buyer-dashboard.tsx`, `apps/web/components/pickup-dashboard.tsx` e `apps/web/app/globals.css`
+  - gate/evidencia: `docs/ops/done/B6-09.done.md`
 
 ## READY
 
-- `B6-09` - Buyer detail + pickup continuity
-  - motivo explicito: `B6-07` fechou a consistencia transversal e o proximo ganho aprovado volta para a continuidade do fluxo buyer
+- nenhuma task `READY` neste momento
 
 ## BLOCKED
 
@@ -162,14 +165,9 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## Proxima task pequena escolhida
 
-- `B6-09`
-- objetivo: reforcar a continuidade de experiencia entre buyer feed, auction detail e pickup sem abrir redesign amplo do fluxo inteiro
-- camada: ux + frontend
-- aceitacao:
-  - buyer detail e pickup passam a parecer uma mesma jornada
-  - o fluxo principal ganha continuidade sem alterar comportamento
-  - `B6-08` continua fora da execucao
+- nenhuma task escolhida automaticamente
+- proxima passagem depende de nova leitura do gatilho entre continuidade em `BACKLOG6` ou pausa estrategica
 
 ## Observacao operacional
 
-`BACKLOG6` foi aberta depois do fechamento operacional de `BACKLOG4`. `B6-01`, `B6-02` e `B6-03` fecharam o checkpoint formal de UX/Figma sem abrir redesign amplo nem tocar a base tecnica validada. `B6-04`, `B6-05` e `B6-06` fecharam a primeira rodada completa de slices em handoff/buyer, seller e admin. `B6-07` consolidou a linguagem compartilhada de loading, empty, error e success sem abrir design system amplo. `B6-09` passa a ser a proxima continuidade aprovada do fluxo buyer.
+`BACKLOG6` foi aberta depois do fechamento operacional de `BACKLOG4`. `B6-01`, `B6-02` e `B6-03` fecharam o checkpoint formal de UX/Figma sem abrir redesign amplo nem tocar a base tecnica validada. `B6-04`, `B6-05` e `B6-06` fecharam a primeira rodada completa de slices em handoff/buyer, seller e admin. `B6-07` consolidou a linguagem compartilhada de loading, empty, error e success sem abrir design system amplo. `B6-09` reforcou a continuidade entre buyer detail e pickup sem transformar essa fase em redesign amplo ou design layer.
