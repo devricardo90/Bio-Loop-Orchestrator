@@ -196,13 +196,33 @@ h3 {
 .journey-banner,
 .login-bridge,
 .login-route-note,
-.context-card {
+.context-card,
+.seller-bridge,
+.admin-bridge {
   border: 1px solid rgba(26, 29, 31, 0.08);
   background: rgba(255, 255, 255, 0.72);
   border-radius: 22px;
 }
 
 .hero-callout {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 18px 20px;
+}
+
+.seller-bridge {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 18px 20px;
+}
+
+.admin-bridge {
   margin-top: 22px;
   display: grid;
   grid-template-columns: auto 1fr;
@@ -229,7 +249,9 @@ h3 {
 }
 
 .hero-callout strong,
-.journey-banner-copy strong {
+.journey-banner-copy strong,
+.seller-bridge strong,
+.admin-bridge strong {
   display: block;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.2rem;
@@ -237,7 +259,9 @@ h3 {
 }
 
 .hero-callout p,
-.journey-banner-copy p {
+.journey-banner-copy p,
+.seller-bridge p,
+.admin-bridge p {
   margin: 0;
   color: var(--muted);
   line-height: 1.55;
@@ -611,6 +635,11 @@ h3 {
   display: grid;
   gap: 16px;
   padding: 18px 20px;
+}
+
+.seller-journey-banner {
+  border-color: rgba(181, 107, 45, 0.16);
+  background: rgba(181, 107, 45, 0.06);
 }
 
 .journey-banner-steps {

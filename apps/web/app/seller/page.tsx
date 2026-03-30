@@ -16,6 +16,16 @@ export default function SellerHomePage() {
             Use seller as the second step of the guided demo. This workspace shows how the same validated baseline
             supports listed lots, terminal states, and report-ready outputs from the supply side.
           </p>
+          <div className="seller-bridge">
+            <span className="status-badge status-scheduled">Step 2</span>
+            <div>
+              <strong>Move here after buyer proves the live path.</strong>
+              <p>
+                Seller is where the story shifts from discovery to operational control: listed lots, outcomes, and
+                export-ready evidence on the same baseline.
+              </p>
+            </div>
+          </div>
           <div className="hero-meta">
             <Link href="/seller/lots" className="button button-primary">
               Seller lots
@@ -32,6 +42,20 @@ export default function SellerHomePage() {
         <div className="hero-side">
           <div className="panel">
             <p className="label">Operational checklist</p>
+            <ol className="sequence-list">
+              <li>
+                <strong>Open lots first</strong>
+                <span>Show what the seller currently has listed before discussing outcomes.</span>
+              </li>
+              <li>
+                <strong>Use results second</strong>
+                <span>Frame settlement and terminal states as the continuation of the buyer path.</span>
+              </li>
+              <li>
+                <strong>Close with reports</strong>
+                <span>Use export-ready evidence when the audience asks for operational proof.</span>
+              </li>
+            </ol>
             <ul className="feature-list">
               <li>Review listed lots after the buyer path has already proved source=api</li>
               <li>Inspect results and settlement-ready outcomes as the seller-side continuation of the story</li>

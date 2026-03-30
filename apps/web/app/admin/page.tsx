@@ -11,6 +11,16 @@ export default function AdminHomePage() {
             Use admin as the final step of the guided demo. This workspace closes the loop with buyer approvals,
             dispute handling, and clear separation between demo and real catalog records.
           </p>
+          <div className="admin-bridge">
+            <span className="status-badge status-ended">Step 3</span>
+            <div>
+              <strong>Use admin as the closing layer of trust.</strong>
+              <p>
+                This is where the story shifts from buyer and seller activity into governance, approvals, disputes,
+                and clear dataset boundaries.
+              </p>
+            </div>
+          </div>
           <div className="hero-meta">
             <Link href="/admin/buyers" className="button button-primary">
               Buyer approvals
@@ -27,6 +37,20 @@ export default function AdminHomePage() {
         <div className="hero-side">
           <div className="panel">
             <p className="label">Operational checklist</p>
+            <ol className="sequence-list">
+              <li>
+                <strong>Open buyers first</strong>
+                <span>Use approvals to explain who can reach the trade surface and why governance matters.</span>
+              </li>
+              <li>
+                <strong>Use disputes second</strong>
+                <span>Show how the admin layer closes exceptions without breaking the operational loop.</span>
+              </li>
+              <li>
+                <strong>Finish with dataset clarity</strong>
+                <span>Use `catalogScope` and badges to explain demo versus real records clearly.</span>
+              </li>
+            </ol>
             <ul className="feature-list">
               <li>Open buyers first to show approvals on the live admin surface</li>
               <li>Use `catalogScope` and dataset badges to explain real versus demo records</li>
@@ -35,6 +59,24 @@ export default function AdminHomePage() {
             </ul>
           </div>
         </div>
+      </section>
+      <section className="buyer-context-strip" aria-label="Admin closeout context">
+        <article className="panel context-card">
+          <p className="eyebrow">Why admin comes last</p>
+          <h2>Admin turns the product story into controlled operations.</h2>
+          <p className="muted">
+            After buyer proves demand and seller proves inventory control, admin explains governance, exception
+            handling, and the visible boundary between demo and real data.
+          </p>
+        </article>
+        <article className="panel context-card">
+          <p className="eyebrow">What to verify</p>
+          <ul className="feature-list">
+            <li>Use buyer approvals to frame operational access and control</li>
+            <li>Use disputes as the proof that the loop can close without dead-ends</li>
+            <li>Keep `catalogScope` and dataset badges visible when discussing real versus demo</li>
+          </ul>
+        </article>
       </section>
     </main>
   );

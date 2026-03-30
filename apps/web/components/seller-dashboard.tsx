@@ -95,6 +95,22 @@ export function SellerDashboard({ mode, lotId }: SellerDashboardProps) {
             The seller surface mirrors the trade pipeline with live statuses, compact timelines, and result cards
             that stay aligned with the domain contracts.
           </p>
+          <div className="journey-banner seller-journey-banner">
+            <div className="journey-banner-copy">
+              <span className="journey-badge">Second product readout</span>
+              <strong>{mode === "lots" ? "Lots -> outcomes -> reports" : "Results explain how the seller closes value"}</strong>
+              <p>
+                {mode === "lots"
+                  ? "Use this workspace after buyer to show how the same runtime supports listed lots, live control, and operational follow-through."
+                  : "This results view should feel like the seller-side confirmation of what the buyer flow started."}
+              </p>
+            </div>
+            <div className="journey-banner-steps">
+              <span className={`journey-step ${mode === "lots" ? "journey-step-active" : ""}`}>1. Lots</span>
+              <span className={`journey-step ${mode === "results" ? "journey-step-active" : ""}`}>2. Results</span>
+              <span className="journey-step">3. Reports</span>
+            </div>
+          </div>
           <div className="hero-meta">
             <span className="chip chip-accent">{formatSyncTime(state.lastSyncedAt)}</span>
             <span className="chip">{summary.live} live</span>
@@ -137,6 +153,26 @@ export function SellerDashboard({ mode, lotId }: SellerDashboardProps) {
           </div>
         </div>
       </section>
+      {mode === "lots" ? (
+        <section className="buyer-context-strip" aria-label="Seller overview context">
+          <article className="panel context-card">
+            <p className="eyebrow">Why seller comes second</p>
+            <h2>Seller explains control, outcomes, and operational proof.</h2>
+            <p className="muted">
+              Once buyer proves discovery and bidding, seller shows how the same flow becomes listed inventory,
+              outcome visibility, and exportable evidence.
+            </p>
+          </article>
+          <article className="panel context-card">
+            <p className="eyebrow">What to verify</p>
+            <ul className="feature-list">
+              <li>Show listed lots before diving into result states</li>
+              <li>Use spotlight and timeline to explain where the lot sits now</li>
+              <li>Keep reports as the proof layer, not the first thing on screen</li>
+            </ul>
+          </article>
+        </section>
+      ) : null}
 
       <section className="seller-layout">
         <div className="panel seller-list-panel">

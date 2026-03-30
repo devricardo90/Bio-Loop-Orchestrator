@@ -80,20 +80,22 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
   - gates de `typecheck`, `test` e `build` do web fechados
 
 ### B6-05 - Refinar seller overview como segundo slice de UX/Figma
-- status proposto: READY
+- status proposto: DONE
 - objetivo: elevar hierarquia visual e leitura de valor do seller overview sem tocar resultados, reports ou admin
 - camada: ux + frontend
 - dependencia-chave: conclusao de `B6-04`
-- motivo para entrar em READY:
-  - o primeiro slice handoff + buyer foi fechado e o seller continua sendo a proxima superficie madura com impacto visual relevante
+- criterio adicional de fechamento:
+  - relatorio registrado em `docs/ops/done/B6-05.done.md`
+  - gates de `typecheck`, `test` e `build` do web fechados
 
 ### B6-06 - Refinar admin closeout como terceiro slice de UX/Figma
-- status proposto: BLOCKED
+- status proposto: DONE
 - objetivo: melhorar a narrativa de fechamento e governanca do admin sem redesign amplo
 - camada: ux + frontend
 - dependencia-chave: conclusao de `B6-05`
-- motivo para bloqueio:
-  - o gate de prioridade aprovado coloca seller antes de admin nesta frente
+- criterio adicional de fechamento:
+  - relatorio registrado em `docs/ops/done/B6-06.done.md`
+  - gates de `typecheck`, `test` e `build` do web fechados
 
 ## DONE
 
@@ -109,16 +111,20 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - `B6-04` - Refinar handoff principal e buyer shell como primeiro slice de UX/Figma
   - evidencia final: ajustes em `apps/web/app/page.tsx`, `apps/web/components/login-panel.tsx`, `apps/web/components/buyer-dashboard.tsx` e `apps/web/app/globals.css`
   - gate/evidencia: `docs/ops/done/B6-04.done.md`
+- `B6-05` - Refinar seller overview como segundo slice de UX/Figma
+  - evidencia final: ajustes em `apps/web/app/seller/page.tsx`, `apps/web/components/seller-dashboard.tsx` e `apps/web/app/globals.css`
+  - gate/evidencia: `docs/ops/done/B6-05.done.md`
+- `B6-06` - Refinar admin closeout como terceiro slice de UX/Figma
+  - evidencia final: ajustes em `apps/web/app/admin/page.tsx` e `apps/web/app/globals.css`
+  - gate/evidencia: `docs/ops/done/B6-06.done.md`
 
 ## READY
 
-- `B6-05` - Refinar seller overview como segundo slice de UX/Figma
-  - motivo explicito: handoff principal + buyer shell fecharam com gates reais, e seller segue como a proxima superficie madura sem exigir redesign amplo
+- nenhuma task `READY` neste momento
 
 ## BLOCKED
 
-- `B6-06`
-  - motivo explicito: a prioridade aprovada desta frente coloca seller antes de admin
+- nenhuma task `BLOCKED` neste momento
 
 ## FUTURO
 
@@ -126,14 +132,9 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## Proxima task pequena escolhida
 
-- `B6-05`
-- objetivo: refinar hierarquia visual e leitura de valor do seller overview sem abrir redesign de seller inteiro
-- camada: ux + frontend
-- aceitacao:
-  - seller overview fica mais claro como segunda etapa do fluxo
-  - lots/results/reports nao mudam de escopo nesta task
-  - admin permanece fora do escopo
+- nenhuma task escolhida
+- a proxima mini-fase desta frente depende de nova decisao do gatilho
 
 ## Observacao operacional
 
-`BACKLOG6` foi aberta depois do fechamento operacional de `BACKLOG4`. `B6-01`, `B6-02` e `B6-03` fecharam o checkpoint formal de UX/Figma sem abrir redesign amplo nem tocar a base tecnica validada. `B6-04` fechou o primeiro slice real de implementacao em handoff principal + buyer shell sem tocar seller/admin.
+`BACKLOG6` foi aberta depois do fechamento operacional de `BACKLOG4`. `B6-01`, `B6-02` e `B6-03` fecharam o checkpoint formal de UX/Figma sem abrir redesign amplo nem tocar a base tecnica validada. `B6-04`, `B6-05` e `B6-06` fecharam a primeira rodada completa de slices em handoff/buyer, seller e admin.
