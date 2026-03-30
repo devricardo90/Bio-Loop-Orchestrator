@@ -58,7 +58,7 @@ pnpm typecheck
 When validating Prisma migrations locally:
 
 ```bash
-$env:SHADOW_DATABASE_URL="postgresql://bio_loop:bio_loop_dev@localhost:5432/bio_loop_shadow"
+$env:SHADOW_DATABASE_URL="postgresql://bio_loop:bio_loop_dev@localhost:5453/bio_loop_shadow"
 pnpm --filter @bio-loop/api prisma:drift
 pnpm --filter @bio-loop/api db:verify-clean
 ```

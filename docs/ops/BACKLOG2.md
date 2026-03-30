@@ -44,8 +44,6 @@ Observacoes:
   - gate resumido em `docs/ops/done/API-17.done.md`
 - status real: DONE
 
-## PARTIAL
-
 ### API-14 - Idempotencia e auditoria para mutacoes criticas
 - descricao: protecao contra replay/double-submit e trilha de auditoria em bids, approvals, disputes, pickup e POD
 - camada: api
@@ -239,26 +237,30 @@ Observacoes:
   - relatorio registrado em `docs/ops/done/QA-07.done.md`
 - status real: DONE
 
+### OPS-01 - Finalizar integridade pos-M9
+- descricao: limpeza final da baseline documental e operacional depois do fechamento tecnico de M9
+- camada: docs + orchestration
+- dependencias: QA-07 concluida
+- criterios de aceitacao:
+  - `docs/ops/BACKLOG2.md` sem contradicoes materiais
+  - `README.md` coerente com portas e runtime reconciliados
+  - worktree limpo ou residuo restante classificado com justificativa
+  - evidencia final registrada
+- evidencia encontrada:
+  - itens `DONE` reorganizados na secao correta deste arquivo
+  - `M9 clean-up documental` removido de `FUTURO` e refletido como baseline fechada
+  - `README.md` alinhado para `SHADOW_DATABASE_URL` em `5453`
+  - alteracao cosmetica residual em `docs/agents/03_API_BACKEND.md` descartada por nao representar mudanca funcional nem decisao tecnica
+  - relatorio registrado em `docs/ops/done/OPS-01.done.md`
+- status real: DONE
+
 ## READY
 
 ## BLOCKED
 
 ## FUTURO
 
-### M9 clean-up documental
-- descricao: reconciliar `STATUS.md`, `STATUS1.md`, `BACKLOG.md` e `BACKLOG1.md` depois que os itens parciais forem validados ou rebaixados definitivamente
-- camada: docs + orchestration
-- dependencias: fechamento dos itens `VAL-*`
-- status real: FUTURO
-
 ## Proxima task pequena escolhida
 
-### M9 clean-up documental
-- objetivo: reconciliar os snapshots historicos (`STATUS.md`, `STATUS1.md`, `BACKLOG.md`, `BACKLOG1.md`) com o estado final validado de `BACKLOG2`
-- camada: docs + orchestration
-- dependencias: fechamento de `QA-07`
-- aceitacao:
-  - snapshots historicos sem contradicoes materiais
-  - backlog operacional e status de milestone coerentes
-  - evidencias registradas
-  - itens historicos reconciliados sem promover `DONE` sem gate real
+- nenhuma task escolhida
+- a baseline pos-M9 esta limpa; qualquer proximo passo depende de aprovacao explicita do gatilho e de abertura de nova frente
