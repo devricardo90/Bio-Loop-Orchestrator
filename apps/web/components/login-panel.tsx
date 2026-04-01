@@ -16,13 +16,13 @@ const personaActions: Array<{
   {
     persona: "buyer",
     title: "Buyer operations",
-    subtitle: "Feed, auction detail, bidding, and pickup queue",
+    subtitle: "Feed, auction detail, bidding, and pick-up queue",
     route: getWorkspaceHomeRoute("buyer")
   },
   {
     persona: "seller",
     title: "Seller operations",
-    subtitle: "Lots, auction results, and pickup status",
+    subtitle: "Lots, auction results, and pick-up status",
     route: getWorkspaceHomeRoute("seller")
   },
   {

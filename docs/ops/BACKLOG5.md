@@ -2,12 +2,12 @@
 
 ## Status da frente
 
-DOCUMENTED-NOT-PRIORITIZED
+ACTIVE-EXECUTION
 
 ## Estado operacional
 
-- frente ativa principal: nao
-- frente em execucao: nao
+- frente ativa principal: sim
+- frente em execucao: sim
 - leitura obrigatoria antes de executar: `docs/agents/CONTEXT_SHARED.md`
 
 ## Papel desta frente
@@ -61,7 +61,7 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## READY
 
-- nenhuma task `READY`
+- `B5-HOTFIX-01` - Estabilizar boot inicial, auth hydration, integridade de datas e coerência de estado visível
 
 ## BLOCKED
 
@@ -78,9 +78,8 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## Proxima task pequena escolhida
 
-- nenhuma task escolhida
-- esta frente permanece congelada ate risco observado ou nova decisao explicita do gatilho
+- `B5-HOTFIX-01` - Estabilizar boot inicial, auth hydration, integridade de datas e coerência de estado visível
 
 ## Observacao operacional
 
-Esta frente nao deve competir com `BACKLOG4` neste momento. So volta ao topo se a frente principal revelar risco tecnico concreto.
+Esta frente foi reativada no pos-M9 devido aos vazamentos técnicos percebidos na rodada 2 do Piloto (B4-07). O hardening ataca cirurgicamente os ruidos estéticos de API/React mapeados sem escalar para reescritas gerais de runtime.

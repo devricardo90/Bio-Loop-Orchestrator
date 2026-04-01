@@ -362,8 +362,14 @@ h3 {
     background 0.2s ease;
 }
 
-.button:hover {
+.button:hover:not(:disabled) {
   transform: translateY(-1px);
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
 }
 
 .button-primary {
@@ -388,7 +394,7 @@ h3 {
 .metrics {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 14px;
 }
 
 .metrics {
@@ -762,7 +768,7 @@ h3 {
 .admin-action-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 14px;
 }
 
 .admin-note {

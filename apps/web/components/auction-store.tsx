@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useAuthSession } from "./auth-session";
 import type { BidDto, Dispute, PickupProof, PickupWindow } from "@bio-loop/domain";
 import { submitBidToApi } from "../lib/bid-api";
 import { schedulePickupToApi, submitPodToApi } from "../lib/pickup-api";
@@ -100,6 +101,7 @@ export function AuctionStoreProvider({
 }: Readonly<{
   children: ReactNode;
 }>) {
+  const { status, isAuthenticated } = useAuthSession();
   const [state, setState] = useState<DemoState>(() => createDemoState());
   const [now, setNow] = useState(() => Date.now());
   const [hydrated, setHydrated] = useState(false);
@@ -110,9 +112,17 @@ export function AuctionStoreProvider({
   }, []);
 
   useEffect(() => {
+    if (!hydrated || status === "loading") {
+      return;
+    }
+
     let cancelled = false;
 
     async function refreshFromApi() {
+      if (!isAuthenticated) {
+        return;
+      }
+
       try {
         const feed = await fetchBuyerFeed();
         if (cancelled) {
@@ -130,7 +140,7 @@ export function AuctionStoreProvider({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [hydrated, isAuthenticated, status]);
 
   useEffect(() => {
     if (!hydrated || typeof window === "undefined") {

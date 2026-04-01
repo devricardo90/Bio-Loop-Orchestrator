@@ -205,11 +205,10 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
     <main className="app-shell pickup-shell">
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">Pickup operations</p>
-          <h1>{mode === "list" ? "Schedule pickups and keep PODs moving." : "Pickup detail with proof upload and dispute state."}</h1>
+          <p className="eyebrow">Pick-up operations</p>
+          <h1>{mode === "list" ? "Schedule pick-ups and keep PODs moving." : "Pick-up detail with proof upload and dispute state."}</h1>
           <p className="lead">
-            The pickup desk now runs on the buyer API read-model, with explicit status guards and no silent demo
-            fallback in the main path.
+            Manage your pick-up queue, schedule windows, and submit proof of delivery (POD) to finalize awards.
           </p>
           <div className="hero-meta">
             <span className="chip chip-accent">{formatSyncTime(workspace.lastSyncedAt)}</span>
@@ -221,7 +220,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
           <div className="journey-banner pickup-journey-banner">
             <div className="journey-banner-copy">
               <span className="journey-badge">Buyer closeout</span>
-              <strong>{mode === "list" ? "Pickup is the operational close of the buyer journey." : "Order detail is the last visible handoff in the buyer path."}</strong>
+              <strong>{mode === "list" ? "Pick-up is the operational close of the buyer journey." : "Order detail is the last visible handoff in the buyer path."}</strong>
               <p>
                 {mode === "list"
                   ? "Use this queue after feed and auction detail to confirm the award really becomes scheduling and POD work."
@@ -231,7 +230,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
             <div className="journey-banner-steps">
               <span className="journey-step">1. Feed</span>
               <span className="journey-step">2. Auction</span>
-              <span className="journey-step journey-step-active">3. Pickup</span>
+              <span className="journey-step journey-step-active">3. Pick-up</span>
             </div>
           </div>
           <div className="hero-meta">
@@ -239,7 +238,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
               Buyer feed
             </Link>
             <Link href="/buyer/orders" className="button button-secondary">
-              Pickup queue
+              Pick-up queue
             </Link>
           </div>
         </div>
@@ -261,7 +260,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
               ))}
             </div>
             <p className="muted">
-              {activeBuyerName} is {activeBuyerApproved ? "approved" : "pending approval"} for pickup actions.
+              {activeBuyerName} is {activeBuyerApproved ? "approved" : "pending approval"} for pick-up actions.
             </p>
           </div>
         </div>
@@ -286,7 +285,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
           <div className="panel">
             <div className="panel-head">
               <div>
-                <p className="eyebrow">Pickup queue</p>
+                <p className="eyebrow">Pick-up queue</p>
                 <h2>Orders ready for scheduling and POD</h2>
               </div>
             </div>
@@ -297,7 +296,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
               ) : (
                 <WorkspaceState
                   eyebrow="No orders"
-                  title="No pickup orders for the active buyer."
+                  title="No pick-up orders for the active buyer."
                   description="Switch buyer profiles or return to the buyer feed to open a different runtime path."
                   tone="empty"
                   statusLabel="Queue empty"
@@ -308,9 +307,9 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
           </div>
 
           <aside className="panel spotlight-panel">
-            <p className="eyebrow">Pickup status</p>
-            <h2>{spotlight ? spotlight.categoryName : "No active pickup"}</h2>
-            <p className="muted">{spotlight ? getPickupStatusLine(spotlight, now) : "Open an order to schedule pickup."}</p>
+            <p className="eyebrow">Pick-up status</p>
+            <h2>{spotlight ? spotlight.categoryName : "No active pick-up"}</h2>
+            <p className="muted">{spotlight ? getPickupStatusLine(spotlight, now) : "Open an order to schedule pick-up."}</p>
 
             {spotlight ? (
               <>
@@ -337,8 +336,8 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
 
           <ApiReferencePanel
             workspace="pickup"
-            title="Trace pickup API behavior"
-            description="Use the live API reference to inspect the scheduling and POD endpoints while validating buyer pickup operations."
+            title="Trace pick-up API behavior"
+            description="Use the live API reference to inspect the scheduling and POD endpoints while validating buyer pick-up operations."
           />
         </section>
       ) : (
@@ -362,7 +361,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                     <strong>{spotlight.storeName}</strong>
                   </div>
                   <div>
-                    <span className="label">Pickup window</span>
+                    <span className="label">Pick-up window</span>
                     <strong>{formatTimeWindow(getPickupWindow(spotlight).startAt, getPickupWindow(spotlight).endAt)}</strong>
                   </div>
                   <div>
@@ -370,7 +369,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                     <strong>{spotlight.order.status}</strong>
                   </div>
                   <div>
-                    <span className="label">Pickup status</span>
+                    <span className="label">Pick-up status</span>
                     <strong>{spotlight.order.pickupStatus}</strong>
                   </div>
                 </div>
@@ -378,7 +377,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                 <div className="journey-detail-strip">
                   <div>
                     <span className="label">Journey continuity</span>
-                    <strong>Buyer feed to auction detail to pickup closeout</strong>
+                    <strong>Buyer feed to auction detail to pick-up closeout</strong>
                   </div>
                   <div>
                     <span className="label">Auction link</span>
@@ -405,7 +404,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                   >
                     <div className="panel-head compact-row">
                       <div>
-                        <p className="eyebrow">Schedule pickup</p>
+                        <p className="eyebrow">Schedule pick-up</p>
                         <h3>Pick a future window</h3>
                       </div>
                       <span className={`status-badge status-${canSchedule ? "scheduled" : "void"}`}>
@@ -433,14 +432,19 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                       />
                     </label>
 
-                    <button className="button button-primary" type="submit" disabled={scheduleDisabled}>
-                      {schedulePending ? "Scheduling..." : "Schedule pickup"}
+                    <button 
+                      className="button button-primary" 
+                      type="submit" 
+                      disabled={scheduleDisabled}
+                      title={scheduleDisabled ? (spotlight ? "Scheduling is only available for active, non-settled orders with a future window." : "Select an order to schedule pick-up.") : "Submit pick-up window to the live API"}
+                    >
+                      {schedulePending ? "Scheduling..." : "Schedule pick-up"}
                     </button>
                     <p className={`message ${scheduleMessage ? "message-visible" : ""}`} aria-live="polite">
                       {scheduleMessage ||
                         (canSchedule
                           ? scheduleWindowValid
-                            ? "The pickup window will be sent directly to the live API."
+                            ? "The pick-up window will be sent directly to the live API."
                             : "The window must be in the future and end after the start."
                           : "This order cannot be rescheduled in its current state.")}
                     </p>
@@ -463,7 +467,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                     <div className="panel-head compact-row">
                       <div>
                         <p className="eyebrow">Upload POD</p>
-                        <h3>Record proof of delivery or pickup</h3>
+                        <h3>Record proof of delivery or pick-up</h3>
                       </div>
                       <span className={`status-badge status-${canSubmitPod ? "live" : "void"}`}>
                         {canSubmitPod ? "Allowed" : "Locked"}
@@ -492,14 +496,19 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                       />
                     </label>
 
-                    <button className="button button-primary" type="submit" disabled={podDisabled}>
+                    <button 
+                      className="button button-primary" 
+                      type="submit" 
+                      disabled={podDisabled}
+                      title={podDisabled ? "POD submission requires a scheduled pick-up and a valid proof URL." : "Submit proof of delivery to the live API"}
+                    >
                       {podPending ? "Uploading..." : "Submit POD"}
                     </button>
                     <p className={`message ${podMessage ? "message-visible" : ""}`} aria-live="polite">
                       {podMessage ||
                         (canSubmitPod
                           ? "Submitting POD will send proof data to the live API."
-                          : "POD is only available after pickup has been scheduled.")}
+                          : "POD is only available after pick-up has been scheduled.")}
                     </p>
                   </form>
                 </div>
@@ -566,8 +575,8 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
 
           <ApiReferencePanel
             workspace="pickup"
-            title="Verify pickup mutations"
-            description="Open the API reference to confirm the schedule-pickup and POD contracts when troubleshooting state transitions."
+            title="Verify pick-up mutations"
+            description="Open the API reference to confirm the schedule-pick-up and POD contracts when troubleshooting state transitions."
           />
         </section>
       )}
@@ -718,18 +727,27 @@ function isScheduleWindowValid(start: string, end: string) {
 
 function toLocalDateTime(iso: string) {
   const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
   const offset = date.getTimezoneOffset();
   const local = new Date(date.getTime() - offset * 60_000);
   return local.toISOString().slice(0, 16);
 }
 
 function parseLocalDateTime(localDateTime: string) {
+  if (!localDateTime) {
+    return null;
+  }
   const parsed = new Date(localDateTime);
   const time = parsed.getTime();
   return Number.isFinite(time) ? time : null;
 }
 
 function toIsoString(localDateTime: string) {
+  if (!localDateTime) {
+    return "";
+  }
   const parsed = new Date(localDateTime);
   if (!Number.isFinite(parsed.getTime())) {
     return "";

@@ -135,6 +135,19 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - motivo para bloqueio:
   - o dry-run atual nao deixou friccao funcional aberta que justifique execucao imediata
 
+### B4-07 - Consolidar rodada 2 de piloto assistido com captura estruturada de sinais
+- status proposto: DONE
+- objetivo: usar o estado atual validado do produto para observar uso real e transformar sinais coletados em base de decisao
+- camada: produto/operacao + qa + ux
+- dependencias: baseline pos-M9 fechada
+- criterios de aceitacao:
+  - roteiro de Piloto executado na integra
+  - evidencias listadas e agrupadas (OPERACAO, UX, TECNICA)
+  - zero correcoes de codigo no processo
+  - recomendacao final indicando BACKLOG4, 5 ou 6
+- motivo para entrar em READY:
+  - projeto validado precisa de uso funcional para decidir proximos passos, sem otimizar no vacuo
+
 ## DONE
 
 - `B4-01` - Demo script operacional por role
@@ -152,6 +165,9 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - `B4-05` - Operator handoff card de 1 pagina
   - evidencia final: `docs/ops/PILOT_OPERATOR_HANDOFF_CARD.md`
   - gate/evidencia: `docs/ops/done/B4-05.done.md`
+- `B4-07` - Consolidar rodada 2 de piloto assistido com captura estruturada de sinais
+  - evidencia final: `docs/ops/PILOT_DRY_RUN_V2.md`
+  - gate/evidencia: `docs/ops/done/B4-07.done.md`
 
 ## READY
 
@@ -181,4 +197,4 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 ## Proxima task pequena escolhida
 
 - nenhuma task escolhida
-- a proxima mini-fase desta frente depende de novo recorte aprovado pelo gatilho
+- a rodada 2 do piloto gerou evidencias claras (B4-07); aguardando direcao do gatilho para decidir a ativacao das frentes recomendadas (BACKLOG6 e BACKLOG5).

@@ -11,6 +11,7 @@ import {
   type DisputeResolutionDecision,
   type DisputeStatus
 } from "../lib/admin-api";
+import { formatDateSafe } from "../lib/demo-auctions";
 import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
 
@@ -300,13 +301,35 @@ export function AdminDisputesDashboard() {
                   <div>
                     <p className="eyebrow">{dispute.orderId}</p>
                     <h3>{dispute.reason.replace("_", " ").toLowerCase()}</h3>
-                    <p className="muted">Opened {new Date(dispute.openedAt).toLocaleString("en-GB")}</p>
+                    <p className="muted">Opened {formatDateSafe(dispute.openedAt)}</p>
                   </div>
 
                   <span className={`status-badge status-${dispute.status.toLowerCase()}`}>
                     {dispute.status}
                   </span>
                 </div>
+
+                <div className="admin-action-row">
+                  <button
+                    className="button button-primary"
+                    onClick={() => handleResolution(dispute, "CANCEL_ORDER")}
+                    disabled={isPending || loadingDisputeId === dispute.id || dispute.status !== "OPEN"}
+                    title="Closing the dispute in favor of the buyer will trigger a full refund."
+                  >
+                    {loadingDisputeId === dispute.id ? "Processing..." : "Award Buyer"}
+                  </button>
+                  <button
+                    className="button button-secondary"
+                    onClick={() => handleResolution(dispute, "SETTLE")}
+                    disabled={isPending || loadingDisputeId === dispute.id || dispute.status !== "OPEN"}
+                    title="Closing in favor of the seller will finalize the payout as originally scheduled."
+                  >
+                    {loadingDisputeId === dispute.id ? "Processing..." : "Award Seller"}
+                  </button>
+                </div>
+                <p className="muted small" style={{ marginTop: "12px" }}>
+                  Resolving a dispute is final. Both parties will be notified via the live API events.
+                </p>
 
                 <div className="seller-card-grid">
                   <div>
@@ -315,7 +338,7 @@ export function AdminDisputesDashboard() {
                   </div>
                   <div>
                     <span className="label">Resolved at</span>
-                    <strong>{dispute.resolvedAt ? new Date(dispute.resolvedAt).toLocaleString("en-GB") : "Still open"}</strong>
+                    <strong>{formatDateSafe(dispute.resolvedAt, "Still open")}</strong>
                   </div>
                   <div>
                     <span className="label">Reason</span>

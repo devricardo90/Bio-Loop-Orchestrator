@@ -82,34 +82,53 @@ export function getPickupSpotlight(records: PickupOrderRecord[], orderId?: strin
 }
 
 export function getPickupTimeline(record: PickupOrderRecord): PickupTimelineStep[] {
+  const status = record.order.status;
+  const pickupStatus = record.order.pickupStatus;
+
+  // Filtrar a timeline para evitar "passos fantasmas" ou repetidos
+  const filteredTimeline = pickupTimeline.filter((step) => {
+    if (status === "IN_DISPUTE") {
+      return step !== "COMPLETED" && step !== "SETTLED" && step !== "CANCELLED";
+    }
+    if (status === "SETTLED" || pickupStatus === "COMPLETED") {
+      return step !== "IN_DISPUTE" && step !== "CANCELLED";
+    }
+    if (status === "CANCELLED") {
+      return step !== "COMPLETED" && step !== "SETTLED" && step !== "IN_DISPUTE" && step !== "SCHEDULED";
+    }
+    // No estado inicial, mostramos o caminho feliz por padrão, ocultando erros/disputas
+    return step !== "IN_DISPUTE" && step !== "CANCELLED";
+  });
+
   const currentIndex = getPickupCurrentIndex(record);
 
-  return pickupTimeline.map((status, index) => {
+  return filteredTimeline.map((step) => {
+    const index = pickupTimeline.indexOf(step);
     const tone =
-      status === "COMPLETED" || status === "SETTLED"
+      step === "COMPLETED" || step === "SETTLED"
         ? "awarded"
-        : status === "IN_DISPUTE" || status === "CANCELLED"
+        : step === "IN_DISPUTE" || step === "CANCELLED"
           ? "void"
-          : status === "SCHEDULED"
+          : step === "SCHEDULED"
             ? "scheduled"
-            : status === "CONFIRMED"
+            : step === "CONFIRMED"
               ? "live"
               : "neutral";
 
     return {
-      key: status,
+      key: step,
       label:
-        status === "CREATED"
+        step === "CREATED"
           ? "Created"
-          : status === "CONFIRMED"
+          : step === "CONFIRMED"
             ? "Confirmed"
-            : status === "SCHEDULED"
-              ? "Pickup scheduled"
-              : status === "COMPLETED"
-                ? "Pickup completed"
-                : status === "IN_DISPUTE"
+            : step === "SCHEDULED"
+              ? "Pick-up scheduled"
+              : step === "COMPLETED"
+                ? "Pick-up completed"
+                : step === "IN_DISPUTE"
                   ? "In dispute"
-                  : status === "SETTLED"
+                  : step === "SETTLED"
                     ? "Settled"
                     : "Cancelled",
       state: index < currentIndex ? "complete" : index === currentIndex ? "current" : "future",
@@ -148,14 +167,14 @@ export function getPickupStatusLabel(record: PickupOrderRecord) {
   }
 
   if (record.order.pickupStatus === "COMPLETED") {
-    return "Pickup completed";
+    return "Pick-up completed";
   }
 
   if (record.order.pickupStatus === "SCHEDULED") {
-    return "Pickup scheduled";
+    return "Pick-up scheduled";
   }
 
-  return "Awaiting pickup";
+  return "Awaiting pick-up";
 }
 
 export function getPickupStatusLine(record: PickupOrderRecord, now: number) {

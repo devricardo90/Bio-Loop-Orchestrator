@@ -13,6 +13,7 @@ import {
   type BuyerRecordDto,
   type CatalogScope
 } from "../lib/admin-api";
+import { formatDateSafe } from "../lib/demo-auctions";
 import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
 
@@ -308,7 +309,7 @@ export function AdminBuyersDashboard() {
                   </div>
                   <div>
                     <span className="label">Updated</span>
-                    <strong>{new Date(buyer.updatedAt).toLocaleString("en-GB")}</strong>
+                    <strong>{formatDateSafe(buyer.updatedAt)}</strong>
                   </div>
                   <div>
                     <span className="label">Status note</span>
@@ -335,9 +336,7 @@ export function AdminBuyersDashboard() {
                     </strong>
                     <p className="muted">
                       Reviewed by {buyer.approval.reviewerId ?? "Unknown"} on{" "}
-                      {buyer.approval.reviewedAt
-                        ? new Date(buyer.approval.reviewedAt).toLocaleString("en-GB")
-                        : "Not reviewed yet"}
+                      {formatDateSafe(buyer.approval.reviewedAt, "Not reviewed yet")}
                     </p>
                     <p className="muted">{buyer.approval.notes}</p>
                   </div>
@@ -351,6 +350,7 @@ export function AdminBuyersDashboard() {
                       className={`button ${action.decision === "APPROVE" ? "button-primary" : "button-secondary"}`}
                       type="button"
                       disabled={isPending || loadingBuyerId === buyer.buyerId}
+                      title={`Execute ${action.label.toLowerCase()} decision for this buyer.`}
                       onClick={() => {
                         startTransition(() => {
                           void handleAction(buyer, action.decision);
@@ -361,6 +361,9 @@ export function AdminBuyersDashboard() {
                     </button>
                   ))}
                 </div>
+                <p className="muted small" style={{ marginTop: "12px" }}>
+                  Status changes are live. System will update reputation scores and verify credentials via the Bio-Loop Orchestrator.
+                </p>
               </article>
             ))
           )}

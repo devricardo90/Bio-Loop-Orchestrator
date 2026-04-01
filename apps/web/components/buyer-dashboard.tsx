@@ -14,6 +14,7 @@ import {
   type DemoAuctionRecord,
   type DemoBuyer
 } from "../lib/demo-auctions";
+import { useAuthSession } from "./auth-session";
 import { BidPanel } from "./bid-panel";
 import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
@@ -33,6 +34,7 @@ type BuyerWorkspaceState = {
 const filters = ["ALL", "LIVE", "SCHEDULED", "ENDED", "VOID"] as const;
 
 export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
+  const { status, isAuthenticated } = useAuthSession();
   const [workspace, setWorkspace] = useState<BuyerWorkspaceState | null>(null);
   const [activeBuyerId, setActiveBuyerId] = useState("");
   const [loading, setLoading] = useState(true);
@@ -41,9 +43,18 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
   const now = Date.now();
 
   useEffect(() => {
+    if (status === "loading") {
+      return;
+    }
+
     let cancelled = false;
 
     async function load() {
+      if (!isAuthenticated) {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setError("");
 
@@ -91,7 +102,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
     return () => {
       cancelled = true;
     };
-  }, [auctionId, mode]);
+  }, [auctionId, isAuthenticated, mode, status]);
 
   useEffect(() => {
     if (!workspace) {
@@ -251,7 +262,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
           </div>
           <div className="hero-meta">
             <Link href="/buyer/orders" className="button button-secondary">
-              Pickup queue
+              Pick-up queue
             </Link>
             <Link href="/buyer/feed" className="button button-secondary">
               Buyer feed
@@ -302,7 +313,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
             <p className="eyebrow">Why this comes first</p>
             <h2>Buyer is the clearest proof of product continuity.</h2>
             <p className="muted">
-              The feed explains discovery, the auction explains price action, and pickup explains operational closure
+              The feed explains discovery, the auction explains price action, and pick-up explains operational closure
               without changing workspace.
             </p>
           </article>
@@ -311,7 +322,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
             <ul className="feature-list">
               <li>Confirm `source=api` before discussing the rest of the demo</li>
               <li>Open a live auction from the spotlight or feed list</li>
-              <li>Use pickup queue as the operational continuation after award</li>
+              <li>Use pick-up queue as the operational continuation after award</li>
             </ul>
           </article>
         </section>

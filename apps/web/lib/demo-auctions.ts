@@ -69,6 +69,11 @@ export function formatDistance(distanceKm: number) {
 export function formatTimeWindow(startAt: string, endAt: string) {
   const start = new Date(startAt);
   const end = new Date(endAt);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    return "Time window unavailable";
+  }
+
   return `${start.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })} - ${end.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}`;
 }
 
@@ -88,13 +93,30 @@ export function formatCountdown(ms: number) {
 }
 
 export function formatSyncTime(dateTime: string) {
-  const elapsed = Date.now() - new Date(dateTime).getTime();
+  if (!dateTime) return "sync pending";
+  const syncDate = new Date(dateTime);
+  if (Number.isNaN(syncDate.getTime())) {
+    return "sync pending";
+  }
+
+  const elapsed = Date.now() - syncDate.getTime();
   if (elapsed < 60_000) {
     return "synced just now";
   }
 
   const minutes = Math.round(elapsed / 60_000);
   return `synced ${minutes}m ago`;
+}
+
+export function formatDateSafe(iso: string | null | undefined, fallback = "N/A"): string {
+  if (!iso) {
+    return fallback;
+  }
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    return fallback;
+  }
+  return date.toLocaleString("en-GB");
 }
 
 export function createDemoState(): DemoState {
@@ -301,8 +323,27 @@ export function findAuction(state: DemoState, auctionId: string) {
   return state.auctions.find((auction) => auction.id === auctionId);
 }
 
-export function getFeaturedAuction(state: DemoState) {
-  return state.auctions.find((auction) => auction.auction.status === "LIVE") ?? state.auctions[0];
+export function getFeaturedAuction(input: {
+  buyers: DemoBuyer[];
+  activeBuyerId: string;
+  auctions: DemoAuctionRecord[];
+  lastSyncedAt: string;
+}) {
+  const now = Date.now();
+  // Ensure we prioritize auctions that are actually LIVE according to getAuctionRuntime logic
+  const liveAuction = input.auctions.find((record) => getAuctionRuntime(record, now).statusLabel === "LIVE");
+  const record = liveAuction ?? input.auctions[0];
+
+  if (!record) {
+    return null;
+  }
+
+  const activeBuyer = input.buyers.find((b) => b.id === input.activeBuyerId) ?? input.buyers[0];
+
+  return {
+    ...record,
+    activeBuyer
+  };
 }
 
 export function getAuctionRuntime(record: DemoAuctionRecord, now: number): AuctionRuntime {
