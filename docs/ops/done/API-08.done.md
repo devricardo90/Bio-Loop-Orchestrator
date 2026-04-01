@@ -41,6 +41,7 @@ pnpm --filter @bio-loop/api test
 - Resultado: `PASS`
 
 ## Pendências / riscos
+
 - `WEB-06` agora é a próxima task `READY` e depende do backend admin já entregue.
 - O Prisma generate encontrou bloqueio de download de engine no ambiente, então o gate foi validado por `typecheck`, `build` e `test` com o estado atual do workspace.
 - Ainda não há frontend admin; o slice concluído aqui é somente a API.
