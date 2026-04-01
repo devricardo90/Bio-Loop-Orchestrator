@@ -2,17 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =============================================================================
+   BIO-LOOP DESIGN LAYER — B6-08
+   Tokens e classes reutilizáveis extraídos dos slices B6-04 a B6-09.
+   Não alterar valores sem revisão de impacto — aplicados em buyer, seller,
+   admin, pickup e handoff principal.
+   =============================================================================
+
+   TOKENS PRIMÁRIOS
+   --accent        Forest green — ação, confirmação, live status, CTA primário
+   --gold          Amber — atenção, pendente, agendado, seller highlight
+   --text          Quase preto — conteúdo principal
+   --muted         Cinza médio — labels, subtextos, chips neutros
+   --bg            Creme — fundo global da página
+   --panel         Branco translúcido — superfícies de cards (com blur opcional)
+   --border        Preta 12% — bordas estruturais padrão
+   --shadow        Sombra quente — elevação de cards principais
+   --accent-soft   Verde 12% — fundos sutis de foco/hover do acento
+   --radius        1rem — raio base; cards usam 28px como extensão
+
+   PALETA DE STATUS (classes .status-*)
+   live / awarded / approved / resolved → accent
+   pending / scheduled / open          → gold
+   ended / rejected / suspended / cancelled / void / neutral → muted/text
+
+   PALETA DE ESTADOS DE WORKSPACE (classes .workspace-state-*)
+   loading  → gold border + gradiente quente
+   error    → vermelho 18% border + gradiente frio
+   empty    → border neutro + gradiente neutro
+
+   SUPERFÍCIES REUTILIZÁVEIS (classes)
+   .panel            → card elevado com borda + sombra + panel bg
+   .auction-card     → variante com animação rise
+   .seller-card      → idêntico ao auction-card
+   .pickup-action-card → variante com padding próprio
+   .compact-row      → linha clicável com hover implícito
+   .journey-step     → pill de passo de jornada (ativo/inativo)
+   .status-badge     → chip de status tipado
+   .chip             → chip genérico (+ variantes accent e muted)
+
+   TIPOGRAFIA
+   serif  → Georgia / Times New Roman (headings h1 h2 h3, nomes fortes)
+   sans   → Trebuchet MS / Avenir Next / Segoe UI (body copy)
+
+   ANIMAÇÃO
+   @keyframes rise → aparecimento de cards (opacity + translateY, 0.55s ease)
+   ============================================================================= */
+
 :root {
   color-scheme: light;
+
+  /* Cores base */
   --bg: #f1eadf;
   --panel: rgba(255, 250, 243, 0.9);
   --text: #1a1d1f;
   --muted: #5f656b;
+
+  /* Acento primário: forest green */
   --accent: #0f5d4b;
   --accent-soft: rgba(15, 93, 75, 0.12);
+
+  /* Acento secundário: amber/gold */
   --gold: #b56b2d;
+
+  /* Estrutura */
   --border: rgba(26, 29, 31, 0.12);
   --shadow: 0 26px 70px rgba(36, 28, 18, 0.12);
+
+  /* Tokens shadcn (HSL) — não remover; usados por componentes shadcn */
   --background: 36 45% 94%;
   --foreground: 210 8% 11%;
   --card: 32 58% 96%;

@@ -107,12 +107,17 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
   - gates de `typecheck`, `test` e `build` do web fechados
 
 ### B6-08 - Design layer minimo reutilizavel
-- status proposto: FUTURO
-- objetivo: consolidar um pequeno layer reutilizavel somente quando os padroes visuais ja tiverem maturado o suficiente
+- status proposto: DONE
+- objetivo: consolidar um pequeno layer reutilizavel a partir dos padroes visuais maduros ja validados em B6-04 a B6-09
 - camada: ux + frontend
-- dependencia-chave: mais uma rodada de validacao pratica antes de formalizar base reutilizavel
-- motivo para nao priorizar agora:
-  - o gatilho aprovou manter esta task documentada, mas ainda nao priorizada
+- dependencia-chave: conclusao de `B6-09` (DONE)
+- criterio adicional de fechamento:
+  - tokens e variaveis CSS compartilhadas extraidos e documentados
+  - sem redesign amplo — apenas formalizacao do que ja existe
+  - relatorio registrado em `docs/ops/done/B6-08.done.md`
+  - gates de `typecheck`, `test` e `build` do web fechados
+- motivo para entrada em READY:
+  - gatilho aprovou abertura desta mini-fase em 2026-04-01
 
 ### B6-09 - Buyer detail + pickup continuity
 - status proposto: DONE
@@ -146,6 +151,9 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - `B6-07` - Alinhar estados compartilhados de loading / empty / error / success
   - evidencia final: ajustes em `apps/web/components/workspace-state.tsx`, `apps/web/components/admin-buyers-dashboard.tsx`, `apps/web/components/admin-disputes-dashboard.tsx`, `apps/web/components/pickup-dashboard.tsx` e `apps/web/app/globals.css`
   - gate/evidencia: `docs/ops/done/B6-07.done.md`
+- `B6-08` - Design layer minimo reutilizavel
+  - evidencia final: bloco de documentacao `BIO-LOOP DESIGN LAYER` adicionado a `apps/web/app/globals.css`; tokens agrupados com semantica documentada; superficies, paletas de status/workspace e tipografia rastreadas
+  - gate/evidencia: `docs/ops/done/B6-08.done.md`
 - `B6-09` - Buyer detail + pickup continuity
   - evidencia final: ajustes em `apps/web/components/buyer-dashboard.tsx`, `apps/web/components/pickup-dashboard.tsx` e `apps/web/app/globals.css`
   - gate/evidencia: `docs/ops/done/B6-09.done.md`
@@ -160,14 +168,14 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## FUTURO
 
-- `B6-08` - Design layer minimo reutilizavel
-- redesigns por modulo e eventuais implementacoes guiadas por Figma, depois da aprovacao do gatilho sobre a proxima mini-fase
+- redesigns por modulo e eventuais implementacoes guiadas por Figma, depois de B6-08 aprovado e fechado
 
 ## Proxima task pequena escolhida
 
-- nenhuma task escolhida automaticamente
-- proxima passagem depende de nova leitura do gatilho entre continuidade em `BACKLOG6` ou pausa estrategica
+- nenhuma task escolhida
+- o ciclo completo de UX/Figma desta frente foi fechado com B6-08
+- proxima passagem depende de nova decisao explicita do gatilho
 
 ## Observacao operacional
 
-`BACKLOG6` foi aberta depois do fechamento operacional de `BACKLOG4`. `B6-01`, `B6-02` e `B6-03` fecharam o checkpoint formal de UX/Figma sem abrir redesign amplo nem tocar a base tecnica validada. `B6-04`, `B6-05` e `B6-06` fecharam a primeira rodada completa de slices em handoff/buyer, seller e admin. `B6-07` consolidou a linguagem compartilhada de loading, empty, error e success sem abrir design system amplo. `B6-09` reforcou a continuidade entre buyer detail e pickup sem transformar essa fase em redesign amplo ou design layer.
+`BACKLOG6` foi aberta depois do fechamento operacional de `BACKLOG4`. `B6-01`, `B6-02` e `B6-03` fecharam o checkpoint formal de UX/Figma sem abrir redesign amplo nem tocar a base tecnica validada. `B6-04`, `B6-05` e `B6-06` fecharam a primeira rodada completa de slices em handoff/buyer, seller e admin. `B6-07` consolidou a linguagem compartilhada de loading, empty, error e success sem abrir design system amplo. `B6-09` reforcou a continuidade entre buyer detail e pickup sem transformar essa fase em redesign amplo ou design layer. `B6-08` formalizou o design layer minimo com documentacao inline de tokens, superficies e paletas sem alterar nenhum valor visual existente, encerrando o ciclo completo desta frente.
