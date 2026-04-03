@@ -42,7 +42,10 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - piloto/runtime profile documentado
 - browser gate consolidado validado
 - handoff executivo inicial no `/`
-- frente aprovada pelo gatilho como proxima prioridade principal
+- rodada corretiva de UX consolidada em `BACKLOG6`
+- baseline revalidada em `B4-08`
+- frente aprovada pelo gatilho para nova leitura orientada a decisao
+- prioridade de produto consolidada em onboarding real controlado apos `B4-10`
 
 ## Itens concluidos que esta frente deve preservar
 
@@ -148,6 +151,56 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - motivo para entrar em READY:
   - projeto validado precisa de uso funcional para decidir proximos passos, sem otimizar no vacuo
 
+### B4-09 - Executar piloto orientado a decisao e classificar sinais
+- status proposto: DONE
+- objetivo: usar a baseline atual consolidada para observar uma rodada curta de uso assistido e converter os sinais em decisao objetiva de prioridade
+- camada: produto/operacao + qa
+- dependencias: `B4-08` concluida; baseline atual aceita pelo gatilho; zero correcoes abertas durante a task
+- escopo:
+  - executar a jornada assistida sobre a baseline atual sem tocar codigo
+  - observar buyer, seller e admin na narrativa operacional principal
+  - classificar sinais em `PRODUTO`, `UX` e `TECNICA`
+  - devolver uma unica recomendacao final entre `BACKLOG4`, `BACKLOG6` ou `BACKLOG5`
+- sinais a observar:
+  - clareza de proposta de valor e narrativa buyer / seller / admin
+  - atrito perceptivo relevante ou dependencia de explicacao verbal excessiva
+  - bugs visiveis, inconsistencias de estado ou sinais de baixa confianca operacional
+- criterios de aceitacao:
+  - jornada executada e registrada sem correcoes automaticas
+  - evidencias agrupadas por categoria com impacto e severidade
+  - artefato unico, curto, observavel e auditavel
+  - decisao final objetiva entre `BACKLOG4`, `BACKLOG6` ou `BACKLOG5`
+- motivo para entrar em READY:
+  - `B4-07` apontou gaps que levaram ao ciclo corretivo de `BACKLOG6`
+  - `B4-08` registrou baseline mais estavel e pronta para nova leitura
+  - o proximo ganho vem de decisao orientada por evidencia, nao de polish cego
+
+### B4-10 - Definir prioridade unica de produto para a continuidade do piloto
+- status proposto: DONE
+- objetivo: converter a decisao de continuidade em `BACKLOG4` em uma prioridade unica e rastreavel de produto
+- camada: produto/operacao
+- dependencias: `B4-09` concluida
+- criterios de aceitacao:
+  - prioridade unica explicitada
+  - frentes nao prioritarias explicitamente excluidas
+  - recomendacao coerente com o estado real do repo e com a baseline atual
+  - artefato curto e auditavel registrado
+- motivo para entrar em READY:
+  - `B4-09` decidiu manter `BACKLOG4`, mas a frente ainda precisava de uma direcao concreta para nao cair em expansao difusa
+
+### B4-11 - Preparar prova operacional de onboarding real controlado
+- status proposto: DONE
+- objetivo: registrar o recorte, o checklist e a validacao minima do onboarding real controlado usando o dataset atual do piloto
+- camada: produto/operacao + qa
+- dependencias: `B4-10` concluida; pacote real oficial presente em `data/real-data/sweden-supermarkets/incoming/`
+- criterios de aceitacao:
+  - `dry-run` oficial executado com sucesso
+  - recorte do dataset explicitado
+  - checklist operacional minimo registrado
+  - riscos e assuncoes ainda abertas listados sem abrir correcao automatica
+- motivo para entrar em READY:
+  - a prioridade definida em `B4-10` precisava virar uma prova operacional observavel antes de qualquer onboarding efetivo no piloto
+
 ## DONE
 
 - `B4-01` - Demo script operacional por role
@@ -168,6 +221,18 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - `B4-07` - Consolidar rodada 2 de piloto assistido com captura estruturada de sinais
   - evidencia final: `docs/ops/PILOT_DRY_RUN_V2.md`
   - gate/evidencia: `docs/ops/done/B4-07.done.md`
+- `B4-08` - Validar baseline pos-UX consolidada
+  - evidencia final: `docs/ops/done/B4-08.done.md`
+  - gate/evidencia: `docs/ops/done/B4-08.done.md`
+- `B4-09` - Executar piloto orientado a decisao e classificar sinais
+  - evidencia final: `docs/ops/PILOT_DECISION_B4-09.md`
+  - gate/evidencia: `docs/ops/done/B4-09.done.md`
+- `B4-10` - Definir prioridade unica de produto para a continuidade do piloto
+  - evidencia final: `docs/ops/PILOT_PRODUCT_PRIORITY_B4-10.md`
+  - gate/evidencia: `docs/ops/done/B4-10.done.md`
+- `B4-11` - Preparar prova operacional de onboarding real controlado
+  - evidencia final: `docs/ops/PILOT_ONBOARDING_PROOF_B4-11.md`
+  - gate/evidencia: `docs/ops/done/B4-11.done.md`
 
 ## READY
 
@@ -193,8 +258,12 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 `B4-01`, `B4-02`, `B4-03` e `B4-04` fecharam a rodada atual desta frente sem alterar a base tecnica validada em M9. O dry-run encontrou apenas drifts de teste, nao falhas abertas de fluxo do produto.
 `B4-05` consolidou o artefato rapido de consulta para uso ao vivo.
+`B4-07` disparou o ciclo corretivo posterior de UX/hardening. `B4-08` registrou a baseline atual como novamente apta para leitura de decisao.
+`B4-09` reexecutou a leitura orientada por evidencia e manteve a decisao de seguir em `BACKLOG4`.
+`B4-10` converteu essa continuidade em prioridade unica de produto: onboarding real controlado como proxima aposta do piloto.
+`B4-11` validou o dry-run oficial do dataset atual e deixou a prova operacional minima pronta para a proxima rodada.
 
 ## Proxima task pequena escolhida
 
 - nenhuma task escolhida
-- a rodada 2 do piloto gerou evidencias claras (B4-07); aguardando direcao do gatilho para decidir a ativacao das frentes recomendadas (BACKLOG6 e BACKLOG5).
+- `B4-11` deixou pronta a prova operacional minima; a proxima task deve decidir se o piloto vai apenas preparar o apply controlado ou executar o onboarding efetivo

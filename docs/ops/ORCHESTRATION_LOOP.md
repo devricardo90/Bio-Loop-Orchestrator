@@ -13,7 +13,7 @@ Definir a dinâmica do Agente Orquestrador: como ele escolhe tarefas, chama suba
 3. Preparar "Task Brief" (contexto + input + output + aceitação).
 4. Chamar subagente (Domain/API/Frontend/Infra/QA) com o brief.
 5. Receber entregáveis -> rodar Gate.
-6. Se Gate OK: merge -> atualizar STATUS + marcar backlog como DONE.
+6. Se Gate OK: rodar `pnpm.cmd --filter @bio-loop/api prisma:generate` -> commit proprio da execucao -> atualizar STATUS + marcar backlog como DONE.
 7. Se Gate falhar: criar tarefa "FIX" e voltar ao passo 2.
 
 ---
@@ -45,6 +45,12 @@ Definir a dinâmica do Agente Orquestrador: como ele escolhe tarefas, chama suba
 - O orquestrador DEVE rodar `pnpm.cmd --filter @bio-loop/api prisma:generate` ANTES de qualquer commit no repositório E ANTES de executar qualquer passo que dependa/use a API.
 - Não fazer commit nem push de qualquer mudança sem antes executar `prisma:generate` com sucesso.
 - Se `prisma generate` falhar por bloqueio de rede/engine, isso deve ser tratado como gate pendente, não como tarefa concluída.
+
+### Regra obrigatória de commit por execução
+
+- Toda execucao concluida pelo orquestrador deve terminar com commit proprio.
+- Nao agrupar duas execucoes independentes no mesmo commit.
+- Nao considerar task encerrada se a execucao terminou sem commit correspondente.
 
 ---
 

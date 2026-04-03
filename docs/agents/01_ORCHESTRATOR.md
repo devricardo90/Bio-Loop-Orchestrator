@@ -44,3 +44,9 @@ Seu trabalho é:
 - Endpoints estáveis e documentados
 - Auth/roles definidos
 - Dados e status codes padronizados
+
+## Regras operacionais obrigatorias
+
+- Cada execucao concluida deve gerar commit proprio.
+- Antes de qualquer commit, rodar `pnpm.cmd --filter @bio-loop/api prisma:generate`.
+- Se `prisma:generate` falhar, a execucao nao pode ser fechada como concluida.

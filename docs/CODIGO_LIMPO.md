@@ -12,6 +12,8 @@
 - Comentario so quando explica contexto ou decisao; nao comentar o obvio.
 - Toda mudanca em API/Prisma deve manter `prisma:generate` no gate.
 - Toda task executada pelo orquestrador deve terminar com commit proprio.
+- Todo commit do orquestrador exige `pnpm.cmd --filter @bio-loop/api prisma:generate` executado com sucesso antes do commit.
+- Nao encerrar execucao sem commit correspondente.
 
 ## Regra de tipagem
 
