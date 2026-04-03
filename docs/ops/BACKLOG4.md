@@ -201,6 +201,45 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - motivo para entrar em READY:
   - a prioridade definida em `B4-10` precisava virar uma prova operacional observavel antes de qualquer onboarding efetivo no piloto
 
+### B4-12 - Preparar apply controlado do onboarding real no piloto
+- status proposto: DONE
+- objetivo: deixar a execucao efetiva do onboarding real pronta para autorizacao, com go/no-go e verificacao pos-apply
+- camada: produto/operacao + qa
+- dependencias: `B4-11` concluida
+- criterios de aceitacao:
+  - caminhos de apply explicitados
+  - gate go/no-go registrado
+  - verificacoes pos-apply listadas
+  - nenhum apply executado dentro desta task
+- motivo para entrar em READY:
+  - depois da prova minima de `B4-11`, faltava apenas preparar a execucao controlada sem ainda alterar o estado do piloto
+
+### B4-13 - Executar onboarding real controlado no piloto
+- status proposto: DONE
+- objetivo: aplicar o dataset real atual no ambiente do piloto e registrar o resultado da importacao
+- camada: produto/operacao + qa
+- dependencias: `B4-12` concluida; infra local disponivel
+- criterios de aceitacao:
+  - `db:import-real` executado com sucesso
+  - resumo final da importacao registrado
+  - nenhuma sobrescrita do dataset demo
+  - qualquer pendencia residual separada de forma explicita
+- motivo para entrar em READY:
+  - a preparacao de `B4-12` deixou a execucao binaria pronta; faltava apenas aplicar o onboarding efetivo
+
+### B4-14 - Validar catalogo real com runtime ativo e sessao admin
+- status proposto: DONE
+- objetivo: confirmar, com runtime ativo, que o catalogo `real` ficou acessivel no admin apos o onboarding controlado
+- camada: produto/operacao + qa
+- dependencias: `B4-13` concluida
+- criterios de aceitacao:
+  - `GET /health` respondendo `200`
+  - autenticacao admin funcionando
+  - `catalogScope=real` retornando o dataset importado
+  - coexistencia administrativa `demo` + `real` confirmada
+- motivo para entrar em READY:
+  - `B4-13` deixou apenas a validacao assistida residual do catalogo real com runtime ativo
+
 ## DONE
 
 - `B4-01` - Demo script operacional por role
@@ -233,6 +272,15 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - `B4-11` - Preparar prova operacional de onboarding real controlado
   - evidencia final: `docs/ops/PILOT_ONBOARDING_PROOF_B4-11.md`
   - gate/evidencia: `docs/ops/done/B4-11.done.md`
+- `B4-12` - Preparar apply controlado do onboarding real no piloto
+  - evidencia final: `docs/ops/PILOT_ONBOARDING_APPLY_PREP_B4-12.md`
+  - gate/evidencia: `docs/ops/done/B4-12.done.md`
+- `B4-13` - Executar onboarding real controlado no piloto
+  - evidencia final: `docs/ops/PILOT_ONBOARDING_APPLY_B4-13.md`
+  - gate/evidencia: `docs/ops/done/B4-13.done.md`
+- `B4-14` - Validar catalogo real com runtime ativo e sessao admin
+  - evidencia final: `docs/ops/PILOT_REAL_CATALOG_VALIDATION_B4-14.md`
+  - gate/evidencia: `docs/ops/done/B4-14.done.md`
 
 ## READY
 
@@ -262,8 +310,12 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 `B4-09` reexecutou a leitura orientada por evidencia e manteve a decisao de seguir em `BACKLOG4`.
 `B4-10` converteu essa continuidade em prioridade unica de produto: onboarding real controlado como proxima aposta do piloto.
 `B4-11` validou o dry-run oficial do dataset atual e deixou a prova operacional minima pronta para a proxima rodada.
+`B4-12` deixou o apply controlado pronto para autorizacao sem ainda alterar o estado do dataset do piloto.
+`B4-13` executou o apply efetivo do dataset real e isolou a pendencia residual apenas na validacao HTTP/admin com runtime ativo.
+`B4-14` fechou a validacao assistida do catalogo real e encerrou a rodada operacional de onboarding controlado.
 
 ## Proxima task pequena escolhida
 
 - nenhuma task escolhida
-- `B4-11` deixou pronta a prova operacional minima; a proxima task deve decidir se o piloto vai apenas preparar o apply controlado ou executar o onboarding efetivo
+- nenhuma task escolhida
+- a sequencia de onboarding real controlado foi fechada; a frente agora aguarda novo gatilho
