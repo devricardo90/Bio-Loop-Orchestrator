@@ -21,7 +21,7 @@ test("buyer feed, auction detail, and pickup stay anchored to API-backed data", 
   await page.goto("/buyer/feed");
 
   await expect(page.getByRole("heading", { name: "A feed built for industrial buyers." })).toBeVisible();
-  await expect(page.getByText("source=api")).toBeVisible();
+  await expect(page.locator("span.chip").filter({ hasText: "source=api" })).toBeVisible();
   await expect(page.locator("article").filter({ hasText: liveAuction.storeName })).toContainText(liveAuction.categoryName);
 
   await page.locator("article").filter({ hasText: liveAuction.storeName }).getByRole("link", { name: "Open auction" }).click();
@@ -29,13 +29,13 @@ test("buyer feed, auction detail, and pickup stay anchored to API-backed data", 
   await expect(page.getByRole("heading", { name: "Auction view with contract-safe bidding." })).toBeVisible();
   await expect(page.getByRole("heading", { name: liveAuction.categoryName })).toBeVisible();
   await expect(page.getByText(liveAuction.storeName)).toBeVisible();
-  await expect(page.getByText("source=api")).toBeVisible();
+  await expect(page.locator("span.chip").filter({ hasText: "source=api" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Open /reference" })).toBeVisible();
 
   await page.goto("/buyer/orders");
 
-  await expect(page.getByRole("heading", { name: "Schedule pickups and keep PODs moving." })).toBeVisible();
-  await expect(page.getByText("source=api")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Schedule pick-ups and keep PODs moving." })).toBeVisible();
+  await expect(page.locator("span.chip").filter({ hasText: "source=api" })).toBeVisible();
   await expect(page.locator("article").filter({ hasText: pickupOrderRecord.storeName })).toContainText(
     pickupOrderRecord.order.pickupStatus
   );
@@ -45,9 +45,9 @@ test("buyer feed, auction detail, and pickup stay anchored to API-backed data", 
     page.locator("article").filter({ hasText: pickupOrderRecord.storeName }).getByRole("link", { name: "Open pickup detail" }).click()
   ]);
 
-  await expect(page.getByRole("heading", { name: "Pickup detail with proof upload and dispute state." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Pick-up detail with proof upload and dispute state." })).toBeVisible();
   await expect(page.locator(".detail-sidebar").getByText(pickupOrderRecord.order.id, { exact: true })).toBeVisible();
   await expect(page.locator(".detail-sidebar").getByText(pickupOrderRecord.order.pickupStatus, { exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Schedule pickup" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Schedule pick-up" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Submit POD" })).toBeVisible();
 });
