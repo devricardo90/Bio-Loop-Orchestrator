@@ -48,9 +48,7 @@ export type AuctionRuntime = {
 export const DEMO_STORAGE_KEY = "bio-loop-web-demo-state";
 export const BID_INCREMENT = 0.25;
 
-const now = new Date();
-const inMinutes = (minutes: number) => new Date(now.getTime() + minutes * 60_000).toISOString();
-const minutesAgo = (minutes: number) => new Date(now.getTime() - minutes * 60_000).toISOString();
+
 
 export const currency = new Intl.NumberFormat("sv-SE", {
   style: "currency",
@@ -120,6 +118,9 @@ export function formatDateSafe(iso: string | null | undefined, fallback = "N/A")
 }
 
 export function createDemoState(): DemoState {
+  const now = new Date();
+  const inMinutes = (minutes: number) => new Date(now.getTime() + minutes * 60_000).toISOString();
+  const minutesAgo = (minutes: number) => new Date(now.getTime() - minutes * 60_000).toISOString();
   return {
     activeBuyerId: "buyer-grainworks",
     buyers: [

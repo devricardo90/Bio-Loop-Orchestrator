@@ -19,6 +19,7 @@ import {
 } from "../lib/pickup-view";
 import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
+import { useAuthSession } from "./auth-session";
 
 type PickupDashboardProps = {
   mode: "list" | "detail";
@@ -35,6 +36,7 @@ type PickupWorkspaceState = {
 const proofTypes = ["PHOTO", "SIGNATURE", "DOC"] as const;
 
 export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
+  const { status, isAuthenticated } = useAuthSession();
   const [workspace, setWorkspace] = useState<PickupWorkspaceState | null>(null);
   const [activeBuyerId, setActiveBuyerId] = useState("");
   const [loading, setLoading] = useState(true);
@@ -50,9 +52,18 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
   const now = Date.now();
 
   useEffect(() => {
+    if (status === "loading") {
+      return;
+    }
+
     let cancelled = false;
 
     async function load() {
+      if (!isAuthenticated) {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setError("");
 
@@ -89,7 +100,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
     return () => {
       cancelled = true;
     };
-  }, [orderId]);
+  }, [orderId, isAuthenticated, status]);
 
   const activeBuyer = workspace?.buyers.find((buyer) => buyer.id === activeBuyerId) ?? workspace?.buyers[0];
   const orders = useMemo(() => {

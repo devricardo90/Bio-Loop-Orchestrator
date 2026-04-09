@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthSession } from "./auth-session";
 import { getWorkspaceAccessDecision, getWorkspaceLabel, type WorkspaceRole } from "../lib/route-access";
+import { WorkspaceState } from "./workspace-state";
 
 type WorkspaceRouteGateProps = Readonly<{
   workspace: WorkspaceRole;
@@ -38,7 +39,16 @@ export function WorkspaceRouteGate({ workspace, children }: WorkspaceRouteGatePr
   }, [redirectHref, router]);
 
   if (decision.kind === "loading") {
-    return <main className="app-shell">Loading {getWorkspaceLabel(workspace)}...</main>;
+    return (
+      <main className="app-shell">
+        <WorkspaceState
+          eyebrow={getWorkspaceLabel(workspace)}
+          title="Verifying session..."
+          description="The workspace access check is waiting for session hydration to complete."
+          tone="loading"
+        />
+      </main>
+    );
   }
 
   if (decision.kind === "redirect") {

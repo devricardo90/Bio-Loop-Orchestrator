@@ -57,11 +57,13 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## DONE
 
-- nenhuma task executada nesta frente dentro de M10
+- `B5-HOTFIX-01` - Estabilizar boot inicial, auth hydration, integridade de datas e coerência de estado visível
+  - evidencia final: `apps/web/lib/demo-auctions.ts`, `apps/web/components/pickup-dashboard.tsx`, `apps/web/components/route-guard.tsx`
+  - gate/evidencia: `docs/ops/done/B5-HOTFIX-01.done.md`
 
 ## READY
 
-- `B5-HOTFIX-01` - Estabilizar boot inicial, auth hydration, integridade de datas e coerência de estado visível
+- nenhuma task `READY` neste momento
 
 ## BLOCKED
 
@@ -78,8 +80,9 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## Proxima task pequena escolhida
 
-- `B5-HOTFIX-01` - Estabilizar boot inicial, auth hydration, integridade de datas e coerência de estado visível
+- nenhuma task escolhida
+- `B5-HOTFIX-01` foi concluida; a frente agora aguarda novo gatilho para eventuais hardenings guiados por risco observado
 
 ## Observacao operacional
 
-Esta frente foi reativada no pos-M9 devido aos vazamentos técnicos percebidos na rodada 2 do Piloto (B4-07). O hardening ataca cirurgicamente os ruidos estéticos de API/React mapeados sem escalar para reescritas gerais de runtime.
+Esta frente foi reativada no pos-M9 devido aos vazamentos técnicos percebidos na rodada 2 do Piloto (B4-07). O hardening ataca cirurgicamente os ruidos estéticos de API/React mapeados sem escalar para reescritas gerais de runtime. `B5-HOTFIX-01` corrigiu três problemas objetivos sem abrir nova frente: datas module-level stale em `demo-auctions.ts`, ausência de auth hydration guard em `pickup-dashboard.tsx`, e estado de loading puro sem estrutura em `route-guard.tsx`. A frente encerra esta rodada e aguarda novo gatilho.
