@@ -1,64 +1,111 @@
-# Bio-Loop-Orchestrator
+# Bio Loop Orchestrator
 
-Monorepo for the Bio Loop orchestrator project.
+A production-style B2B marketplace showcase that helps supermarkets monetize surplus inventory through real-time, commodity-style trading.
 
-## Workspace layout
+![Bio Loop screenshot](docs/assets/bio-loop-showcase.png)
 
-- `apps/api` - NestJS API scaffold
-- `apps/web` - Next.js app scaffold
-- `packages/domain` - domain contracts package
-- `packages/shared` - shared utilities package
+## Live Links
 
-## Quickstart
+- Web: https://bio-loop-orchestrator-web.vercel.app
+- API: https://bio-loop-orchestrator-production.up.railway.app
+- API Health: https://bio-loop-orchestrator-production.up.railway.app/health
+- API Readiness: https://bio-loop-orchestrator-production.up.railway.app/readiness
+- OpenAPI: https://bio-loop-orchestrator-production.up.railway.app/openapi.json
+- API Reference: https://bio-loop-orchestrator-production.up.railway.app/reference
 
-```bash
-Copy-Item .env.example .env
+## Why this project stands out
+
+This repository demonstrates a senior-style delivery workflow, not just a UI prototype.
+
+It includes:
+
+- monorepo architecture with `pnpm` + `turbo`
+- separate web and API runtimes
+- Next.js 15 frontend
+- NestJS API
+- Prisma + PostgreSQL
+- Redis-backed runtime support
+- production deployment on Vercel + Railway
+- documented deploy baseline, readiness review, and evidence pack
+- validated public runtime with health, readiness, OpenAPI, and API reference endpoints
+
+## Architecture
+
+```text
+apps/web   -> Next.js 15 frontend deployed on Vercel
+apps/api   -> NestJS API deployed on Railway
+Postgres   -> Railway PostgreSQL
+Redis      -> Railway Redis
+
+Key Features
+guided buyer, seller, and admin showcase flow
+cookie-based auth flow
+API-backed buyer feed
+admin and seller operational paths
+public API documentation
+deployment and operational documentation inside the repo
+Tech Stack
+Next.js 15
+React
+NestJS
+Prisma
+PostgreSQL
+Redis
+pnpm workspaces
+Turborepo
+Vercel
+Railway
+Project Structure
+
+apps/
+  web/        Next.js app
+  api/        NestJS API
+
+packages/
+  domain/     domain contracts
+  shared/     shared utilities
+
+docs/
+  deploy/     deployment docs
+  ops/        operational evidence and readiness docs
+Deployment Status
+
+Validated public deployment baseline:
+
+Web deployed and accessible
+API deployed and accessible
+/health validated
+/readiness validated
+/openapi.json validated
+/reference validated
+Local Development
+Prerequisites
+Node 24.x
+pnpm
+Docker Desktop, if using local Postgres/Redis containers
+Install
 pnpm install
-pnpm compose:up
-pnpm --filter @bio-loop/api prisma:generate
-pnpm --filter @bio-loop/api db:seed
-pnpm dev
-```
+Run web
+pnpm --filter @bio-loop/web dev
+Run API
+pnpm --filter @bio-loop/api dev
+Environment
 
-The API runs on `http://localhost:4000`.
-The web app runs on `http://localhost:3001`.
+Example environment variables are documented in:
 
-The first `compose:up`, `dev`, `dev:api`, or `dev:web` run now bootstraps `.env` from `.env.example` automatically if the file is missing.
+.env.example
 
-## Useful URLs
+Production values are not committed.
 
-- `http://localhost:4000/health`
-- `http://localhost:4000/readiness`
-- `http://localhost:4000/openapi.json`
-- `http://localhost:4000/reference`
+Documentation
+Railway API deployment notes
+Pilot evidence pack
+Assisted demo script
+Pilot readiness review
+Notes
 
-## Common commands
+This repository is presented as a validated showcase baseline. Some operational flows may still depend on seeded/demo data or assisted walkthrough context.
 
-```bash
-pnpm compose:down
-pnpm env:bootstrap
-pnpm dev:api
-pnpm dev:web
-pnpm dev
-pnpm --filter @bio-loop/api prisma:drift
-pnpm --filter @bio-loop/api db:verify-clean
-pnpm build
-pnpm lint
-pnpm typecheck
-```
+Author
 
-## Docs
-
-- [Developer quickstart + demo guide](docs/ops/DEVELOPER_QUICKSTART.md)
-- [Local runtime runbook](docs/ops/LOCAL_RUNTIME_STACK.md)
-- [API README](apps/api/README.md)
-
-## Prisma drift hygiene
-
-When validating Prisma migrations locally:
-
-```bash
-$env:SHADOW_DATABASE_URL="postgresql://bio_loop:bio_loop_dev@localhost:5453/bio_loop_shadow"
-pnpm --filter @bio-loop/api prisma:drift
-pnpm --filter @bio-loop/api db:verify-clean
-```
+Ricardo Souza
