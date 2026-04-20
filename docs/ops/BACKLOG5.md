@@ -37,6 +37,75 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## Candidatas registradas, mas nao priorizadas
 
+### B5-04 - Auth production cookie/domain decision
+- status proposto: READY
+- objetivo: decidir a estrategia minima e segura para desbloquear o login no browser em producao sem reescrever o fluxo de auth
+- camada: infra + auth + deploy
+- contexto:
+  - deploy base de vitrine esta DONE
+  - CORS foi validado para `https://bio-loop-orchestrator-web.vercel.app`
+  - CSRF foi validado no codigo e via cliente HTTP quando cookie `csrf_token` e header `X-CSRF-Token` chegam juntos
+  - login no browser permanece `BLOCKED` porque o cookie `csrf_token` nao e reenviado no POST cross-site entre Vercel e Railway
+- escopo estrito:
+  - decidir entre manter dominios gerenciados ou configurar dominio same-site controlado
+  - mapear configuracao final de `APP_URL`, `ALLOWED_ORIGINS`, `COOKIE_SECURE`, `COOKIE_SAMESITE` e `COOKIE_DOMAIN`
+  - registrar criterio de validacao via browser real
+  - nao alterar UI
+  - nao refatorar auth
+- fora de escopo:
+  - redesign
+  - nova feature de login
+  - troca ampla de arquitetura auth
+  - persistencia nova de sessao
+  - implementacao automatica de dominio
+- criterios de aceitacao:
+  - decisao documentada com uma unica estrategia recomendada
+  - riscos de cookie cross-site explicitados
+  - proxima task tecnica de deploy definida como candidata, sem promocao automatica
+  - nenhuma alteracao de codigo de aplicacao
+- motivo para entrada em READY:
+  - e o menor passo tecnico para desbloquear o uso real em producao
+  - evita mexer em UX antes de o login browser funcionar
+  - preserva a disciplina de corrigir o bloqueio observado antes de ampliar produto
+  - gatilho autorizou deixar a proxima do backlog como READY e aguardar execucao separada
+
+### DEPLOY-02 - Same-site domain setup for production auth
+- status proposto: CANDIDATA
+- objetivo: aplicar a estrategia de dominio/cookie decidida em `B5-04` para tornar o login browser funcional em producao
+- camada: deploy + infra
+- dependencia-chave: `B5-04` concluida com decisao operacional explicita
+- escopo estrito:
+  - configurar dominio/subdominios controlados para Web e API
+  - ajustar envs de producao estritamente necessarias
+  - validar CORS e cookies no browser
+  - registrar evidencias sem expor secrets
+- fora de escopo:
+  - alterar fluxo de login
+  - alterar componentes Web
+  - redesenhar telas
+  - refatorar API
+- criterio adicional de fechamento:
+  - login no browser deixa de falhar por ausencia de `csrf_token`
+  - buyer, seller e admin conseguem iniciar sessao em producao
+  - relatorio futuro registrado em `docs/ops/done/DEPLOY-02.done.md`
+
+### QA-08 - Browser auth production validation
+- status proposto: CANDIDATA
+- objetivo: validar ponta a ponta o login real no browser depois da correcao de dominio/cookie em producao
+- camada: qa + auth + produto
+- dependencia-chave: `DEPLOY-02` concluida
+- criterios de aceitacao:
+  - `GET /auth/csrf` retorna `200`
+  - browser armazena `csrf_token`
+  - `POST /auth/login` envia cookie `csrf_token` e header `X-CSRF-Token`
+  - buyer, seller e admin entram na UI de producao
+  - refresh/session hydration e logout funcionam
+  - evidencias registradas sem secrets
+- fora de escopo:
+  - corrigir UX durante a validacao
+  - abrir nova feature
+  - promover `BACKLOG6` automaticamente
+
 ### B5-01 - Isolamento progressivo do runtime seller
 - status proposto: NAO PRIORIZADA
 - objetivo: reduzir dependencia do seller em estado compartilhado do buyer
@@ -63,7 +132,10 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## READY
 
-- nenhuma task `READY` neste momento
+- `B5-04 - Auth production cookie/domain decision`
+  - objetivo: decidir a estrategia minima de dominio/cookie para desbloquear login browser em producao
+  - limite: documentar decisao; nao implementar deploy, nao mexer em UI e nao refatorar auth
+  - aguardando gatilho explicito para execucao
 
 ## BLOCKED
 
@@ -76,12 +148,14 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## FUTURO
 
+- desbloqueio de auth browser em producao por dominio/same-site controlado
+- validacao browser real de buyer, seller e admin em producao
 - demais hardenings estruturais guiados por risco observado em piloto, demo ou gates reais
 
 ## Proxima task pequena escolhida
 
-- nenhuma task escolhida
-- `B5-HOTFIX-01` foi concluida; a frente agora aguarda novo gatilho para eventuais hardenings guiados por risco observado
+- `B5-04 - Auth production cookie/domain decision`
+- aguardando gatilho explicito para iniciar
 
 ## Observacao operacional
 

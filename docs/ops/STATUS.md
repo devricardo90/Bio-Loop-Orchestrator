@@ -99,6 +99,8 @@
 - Em 2026-04-20, a investigacao localizada de CORS/CSRF confirmou CORS correto para `https://bio-loop-orchestrator-web.vercel.app` e handshake CSRF consistente no codigo e via cliente HTTP.
 - Auth em producao permanece `BLOCKED` no browser porque o cookie `csrf_token` nao e reenviado no `POST /auth/login` cross-site entre Vercel e Railway; a proxima solucao deve ser operacional de dominio/same-site, nao refactor de aplicacao.
 - Nenhuma task `READY` foi criada ou promovida por esse checkpoint.
+- Proximas candidatas documentadas: `DEPLOY-02` para setup same-site, `QA-08` para validacao browser, `B4-18` para demo pos-auth, `B6-10` para UX guiado por evidencia e `BACKLOG7` para crescimento de produto/portfolio.
+- Proxima task `READY`: `B5-04 - Auth production cookie/domain decision`, aguardando gatilho explicito para execucao.
 
 ## Nota historica
 

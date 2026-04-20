@@ -168,6 +168,21 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## FUTURO
 
+- `B6-10 - UX Review pos-auth com foco em demo assistida`
+  - status proposto: CANDIDATA
+  - objetivo: revisar friccoes reais de UI/UX somente depois de auth browser funcionar em producao e a demo assistida gerar evidencias
+  - camada: ux + frontend + produto
+  - dependencia-chave: `QA-08` e demo assistida pos-auth concluida
+  - escopo:
+    - revisar clareza do handoff principal
+    - revisar buyer journey, seller overview e admin closeout com base em uso real
+    - priorizar copy, hierarquia e estados que atrapalhem demonstracao
+    - nao redesenhar no vazio
+  - fora de escopo:
+    - corrigir auth
+    - refatorar API
+    - abrir design system amplo
+    - criar telas sem evidencia de friccao
 - redesigns por modulo e eventuais implementacoes guiadas por Figma, depois de B6-08 aprovado e fechado
 
 ## Proxima task pequena escolhida
@@ -179,3 +194,4 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 ## Observacao operacional
 
 `BACKLOG6` foi aberta depois do fechamento operacional de `BACKLOG4`. `B6-01`, `B6-02` e `B6-03` fecharam o checkpoint formal de UX/Figma sem abrir redesign amplo nem tocar a base tecnica validada. `B6-04`, `B6-05` e `B6-06` fecharam a primeira rodada completa de slices em handoff/buyer, seller e admin. `B6-07` consolidou a linguagem compartilhada de loading, empty, error e success sem abrir design system amplo. `B6-09` reforcou a continuidade entre buyer detail e pickup sem transformar essa fase em redesign amplo ou design layer. `B6-08` formalizou o design layer minimo com documentacao inline de tokens, superficies e paletas sem alterar nenhum valor visual existente, encerrando o ciclo completo desta frente.
+Nova revisao UX deve aguardar auth browser funcional e evidencia de demo real. A proxima UX coerente nao e "mais telas"; e clareza operacional sobre fluxos reais.

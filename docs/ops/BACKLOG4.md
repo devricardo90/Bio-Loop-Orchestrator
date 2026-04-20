@@ -431,6 +431,7 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## FUTURO
 
+- demo assistida pos-auth em producao, somente depois de `QA-08` validar login buyer, seller e admin no browser
 - demo assistida externa sobre a baseline de deploy validada, se o gatilho quiser seguir a recomendacao de `B4-17`
 - bifurcacao condicional apos demo externa ou smoke test pos-deploy:
   - se o problema observado for tecnico: avaliar `B5-04 - Technical Risk Decision Memo`
@@ -458,6 +459,7 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 `B4-17` revisou a prontidao documental do piloto e recomendou seguir para deploy de vitrine controlado com smoke test pos-deploy e demo assistida.
 Em 2026-04-15, o deploy de vitrine foi registrado como baseline validada: Web na Vercel, API na Railway, Postgres e Redis ativos, endpoints tecnicos validados e integracao Web -> API confirmada em nivel de deploy.
 Em 2026-04-20, a investigacao localizada de auth/CORS confirmou CORS correto para a Web da Vercel e contrato CSRF consistente quando cookie e header chegam juntos. O login no browser permanece `BLOCKED` por cookie `csrf_token` nao reenviado no POST cross-site entre Vercel e Railway. Nenhuma task `READY` foi criada; qualquer proxima acao depende de novo gatilho.
+Quando auth browser estiver validado, a candidata operacional natural e `B4-18 - Demo assistida pos-auth em producao`, com objetivo de provar buyer, seller e admin em fluxo real antes de abrir UX ou crescimento de produto.
 
 ## Proxima task pequena escolhida
 
