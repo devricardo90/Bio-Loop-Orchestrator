@@ -114,15 +114,21 @@ node apps/api/prisma/import-real-data.mjs --apply
 
 ## Configuracao de plataforma
 
-Nenhum `vercel.json`, `render.yaml`, `railway.toml` ou `Dockerfile` foi criado nesta frente porque a plataforma final ainda nao foi escolhida.
+O deploy validado de vitrine usa:
 
-Pendencias por plataforma:
+- Web: Vercel.
+- API: Railway.
+- Postgres: Railway.
+- Redis: Railway.
 
-- Web: configurar root/app como `apps/web` ou usar build command filtrado a partir da raiz.
-- API: configurar um Web Service Node separado com build/start reais do `@bio-loop/api`.
-- Banco: provisionar Postgres e definir `DATABASE_URL`.
-- Redis: provisionar Redis e definir `REDIS_URL`.
-- Dominios: definir origens finais antes de fixar cookies cross-origin.
+Nenhum `vercel.json`, `render.yaml`, `railway.toml` ou `Dockerfile` foi criado durante a preparacao interna porque a configuracao final foi aplicada nas plataformas gerenciadas.
+
+Pendencias operacionais futuras:
+
+- registrar commit SHA exato associado ao deploy validado, se necessario
+- definir dominio final proprio, se a vitrine sair dos dominios Vercel/Railway
+- reavaliar CORS/cookies se houver mudanca de dominio
+- resolver login no browser com dominio/same-site controlado, pois o cookie `csrf_token` nao e reenviado no POST cross-site entre Vercel e Railway
 
 ## Ambientes minimos
 
@@ -148,4 +154,8 @@ Deve ter secrets proprios, banco persistente, Redis persistente, HTTPS e smoke t
 
 O deploy so deve ser tratado como pronto depois de executar o smoke test documentado em `docs/deploy/smoke-test.md`.
 
-Antes disso, o estado correto e: preparado internamente, aguardando recursos externos e validacao real.
+Em 2026-04-15, o deploy de vitrine foi registrado como baseline validada em `docs/deploy/deploy-baseline.md`.
+
+Estado atual: deploy de vitrine validado, com Web na Vercel, API na Railway, Postgres e Redis ativos na Railway, endpoints tecnicos da API validados e integracao Web -> API confirmada em nivel de deploy.
+
+Checkpoint auth/CORS em 2026-04-20: CORS esta liberado para `https://bio-loop-orchestrator-web.vercel.app`, `GET /auth/csrf` emite cookie e body coerentes, e o backend valida CSRF quando cookie/header chegam juntos. O login no browser permanece bloqueado por cookie CSRF cross-site nao reenviado entre Vercel e Railway.

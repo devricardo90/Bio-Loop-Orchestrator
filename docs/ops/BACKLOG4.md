@@ -240,6 +240,135 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - motivo para entrar em READY:
   - `B4-13` deixou apenas a validacao assistida residual do catalogo real com runtime ativo
 
+### B4-15 - Pilot Evidence Pack pos-onboarding real
+- status proposto: DONE
+- objetivo: consolidar, em artefato curto, o que o piloto ja consegue demonstrar apos o onboarding real validado, incluindo buyer, seller, admin, catalogo real/demo, endpoints de saude, `/reference` e criterios de sucesso para a proxima demonstracao assistida
+- camada: produto/operacao + qa
+- contexto:
+  - `B4-14` fechou a validacao assistida do catalogo real com runtime ativo e sessao admin
+  - o piloto ja possui baseline pos-M9 limpa, runtime documentado, dados reais controlados e gate browser consolidado
+  - a proxima decisao precisa de evidencia operacional sintetica, nao de nova feature automatica
+- escopo estrito:
+  - registrar o estado demonstravel atual do piloto por role: buyer, seller e admin
+  - explicitar como o catalogo `demo` e `real` aparecem na operacao
+  - referenciar verificacoes de `/health`, `/readiness` e `/reference`
+  - definir criterios de sucesso para uma proxima demonstracao assistida
+  - listar evidencias existentes que sustentam a narrativa do piloto
+- fora de escopo:
+  - alteracao de codigo
+  - redesign
+  - refactor de seller, jobs, API ou runtime
+  - abertura de subtasks paralelas
+  - promocao automatica para `READY`
+- dependencias:
+  - `B4-14` concluida
+  - `docs/ops/PILOT_RUNTIME_PROFILE.md`
+  - `docs/ops/PILOT_REAL_CATALOG_VALIDATION_B4-14.md`
+  - `docs/ops/POST_M7_RELEASE_GATE.md`
+  - `QA-07` concluida
+- criterios de aceitacao:
+  - artefato curto registrado com leitura executiva do piloto atual
+  - buyer, seller e admin cobertos sem criar fluxo novo
+  - catalogo real/demo descrito com criterio observavel
+  - endpoints `/health`, `/readiness` e `/reference` referenciados como evidencias operacionais
+  - criterios de sucesso da proxima demonstracao assistida listados de forma objetiva
+  - limites da frente registrados para impedir execucao tecnica implicita
+- evidencias esperadas:
+  - documento `docs/ops/PILOT_EVIDENCE_PACK_B4-15.md`
+  - relatorio de fechamento futuro em `docs/ops/done/B4-15.done.md`, somente se a task for promovida e executada com gate real
+- riscos:
+  - transformar uma sintese operacional em expansao de produto
+  - reabrir UX ou hardening tecnico sem finding novo
+  - misturar decisao de demonstracao assistida com implementacao
+- justificativa de prioridade agora:
+  - depois do onboarding real validado, a menor proxima frente coerente e transformar a capacidade demonstravel em evidencia operacional auditavel
+  - essa proposta preserva a disciplina de `M10`: uma frente por vez, sem continuidade automatica e sem misturar produto, UX e hardening
+  - gatilho executou a proposta em 2026-04-14 sem promover nova continuidade automatica
+
+### B4-16 - Assisted Demo Script
+- status proposto: DONE
+- objetivo: transformar a evidencia da `B4-15` em uma narrativa pratica de demonstracao
+- camada: produto/operacao + qa
+- contexto:
+  - `B4-15` consolidou o que o piloto ja prova hoje
+  - o proximo ganho operacional e converter evidencia em roteiro demonstravel, sem alterar produto
+  - a demo deve mostrar o piloto como produto observavel, nao apenas como sistema existente
+- escopo estrito:
+  - definir ordem da demo
+  - registrar roteiro buyer -> seller -> admin
+  - listar pontos de fala por etapa
+  - estimar tempo da demonstracao
+  - definir checkpoints de validacao durante a demo
+  - registrar perguntas que a demo deve responder
+- fora de escopo:
+  - alteracao de codigo
+  - redesign
+  - refactor
+  - hardening tecnico
+  - abertura de subtasks paralelas
+- dependencias:
+  - `B4-15` concluida
+  - `docs/ops/PILOT_EVIDENCE_PACK_B4-15.md`
+  - `docs/ops/PILOT_RUNTIME_PROFILE.md`
+- criterios de aceitacao:
+  - roteiro curto e executavel por operador humano
+  - buyer, seller e admin conectados em narrativa unica
+  - checkpoints de validacao alinhados ao Evidence Pack
+  - perguntas de decisao explicitadas para orientar a leitura da demo
+  - limites da demo registrados sem abrir implementacao automatica
+- evidencias esperadas:
+  - documento `docs/ops/ASSISTED_DEMO_SCRIPT_B4-16.md`
+  - relatorio de fechamento futuro em `docs/ops/done/B4-16.done.md`, somente se a task for promovida e executada com gate real
+- riscos:
+  - transformar roteiro em mudanca de produto
+  - esconder gaps reais por excesso de narrativa
+  - misturar demonstracao assistida com correcao durante a execucao
+- justificativa de prioridade agora:
+  - depois da clareza operacional da `B4-15`, a menor frente coerente e preparar uma demonstracao que responda o que o piloto prova na pratica
+  - gatilho aprovou a promocao para `READY` em 2026-04-14
+  - roteiro assistido consolidado em 2026-04-14 sem promover `B4-17` automaticamente
+
+### B4-17 - Pilot Readiness Review
+- status proposto: DONE
+- objetivo: decidir, com base na demo e nas evidencias, se o piloto esta pronto para avancar
+- camada: produto/operacao + qa
+- contexto:
+  - `B4-16` deve transformar evidencia em narrativa pratica de demonstracao
+  - a revisao de prontidao deve converter a demo em decisao fria sobre o proximo ciclo
+  - a decisao pode manter `BACKLOG4`, encaminhar risco tecnico para `BACKLOG5` ou encaminhar friccao de experiencia para `BACKLOG6`
+- escopo estrito:
+  - registrar checklist de prontidao
+  - listar gaps reais observados
+  - listar riscos restantes
+  - recomendar uma decisao: seguir para piloto ampliado, pedir hardening tecnico, pedir ajuste UX ou manter como esta
+  - separar achados por `PRODUTO`, `TECNICA` e `UX`
+- fora de escopo:
+  - correcao de gaps durante a revisao
+  - redesign
+  - refactor
+  - hardening tecnico direto
+  - promocao automatica de B5 ou B6
+- dependencias:
+  - `B4-16` concluida
+  - demo assistida executada ou simulada com evidencia registrada
+  - `docs/ops/PILOT_EVIDENCE_PACK_B4-15.md`
+- criterios de aceitacao:
+  - checklist de prontidao registrado
+  - gaps reais classificados por impacto
+  - riscos restantes documentados sem correcao automatica
+  - decisao recomendada explicitada
+  - eventual bifurcacao para `BACKLOG5` ou `BACKLOG6` justificada por evidencia
+- evidencias esperadas:
+  - documento `docs/ops/PILOT_READINESS_REVIEW_B4-17.md`
+  - relatorio de fechamento futuro em `docs/ops/done/B4-17.done.md`, somente se a task for promovida e executada com gate real
+- riscos:
+  - antecipar hardening sem problema tecnico observado
+  - antecipar UX sem friccao real de demonstracao
+  - transformar revisao de prontidao em milestone ampla demais
+- justificativa de prioridade agora:
+  - apos evidencia e roteiro, a proxima decisao deve ser baseada em prontidao real, nao em continuidade automatica
+  - gatilho aprovou e executou a revisao em 2026-04-14 como entrega exclusivamente documental
+
 ## DONE
 
 - `B4-01` - Demo script operacional por role
@@ -281,6 +410,15 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - `B4-14` - Validar catalogo real com runtime ativo e sessao admin
   - evidencia final: `docs/ops/PILOT_REAL_CATALOG_VALIDATION_B4-14.md`
   - gate/evidencia: `docs/ops/done/B4-14.done.md`
+- `B4-15` - Pilot Evidence Pack pos-onboarding real
+  - evidencia final: `docs/ops/PILOT_EVIDENCE_PACK_B4-15.md`
+  - gate/evidencia: `docs/ops/done/B4-15.done.md`
+- `B4-16` - Assisted Demo Script
+  - evidencia final: `docs/ops/ASSISTED_DEMO_SCRIPT_B4-16.md`
+  - gate/evidencia: `docs/ops/done/B4-16.done.md`
+- `B4-17` - Pilot Readiness Review
+  - evidencia final: `docs/ops/PILOT_READINESS_REVIEW_B4-17.md`
+  - gate/evidencia: `docs/ops/done/B4-17.done.md`
 
 ## READY
 
@@ -293,14 +431,16 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## FUTURO
 
-- expansoes de piloto mais amplas, caso o gatilho queira aprofundar depois da primeira rodada curta
+- demo assistida externa sobre a baseline de deploy validada, se o gatilho quiser seguir a recomendacao de `B4-17`
+- bifurcacao condicional apos demo externa ou smoke test pos-deploy:
+  - se o problema observado for tecnico: avaliar `B5-04 - Technical Risk Decision Memo`
+  - se o problema observado for comunicacao/experiencia: avaliar `B6-10 - UX Review pos-design layer com foco em demo assistida`
+- expansoes de piloto mais amplas, caso o gatilho queira aprofundar depois da revisao de prontidao
 - possiveis refinamentos adicionais a partir de feedback real de demo assistida
 
 ## Ordem recomendada quando esta frente for aberta
 
-1. `B4-01`
-2. `B4-02`
-3. `B4-03`
+- nenhuma task escolhida
 
 ## Observacao operacional
 
@@ -313,9 +453,14 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 `B4-12` deixou o apply controlado pronto para autorizacao sem ainda alterar o estado do dataset do piloto.
 `B4-13` executou o apply efetivo do dataset real e isolou a pendencia residual apenas na validacao HTTP/admin com runtime ativo.
 `B4-14` fechou a validacao assistida do catalogo real e encerrou a rodada operacional de onboarding controlado.
+`B4-15` consolidou a evidencia operacional pos-onboarding real.
+`B4-16` transformou essa evidencia em roteiro assistido de demonstracao, sem abrir execucao tecnica nem promover `B4-17` automaticamente.
+`B4-17` revisou a prontidao documental do piloto e recomendou seguir para deploy de vitrine controlado com smoke test pos-deploy e demo assistida.
+Em 2026-04-15, o deploy de vitrine foi registrado como baseline validada: Web na Vercel, API na Railway, Postgres e Redis ativos, endpoints tecnicos validados e integracao Web -> API confirmada em nivel de deploy.
+Em 2026-04-20, a investigacao localizada de auth/CORS confirmou CORS correto para a Web da Vercel e contrato CSRF consistente quando cookie e header chegam juntos. O login no browser permanece `BLOCKED` por cookie `csrf_token` nao reenviado no POST cross-site entre Vercel e Railway. Nenhuma task `READY` foi criada; qualquer proxima acao depende de novo gatilho.
 
 ## Proxima task pequena escolhida
 
 - nenhuma task escolhida
-- nenhuma task escolhida
-- a sequencia de onboarding real controlado foi fechada; a frente agora aguarda novo gatilho
+- nao ha task `READY` neste momento
+- qualquer proxima frente depende de novo gatilho explicito

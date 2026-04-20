@@ -229,3 +229,36 @@ Registrar no resultado do smoke:
 - resultado `PASS` ou `HOLD`
 - falhas observadas
 - classificacao da falha: `PRODUTO`, `TECNICA` ou `UX`
+
+## Registro validado de vitrine
+
+Smoke de vitrine registrado como concluido em 2026-04-15.
+
+URLs:
+
+- Web: `https://bio-loop-orchestrator-web.vercel.app`
+- API: `https://bio-loop-orchestrator-production.up.railway.app`
+
+Checks confirmados:
+
+- `/health`: PASS
+- `/readiness`: PASS
+- `/openapi.json`: PASS
+- `/reference`: PASS
+- Web publica acessivel: PASS
+- Integracao Web -> API em nivel de deploy: PASS
+
+Registro consolidado: `docs/deploy/deploy-baseline.md`.
+
+## Registro auth/CORS pos-investigacao
+
+Validado em 2026-04-20:
+
+- Preflight de `POST /auth/login` com `Origin: https://bio-loop-orchestrator-web.vercel.app`: PASS (`204`).
+- CORS permite credentials para a origem da Vercel: PASS.
+- Headers permitidos incluem `Content-Type` e `X-CSRF-Token`: PASS.
+- `GET /auth/csrf` emite cookie `csrf_token` e retorna o mesmo valor no JSON `csrfToken`: PASS.
+- `POST /auth/login` via cliente HTTP com cookie `csrf_token` e header `X-CSRF-Token`: passa pela validacao CSRF.
+- `POST /auth/login` no browser: BLOCKED por cookie `csrf_token` nao reenviado no contexto cross-site Vercel -> Railway.
+
+Resultado: CORS da API esta correto para a Web publicada; auth browser depende de resolver politica de cookie cross-site por dominio/same-site controlado.

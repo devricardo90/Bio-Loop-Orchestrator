@@ -258,10 +258,23 @@ Resultado esperado:
 
 ## Status
 
-READY para configuracao no Railway, pendente de:
+DONE para baseline de vitrine em 2026-04-15.
 
-- criar servico externo
-- configurar envs reais
-- provisionar Postgres/Redis
-- executar migrations
-- executar smoke pos-deploy
+Estado registrado:
+
+- API publicada na Railway em `https://bio-loop-orchestrator-production.up.railway.app`
+- Postgres ativo na Railway
+- Redis ativo na Railway
+- `/health` validado
+- `/readiness` validado
+- `/reference` validado
+- `/openapi.json` validado
+- CORS validado para `https://bio-loop-orchestrator-web.vercel.app`
+- Auth CSRF validado quando cookie `csrf_token` e header `X-CSRF-Token` chegam juntos
+
+Pendencias nao bloqueantes:
+
+- registrar commit SHA exato associado ao deploy validado, se necessario
+- manter seed/import real como acao operacional explicita
+- reavaliar exposicao de `/reference` e `/openapi.json` antes de ambiente publico mais amplo
+- resolver bloqueio de login no browser causado por cookie CSRF cross-site nao reenviado entre Vercel e Railway

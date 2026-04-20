@@ -95,6 +95,10 @@
 - `DB-05` fechou a hygiene de migracao com gate explicito de drift, verify-clean cross-platform e validacao no pipeline contra Postgres limpo.
 - Nao ha task `READY` restante no backlog atual.
 - O momento correto para o usuario enviar os dados reais dos supermercados da Suecia e logo apos `DB-03`; os campos/documentos necessarios ficam em [REAL_DATA_ONBOARDING.md](C:/Users/ricardodev/Desktop/Bio-Loop-Orchestrator/docs/ops/REAL_DATA_ONBOARDING.md).
+- Em 2026-04-15, o deploy base de vitrine foi registrado como DONE: Web na Vercel, API na Railway, Postgres e Redis ativos, `/health`, `/readiness`, `/openapi.json` e `/reference` validados.
+- Em 2026-04-20, a investigacao localizada de CORS/CSRF confirmou CORS correto para `https://bio-loop-orchestrator-web.vercel.app` e handshake CSRF consistente no codigo e via cliente HTTP.
+- Auth em producao permanece `BLOCKED` no browser porque o cookie `csrf_token` nao e reenviado no `POST /auth/login` cross-site entre Vercel e Railway; a proxima solucao deve ser operacional de dominio/same-site, nao refactor de aplicacao.
+- Nenhuma task `READY` foi criada ou promovida por esse checkpoint.
 
 ## Nota historica
 
