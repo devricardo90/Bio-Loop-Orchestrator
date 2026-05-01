@@ -75,11 +75,27 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
   - opcoes rejeitadas: manter dominios Vercel/Railway com third-party cookies, proxy/BFF como proximo passo, remover CSRF ou redesenhar auth
   - `DEPLOY-02` permanece somente como candidata futura, sem promocao automatica para `READY`
 
+### DEPLOY-02A — Production Domain Preparation
+- status proposto: READY
+- objetivo: documentar e travar os pré-requisitos externos (DNS e Domínios) para a futura DEPLOY-02, sem executar configuração real
+- camada: infra + docs
+- dependencia-chave: `B5-04` concluida
+- escopo estrito:
+  - definir dominios finais (Web e API) sob gatilho de confirmacao
+  - mapear registros DNS esperados com placeholders para valores dos providers
+  - registrar variaveis de ambiente alvo
+- criterios de aceitacao:
+  - documento `docs/deploy/production-domain-prep.md` criado
+  - gatilho de confirmacao de dominio base e acesso DNS registrado como pendente
+- motivo para entrada em READY:
+  - prepara o terreno administrativo/tecnico antes da execucao de rede/infra
+  - evita erros de digitacao ou configuracao ad-hoc nos dashboards dos providers
+
 ### DEPLOY-02 - Same-site domain setup for production auth
 - status proposto: CANDIDATA
 - objetivo: aplicar a estrategia de dominio/cookie decidida em `B5-04` para tornar o login browser funcional em producao
 - camada: deploy + infra
-- dependencia-chave: `B5-04` concluida com decisao operacional explicita
+- dependencia-chave: `DEPLOY-02A` concluida com dominios e DNS travados
 - escopo estrito:
   - configurar dominio/subdominios controlados para Web e API
   - ajustar envs de producao estritamente necessarias
@@ -141,7 +157,7 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## READY
 
-- nenhuma task `READY` neste momento
+- `DEPLOY-02A — Production Domain Preparation`
 
 ## BLOCKED
 
@@ -160,9 +176,9 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## Proxima task pequena escolhida
 
-- nenhuma task escolhida
+- `DEPLOY-02A — Production Domain Preparation`
 - `DEPLOY-02 - Same-site domain setup for production auth` permanece candidata futura
-- qualquer execucao depende de novo gatilho explicito
+- qualquer execucao de rede/DNS depende de novo gatilho explicito
 
 ## Observacao operacional
 

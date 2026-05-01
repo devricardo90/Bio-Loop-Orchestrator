@@ -101,7 +101,8 @@
 - Nenhuma task `READY` foi criada ou promovida por esse checkpoint.
 - Proximas candidatas documentadas: `DEPLOY-02` para setup same-site, `QA-08` para validacao browser, `B4-18` para demo pos-auth, `B6-10` para UX guiado por evidencia e `BACKLOG7` para crescimento de produto/portfolio.
 - `B5-04` fechou a decisao minima de auth production cookie/domain: estrategia recomendada e dominio same-site controlado para Web/API, com `COOKIE_SECURE=true`, `COOKIE_SAMESITE=Lax`, `COOKIE_DOMAIN` vazio/host-only e CORS restrito a URL final da Web.
-- Nenhuma task `READY` foi promovida apos `B5-04`; `DEPLOY-02` permanece candidata futura e depende de novo gatilho explicito.
+- `DEPLOY-02A — Production Domain Preparation` agora e a proxima task `READY` para travar os pre-requisitos de infraestrutura.
+- `DEPLOY-02` permanece candidata futura e depende de novo gatilho explicito.
 
 ## Nota historica
 
