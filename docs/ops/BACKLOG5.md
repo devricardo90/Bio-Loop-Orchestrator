@@ -38,7 +38,7 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 ## Candidatas registradas, mas nao priorizadas
 
 ### B5-04 - Auth production cookie/domain decision
-- status proposto: READY
+- status proposto: DONE
 - objetivo: decidir a estrategia minima e segura para desbloquear o login no browser em producao sem reescrever o fluxo de auth
 - camada: infra + auth + deploy
 - contexto:
@@ -68,6 +68,12 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
   - evita mexer em UX antes de o login browser funcionar
   - preserva a disciplina de corrigir o bloqueio observado antes de ampliar produto
   - gatilho autorizou deixar a proxima do backlog como READY e aguardar execucao separada
+- resultado:
+  - decisao registrada em `docs/ops/AUTH_PRODUCTION_COOKIE_DOMAIN_DECISION_B5-04.md`
+  - estrategia recomendada: configurar Web e API sob dominio same-site controlado, mantendo servicos separados
+  - configuracao recomendada: `COOKIE_SECURE=true`, `COOKIE_SAMESITE=Lax`, `COOKIE_DOMAIN` vazio/host-only, `ALLOWED_ORIGINS` restrito a URL final da Web
+  - opcoes rejeitadas: manter dominios Vercel/Railway com third-party cookies, proxy/BFF como proximo passo, remover CSRF ou redesenhar auth
+  - `DEPLOY-02` permanece somente como candidata futura, sem promocao automatica para `READY`
 
 ### DEPLOY-02 - Same-site domain setup for production auth
 - status proposto: CANDIDATA
@@ -129,13 +135,13 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - `B5-HOTFIX-01` - Estabilizar boot inicial, auth hydration, integridade de datas e coerência de estado visível
   - evidencia final: `apps/web/lib/demo-auctions.ts`, `apps/web/components/pickup-dashboard.tsx`, `apps/web/components/route-guard.tsx`
   - gate/evidencia: `docs/ops/done/B5-HOTFIX-01.done.md`
+- `B5-04` - Auth production cookie/domain decision
+  - evidencia final: `docs/ops/AUTH_PRODUCTION_COOKIE_DOMAIN_DECISION_B5-04.md`
+  - gate/evidencia: `docs/ops/done/B5-04.done.md`
 
 ## READY
 
-- `B5-04 - Auth production cookie/domain decision`
-  - objetivo: decidir a estrategia minima de dominio/cookie para desbloquear login browser em producao
-  - limite: documentar decisao; nao implementar deploy, nao mexer em UI e nao refatorar auth
-  - aguardando gatilho explicito para execucao
+- nenhuma task `READY` neste momento
 
 ## BLOCKED
 
@@ -154,9 +160,11 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## Proxima task pequena escolhida
 
-- `B5-04 - Auth production cookie/domain decision`
-- aguardando gatilho explicito para iniciar
+- nenhuma task escolhida
+- `DEPLOY-02 - Same-site domain setup for production auth` permanece candidata futura
+- qualquer execucao depende de novo gatilho explicito
 
 ## Observacao operacional
 
-Esta frente foi reativada no pos-M9 devido aos vazamentos técnicos percebidos na rodada 2 do Piloto (B4-07). O hardening ataca cirurgicamente os ruidos estéticos de API/React mapeados sem escalar para reescritas gerais de runtime. `B5-HOTFIX-01` corrigiu três problemas objetivos sem abrir nova frente: datas module-level stale em `demo-auctions.ts`, ausência de auth hydration guard em `pickup-dashboard.tsx`, e estado de loading puro sem estrutura em `route-guard.tsx`. A frente encerra esta rodada e aguarda novo gatilho.
+Esta frente foi reativada no pos-M9 devido aos vazamentos técnicos percebidos na rodada 2 do Piloto (B4-07). O hardening ataca cirurgicamente os ruidos estéticos de API/React mapeados sem escalar para reescritas gerais de runtime. `B5-HOTFIX-01` corrigiu três problemas objetivos sem abrir nova frente: datas module-level stale em `demo-auctions.ts`, ausência de auth hydration guard em `pickup-dashboard.tsx`, e estado de loading puro sem estrutura em `route-guard.tsx`.
+`B5-04` decidiu a estrategia minima para auth browser em producao: sair do par cross-site Vercel/Railway para dominio same-site controlado, mantendo Web e API separadas, `COOKIE_SAMESITE=Lax` e `COOKIE_DOMAIN` vazio/host-only inicialmente. Nenhuma configuracao real de dominio, deploy, auth, UI ou provider foi executada.
