@@ -103,6 +103,8 @@
 - `B5-04` fechou a decisao minima de auth production cookie/domain: estrategia recomendada e dominio same-site controlado para Web/API, com `COOKIE_SECURE=true`, `COOKIE_SAMESITE=Lax`, `COOKIE_DOMAIN` vazio/host-only e CORS restrito a URL final da Web.
 - `DEPLOY-02A — Production Domain Preparation` agora e a proxima task `READY` para travar os pre-requisitos de infraestrutura.
 - `DEPLOY-02` permanece candidata futura e depende de novo gatilho explicito.
+- Em 2026-05-02, `OPS-02 — Production Demo Data Restore` foi concluído: dados de demo restaurados no banco de produção (Railway) via seed gerenciado, corrigindo o erro 401 INVALID_CREDENTIALS.
+- Em 2026-05-02, o **Production Business Smoke (Buyer Flow)** foi validado manualmente: login/sessão PASS, buyer feed PASS com `source=api`, 6 leilões visíveis e status de comprador aprovado confirmado.
 
 ## Nota historica
 
