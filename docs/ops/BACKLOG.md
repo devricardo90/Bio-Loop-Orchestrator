@@ -89,3 +89,13 @@
   - deps: WEB-07, API-09
 - [BLOCKED] (INFRA-03) Observability minimum: structured logs, request ids, health/readiness checks
   - deps: API-05, API-06
+
+---
+
+## M10 Public Presentation & Documentation
+
+- [DONE] (DOCS-01) Developer quickstart — original task, closed. See docs/ops/done/DOCS-01.done.md.
+- [REVIEW] (DOCS-01B) README Product Clarity and Screenshot Polish
+  - objective: revise README for public presentation with validated production claims, real screenshot, and product section
+  - deps: DOCS-01
+  - note: awaiting owner commit authorization

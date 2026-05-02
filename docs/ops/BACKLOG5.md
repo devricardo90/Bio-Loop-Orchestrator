@@ -76,7 +76,7 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
   - `DEPLOY-02` permanece somente como candidata futura, sem promocao automatica para `READY`
 
 ### DEPLOY-02A — Production Domain Preparation
-- status proposto: READY
+- status proposto: WAITING / BLOCKED by external confirmation
 - objetivo: documentar e travar os pré-requisitos externos (DNS e Domínios) para a futura DEPLOY-02, sem executar configuração real
 - camada: infra + docs
 - dependencia-chave: `B5-04` concluida
@@ -87,9 +87,8 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 - criterios de aceitacao:
   - documento `docs/deploy/production-domain-prep.md` criado
   - gatilho de confirmacao de dominio base e acesso DNS registrado como pendente
-- motivo para entrada em READY:
-  - prepara o terreno administrativo/tecnico antes da execucao de rede/infra
-  - evita erros de digitacao ou configuracao ad-hoc nos dashboards dos providers
+- motivo para entrada em WAITING:
+  - depende de confirmação externa de domínio/DNS.
 
 ### DEPLOY-02 - Same-site domain setup for production auth
 - status proposto: CANDIDATA
@@ -157,10 +156,12 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## READY
 
-- `DEPLOY-02A — Production Domain Preparation`
+- nenhuma task `READY` neste momento
 
 ## BLOCKED
 
+- `DEPLOY-02A — Production Domain Preparation`
+  - motivo: confirmação externa de domínio/DNS.
 - `B5-01`
   - motivo explicito: depende de decisao arquitetural explicita sobre a estrategia de read-model seller
 - `B5-02`
@@ -170,13 +171,15 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 ## FUTURO
 
+- `DOCS-01B — README Product Clarity and Screenshot Polish` (REVIEW em BACKLOG.md — awaiting commit authorization)
 - desbloqueio de auth browser em producao por dominio/same-site controlado
 - validacao browser real de buyer, seller e admin em producao
 - demais hardenings estruturais guiados por risco observado em piloto, demo ou gates reais
 
 ## Proxima task pequena escolhida
 
-- `DEPLOY-02A — Production Domain Preparation`
+- `DOCS-01B — README Product Clarity and Screenshot Polish`
+- `DEPLOY-02A` está `WAITING / BLOCKED`
 - `DEPLOY-02 - Same-site domain setup for production auth` permanece candidata futura
 - qualquer execucao de rede/DNS depende de novo gatilho explicito
 
@@ -184,3 +187,5 @@ Todos devem ler `docs/agents/CONTEXT_SHARED.md` antes da execucao.
 
 Esta frente foi reativada no pos-M9 devido aos vazamentos técnicos percebidos na rodada 2 do Piloto (B4-07). O hardening ataca cirurgicamente os ruidos estéticos de API/React mapeados sem escalar para reescritas gerais de runtime. `B5-HOTFIX-01` corrigiu três problemas objetivos sem abrir nova frente: datas module-level stale em `demo-auctions.ts`, ausência de auth hydration guard em `pickup-dashboard.tsx`, e estado de loading puro sem estrutura em `route-guard.tsx`.
 `B5-04` decidiu a estrategia minima para auth browser em producao: sair do par cross-site Vercel/Railway para dominio same-site controlado, mantendo Web e API separadas, `COOKIE_SAMESITE=Lax` e `COOKIE_DOMAIN` vazio/host-only inicialmente. Nenhuma configuracao real de dominio, deploy, auth, UI ou provider foi executada.
+`DEPLOY-02A` foi movida para `WAITING` por falta de confirmação externa de DNS.
+`DOCS-01` foi aberta para preparar o projeto para apresentação pública.

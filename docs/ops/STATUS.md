@@ -101,7 +101,8 @@
 - Nenhuma task `READY` foi criada ou promovida por esse checkpoint.
 - Proximas candidatas documentadas: `DEPLOY-02` para setup same-site, `QA-08` para validacao browser, `B4-18` para demo pos-auth, `B6-10` para UX guiado por evidencia e `BACKLOG7` para crescimento de produto/portfolio.
 - `B5-04` fechou a decisao minima de auth production cookie/domain: estrategia recomendada e dominio same-site controlado para Web/API, com `COOKIE_SECURE=true`, `COOKIE_SAMESITE=Lax`, `COOKIE_DOMAIN` vazio/host-only e CORS restrito a URL final da Web.
-- `DEPLOY-02A — Production Domain Preparation` agora e a proxima task `READY` para travar os pre-requisitos de infraestrutura.
+- `DEPLOY-02A — Production Domain Preparation` está `WAITING / BLOCKED` por confirmação externa de domínio/DNS.
+- `DOCS-01B — README Product Clarity and Screenshot Polish` é a task de follow-up em `REVIEW`, aguardando autorização de commit. DOCS-01 original já está fechada em `docs/ops/done/DOCS-01.done.md`.
 - `DEPLOY-02` permanece candidata futura e depende de novo gatilho explicito.
 - Em 2026-05-02, `OPS-02 — Production Demo Data Restore` foi concluído: dados de demo restaurados no banco de produção (Railway) via seed gerenciado, corrigindo o erro 401 INVALID_CREDENTIALS.
 - Em 2026-05-02, o **Production Business Smoke (Buyer Flow)** foi validado manualmente: login/sessão PASS, buyer feed PASS com `source=api`, 6 leilões visíveis e status de comprador aprovado confirmado.
