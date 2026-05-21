@@ -109,6 +109,7 @@
 - Em 2026-05-20, `OPS-03A — Production API Connectivity Recovery` foi concluído: container da API estava suspenso (`deploymentStopped: true`); Postgres estava vivo sem drift de credencial; redeploy restaurou `/health` e `/readiness` para HTTP 200.
 - Em 2026-05-20, `OPS-03 — Production Seller and Admin Smoke` foi concluído: Seller (SELLER_ADMIN) validado em `/seller/reports/summary` e `/seller/reports/export` (HTTP 200, 1 invoice, 3504.54 SEK); Admin (PLATFORM_ADMIN) validado em `/admin/buyers` (4 buyers, mix APPROVED/PENDING/SUSPENDED) e `/admin/disputes` (3 disputes, mix OPEN/RESOLVED); todos `catalog.scope: demo`; nenhum dado alterado.
 - Em 2026-05-21, `PORTFOLIO-01 — Production Evidence Pack` criado em `docs/portfolio/production-evidence-pack.md`: documento executivo de portfólio cobrindo problema de produto, arquitetura validada, evidência operacional por role (Buyer/Seller/Admin), incidente OPS-03A, caveats honestos, narrativa de demo e próximos passos recomendados.
+- Em 2026-05-21, `UI-01A — Visual Baseline` definida em `docs/design/bio-loop-visual-baseline.md`: direção visual oficial B2B premium, tokens existentes do B6-08 preservados, gaps identificados por tela (tipografia, espaçamento, dados, navegação), mini design system (escala tipográfica, formatação de amounts SEK, status badges, cards, tabelas, estados empty/loading), telas prioritárias por ordem de implementação, critérios de screenshot pronta. Próxima task: UI-01B (aguarda autorização).
 
 ## Nota historica
 

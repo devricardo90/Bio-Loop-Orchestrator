@@ -99,3 +99,11 @@
   - objective: revise README for public presentation with validated production claims, real screenshot, and product section
   - deps: DOCS-01
   - note: awaiting owner commit authorization
+- [DONE] (UI-01A) Define Bio-Loop Visual Baseline and Screen Priorities
+  - objective: establish official visual direction, mini design system decisions, and per-screen quality criteria before screenshots and README final
+  - deps: B6-08 (design layer), PORTFOLIO-01 (evidence pack)
+  - evidence: docs/design/bio-loop-visual-baseline.md
+- [BLOCKED] (UI-01B) Apply Visual Baseline to Priority 1 and Priority 2 Screens
+  - objective: apply typography scale, card/table treatment, and status badge polish to landing, login, and buyer screens; capture screenshots
+  - deps: UI-01A, explicit Trigger authorization
+  - note: not yet authorized
