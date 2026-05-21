@@ -108,6 +108,7 @@
 - Em 2026-05-02, o **Production Business Smoke (Buyer Flow)** foi validado manualmente: login/sessão PASS, buyer feed PASS com `source=api`, 6 leilões visíveis e status de comprador aprovado confirmado.
 - Em 2026-05-20, `OPS-03A — Production API Connectivity Recovery` foi concluído: container da API estava suspenso (`deploymentStopped: true`); Postgres estava vivo sem drift de credencial; redeploy restaurou `/health` e `/readiness` para HTTP 200.
 - Em 2026-05-20, `OPS-03 — Production Seller and Admin Smoke` foi concluído: Seller (SELLER_ADMIN) validado em `/seller/reports/summary` e `/seller/reports/export` (HTTP 200, 1 invoice, 3504.54 SEK); Admin (PLATFORM_ADMIN) validado em `/admin/buyers` (4 buyers, mix APPROVED/PENDING/SUSPENDED) e `/admin/disputes` (3 disputes, mix OPEN/RESOLVED); todos `catalog.scope: demo`; nenhum dado alterado.
+- Em 2026-05-21, `PORTFOLIO-01 — Production Evidence Pack` criado em `docs/portfolio/production-evidence-pack.md`: documento executivo de portfólio cobrindo problema de produto, arquitetura validada, evidência operacional por role (Buyer/Seller/Admin), incidente OPS-03A, caveats honestos, narrativa de demo e próximos passos recomendados.
 
 ## Nota historica
 
