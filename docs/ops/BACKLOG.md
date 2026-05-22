@@ -125,6 +125,12 @@
   - deps: UI-01B1, UI-01B2, UI-01B3, AUTH-01B
   - evidence: docs/ops/done/UI-01C.done.md
   - result: mobile header/nav/CTA polish, shortened role badges, product-friendly labels, and E2E/smoke assertion alignment; commit pending Trigger authorization
+- [REVIEW] (CI-01D) Stabilize Browser E2E after UI-01C Copy Polish
+  - objective: update stale E2E assertions that broke after UI-01C humanized enum labels in pickup and admin dashboards
+  - deps: UI-01C (commit db626b0)
+  - evidence: docs/ops/done/CI-01D.done.md
+  - files: tests/e2e/helpers.ts (+formatEnumLabel), tests/e2e/buyer-real-data.e2e.spec.ts (lines 39-41, 53), tests/e2e/admin.e2e.spec.ts (4 status strings)
+  - note: commit pending Trigger authorization
 - [REVIEW] (AUTH-01B) Stabilize Demo Auth, E2E Login, and Role-Based Fetch Noise
   - objective: update Browser E2E login selectors for the UI-01B1 login, document local demo URL, and stop buyer-only feed fetches from seller/admin sessions
   - deps: UI-01C, AUTH-01A diagnostic

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { fetchBuyerFeedSnapshot, loginAs } from "./helpers";
+import { fetchBuyerFeedSnapshot, formatEnumLabel, loginAs } from "./helpers";
 
 test("buyer feed, auction detail, and pickup stay anchored to live product data", async ({ page }) => {
   await loginAs(page, "buyer");
@@ -37,7 +37,7 @@ test("buyer feed, auction detail, and pickup stay anchored to live product data"
   await expect(page.getByRole("heading", { name: "Schedule pick-ups and keep PODs moving." })).toBeVisible();
   await expect(page.locator("span.chip").filter({ hasText: "Live data" })).toBeVisible();
   await expect(page.locator("article").filter({ hasText: pickupOrderRecord.storeName })).toContainText(
-    pickupOrderRecord.order.pickupStatus
+    formatEnumLabel(pickupOrderRecord.order.pickupStatus)
   );
 
   const pickupDetailLink = page
@@ -50,7 +50,7 @@ test("buyer feed, auction detail, and pickup stay anchored to live product data"
 
   await expect(page.getByRole("heading", { name: "Pick-up detail with proof upload and dispute state." })).toBeVisible();
   await expect(page.locator(".detail-sidebar").getByText(pickupOrderRecord.order.id, { exact: true })).toBeVisible();
-  await expect(page.locator(".detail-sidebar").getByText(pickupOrderRecord.order.pickupStatus, { exact: true })).toBeVisible();
+  await expect(page.locator(".detail-sidebar").getByText(formatEnumLabel(pickupOrderRecord.order.pickupStatus), { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Schedule pick-up" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Submit POD" })).toBeVisible();
 });
