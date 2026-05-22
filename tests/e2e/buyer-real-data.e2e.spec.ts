@@ -40,10 +40,13 @@ test("buyer feed, auction detail, and pickup stay anchored to API-backed data", 
     pickupOrderRecord.order.pickupStatus
   );
 
-  await Promise.all([
-    page.waitForURL(new RegExp(`/buyer/orders/${pickupOrderRecord.order.id}$`)),
-    page.locator("article").filter({ hasText: pickupOrderRecord.storeName }).getByRole("link", { name: "Open pickup detail" }).click()
-  ]);
+  const pickupDetailLink = page
+    .locator("article")
+    .filter({ hasText: pickupOrderRecord.storeName })
+    .getByRole("link", { name: "Open pickup detail" });
+  await expect(pickupDetailLink).toHaveAttribute("href", `/buyer/orders/${pickupOrderRecord.order.id}`);
+  await pickupDetailLink.click();
+  await expect(page).toHaveURL(new RegExp(`/buyer/orders/${pickupOrderRecord.order.id}$`), { timeout: 30_000 });
 
   await expect(page.getByRole("heading", { name: "Pick-up detail with proof upload and dispute state." })).toBeVisible();
   await expect(page.locator(".detail-sidebar").getByText(pickupOrderRecord.order.id, { exact: true })).toBeVisible();

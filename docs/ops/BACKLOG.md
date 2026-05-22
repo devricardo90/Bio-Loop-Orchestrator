@@ -98,7 +98,7 @@
 - [REVIEW] (DOCS-01B) README Product Clarity and Screenshot Polish
   - objective: revise README for public presentation with validated production claims, real screenshot, and product section
   - deps: DOCS-01
-  - note: awaiting owner commit authorization
+  - note: blocked until AUTH-01B stabilizes demo auth and Browser E2E
 - [DONE] (UI-01A) Define Bio-Loop Visual Baseline and Screen Priorities
   - objective: establish official visual direction, mini design system decisions, and per-screen quality criteria before screenshots and README final
   - deps: B6-08 (design layer), PORTFOLIO-01 (evidence pack)
@@ -124,7 +124,12 @@
   - objective: validate all 12 required routes in production after UI-01B visual baseline; confirm CSS, auth gating, API health, and no gross regression
   - deps: UI-01B1, UI-01B2, UI-01B3
   - evidence: docs/ops/done/UI-01C.done.md
-  - result: 11 PASS, 1 WARN (admin/buyers title), 0 FAIL; API health/readiness clean; README unblocked
+  - result: 11 PASS, 1 WARN (admin/buyers title), 0 FAIL; API health/readiness clean; README later blocked again by AUTH-01A findings
+- [REVIEW] (AUTH-01B) Stabilize Demo Auth, E2E Login, and Role-Based Fetch Noise
+  - objective: update Browser E2E login selectors for the UI-01B1 login, document local demo URL, and stop buyer-only feed fetches from seller/admin sessions
+  - deps: UI-01C, AUTH-01A diagnostic
+  - evidence: docs/ops/done/AUTH-01B.done.md
+  - note: local REVIEW pending Trigger commit authorization
 - [BLOCKED] (UI-01B) Apply Visual Baseline to Priority 1 and Priority 2 Screens
   - objective: apply typography scale, card/table treatment, and status badge polish to landing, login, and buyer screens; capture screenshots
   - deps: UI-01A, explicit Trigger authorization

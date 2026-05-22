@@ -29,5 +29,5 @@ test("expired-session redirect preserves the sign-in handoff", async ({ page }) 
   await page.goto("/login?reason=session-expired&next=%2Fbuyer%2Ffeed");
 
   await expect(page.getByText("Your session expired. Sign in again to continue.")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Sign in to the operational area that matches your role." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
 });

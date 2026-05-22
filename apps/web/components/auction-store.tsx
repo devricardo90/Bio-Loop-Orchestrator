@@ -101,7 +101,7 @@ export function AuctionStoreProvider({
 }: Readonly<{
   children: ReactNode;
 }>) {
-  const { status, isAuthenticated } = useAuthSession();
+  const { session, status, isAuthenticated } = useAuthSession();
   const [state, setState] = useState<DemoState>(() => createDemoState());
   const [now, setNow] = useState(() => Date.now());
   const [hydrated, setHydrated] = useState(false);
@@ -119,7 +119,7 @@ export function AuctionStoreProvider({
     let cancelled = false;
 
     async function refreshFromApi() {
-      if (!isAuthenticated) {
+      if (!isAuthenticated || session?.role !== "buyer") {
         return;
       }
 
@@ -140,7 +140,7 @@ export function AuctionStoreProvider({
     return () => {
       cancelled = true;
     };
-  }, [hydrated, isAuthenticated, status]);
+  }, [hydrated, isAuthenticated, session?.role, status]);
 
   useEffect(() => {
     if (!hydrated || typeof window === "undefined") {
