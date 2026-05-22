@@ -113,6 +113,7 @@
 - Em 2026-05-21, `UI-01B1 - Landing + Login Visual Redesign` foi concluída: Claude Designer visual design (`bio-loop-screens-v2.jsx`) aplicado a Landing (`/`) e Login (`/login`). Hero zone com green gradient, StatusPanel estático à direita, workspace cards com colored bar + icon + stats chips, role segmented control e centered login card. Auth, CSRF, redirect e session logic preservados sem alterações. Gates: typecheck PASS, build PASS (14 static routes), test PASS. Changed files: `apps/web/app/globals.css` (+474/-1), `apps/web/app/page.tsx` (+148/-102), `apps/web/components/login-panel.tsx` (+75/-53). Commit pendente de autorização.
 
 - Em 2026-05-22, `UI-01B2 - Buyer Priority Screens Visual Baseline` entrou em REVIEW local: visual baseline aplicado a buyer feed, auction detail, pickup queue e pickup detail sem alterar auth, CSRF, API calls, route guard, IDs ou mutacoes. Commit pendente de autorizacao do Trigger.
+- Em 2026-05-22, `UI-01B3 - Seller/Admin/Billing Screens Visual Baseline` entrou em REVIEW local: visual baseline aplicado a seller lots/results, seller reports/billing, admin buyers e admin disputes sem alterar auth, CSRF, API calls, mutations, route guard, IDs ou backend. Commit pendente de autorizacao do Trigger.
 
 ## Nota historica
 

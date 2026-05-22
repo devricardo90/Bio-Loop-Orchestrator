@@ -251,14 +251,14 @@ export function AdminBuyersDashboard() {
       </section>
 
 
-      <section className="metrics">
+      <section className="metrics admin-summary-metrics">
         {[
           ["Pending", statusCounts.PENDING],
           ["Approved", statusCounts.APPROVED],
           ["Rejected", statusCounts.REJECTED],
           ["Suspended", statusCounts.SUSPENDED]
         ].map(([label, value]) => (
-          <article key={label as string} className="metric-card">
+          <article key={label as string} className="metric-card admin-metric-card">
             <span className="label">{label as string}</span>
             <strong>{value as number}</strong>
           </article>
@@ -288,28 +288,45 @@ export function AdminBuyersDashboard() {
             />
           ) : (
             buyers.map((buyer) => (
-              <article key={buyer.id} className="seller-card admin-card">
-                <div className="seller-card-top">
+              <article key={buyer.id} className="seller-card admin-card admin-review-card">
+                <div className="seller-card-top admin-review-head">
                   <div>
                     <p className="eyebrow">{buyer.buyerId}</p>
                     <h3>{buyer.name}</h3>
+                    <p className="muted admin-review-subtitle">{buyer.riskLabel}</p>
                   </div>
                   <span className={`status-badge status-${buyer.status.toLowerCase()}`}>{buyer.status}</span>
                 </div>
 
 
-                <div className="seller-card-grid">
+                <div className="admin-review-strip">
                   <div>
                     <span className="label">Reputation</span>
                     <strong>{buyer.reputationScore}/100</strong>
+                  </div>
+                  <div>
+                    <span className="label">Access state</span>
+                    <strong>{buyer.status}</strong>
+                  </div>
+                  <div>
+                    <span className="label">Last update</span>
+                    <strong>{formatDateSafe(buyer.updatedAt)}</strong>
+                  </div>
+                </div>
+
+
+                <div className="seller-card-grid admin-detail-grid">
+                  <div>
+                    <span className="label">Buyer ID</span>
+                    <strong>{buyer.buyerId}</strong>
                   </div>
                   <div>
                     <span className="label">Risk label</span>
                     <strong>{buyer.riskLabel}</strong>
                   </div>
                   <div>
-                    <span className="label">Updated</span>
-                    <strong>{formatDateSafe(buyer.updatedAt)}</strong>
+                    <span className="label">Catalog</span>
+                    <strong>{buyer.catalog.dataset}</strong>
                   </div>
                   <div>
                     <span className="label">Status note</span>
@@ -324,7 +341,7 @@ export function AdminBuyersDashboard() {
                     <small>{buyer.catalog.dataset}</small>
                   </span>
                   <p className="muted catalog-context">
-                    Source: {buyer.catalog.source} · {buyer.catalog.visibleByDefault ? "Visible by default" : "Visible when catalogScope matches"}
+                    Source: {buyer.catalog.source} - {buyer.catalog.visibleByDefault ? "Visible by default" : "Visible when catalogScope matches"}
                   </p>
                 </div>
 
@@ -343,7 +360,7 @@ export function AdminBuyersDashboard() {
                 ) : null}
 
 
-                <div className="admin-action-row">
+                <div className="admin-action-row admin-decision-row">
                   {actions.map((action) => (
                     <button
                       key={action.decision}
@@ -361,7 +378,7 @@ export function AdminBuyersDashboard() {
                     </button>
                   ))}
                 </div>
-                <p className="muted small" style={{ marginTop: "12px" }}>
+                <p className="muted small admin-action-note">
                   Status changes are live. System will update reputation scores and verify credentials via the Bio-Loop Orchestrator.
                 </p>
               </article>
@@ -390,5 +407,4 @@ export function AdminBuyersDashboard() {
     </main>
   );
 }
-
 

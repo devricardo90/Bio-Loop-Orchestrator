@@ -110,10 +110,15 @@
   - files: apps/web/app/globals.css (+474/-1), apps/web/app/page.tsx (+148/-102), apps/web/components/login-panel.tsx (+75/-53)
   - gates: typecheck PASS, build PASS (14 static routes), test PASS
   - note: commit pending authorization - final screenshots not yet captured
-- [REVIEW] (UI-01B2) Buyer Priority Screens Visual Baseline
+- [DONE] (UI-01B2) Buyer Priority Screens Visual Baseline
   - objective: apply the approved UI-01B1 visual direction to buyer feed, auction detail, pickup queue, and pickup detail while preserving buyer API/auth behavior
   - deps: UI-01B1, explicit Trigger authorization
   - evidence: docs/ops/done/UI-01B2.done.md
+  - note: remote DONE at ed284bd
+- [REVIEW] (UI-01B3) Seller/Admin/Billing Screens Visual Baseline
+  - objective: apply the approved UI-01B1/UI-01B2 visual direction to remaining seller, admin, and billing screens while preserving existing API/auth behavior
+  - deps: UI-01B2, explicit Trigger authorization
+  - evidence: docs/ops/done/UI-01B3.done.md
   - note: local REVIEW pending Trigger browser checkpoint and commit authorization
 - [BLOCKED] (UI-01B) Apply Visual Baseline to Priority 1 and Priority 2 Screens
   - objective: apply typography scale, card/table treatment, and status badge polish to landing, login, and buyer screens; capture screenshots

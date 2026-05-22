@@ -1773,6 +1773,169 @@ h3 {
   background: rgba(15, 93, 75, 0.06);
 }
 
+/* UI-01B3 - Seller, admin, and billing visual baseline */
+.seller-record-card,
+.admin-review-card,
+.billing-invoice-card {
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(36, 28, 18, 0.08);
+}
+
+.seller-record-head,
+.admin-review-head {
+  padding-bottom: 4px;
+}
+
+.seller-record-head h3,
+.admin-review-head h3 {
+  font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 1.18rem;
+  line-height: 1.35;
+}
+
+.seller-record-id,
+.admin-review-subtitle {
+  margin-top: 4px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.78rem;
+}
+
+.seller-record-summary,
+.admin-review-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: stretch;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 93, 75, 0.12);
+  background: rgba(15, 93, 75, 0.06);
+}
+
+.admin-review-strip {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  background: rgba(255, 255, 255, 0.62);
+  border-color: rgba(26, 29, 31, 0.08);
+}
+
+.seller-record-summary strong,
+.admin-review-strip strong {
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 1rem;
+}
+
+.seller-record-value {
+  min-width: 160px;
+  padding-left: 14px;
+  border-left: 1px solid rgba(15, 93, 75, 0.14);
+}
+
+.seller-record-copy {
+  max-width: 72ch;
+}
+
+.seller-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-top: 2px;
+}
+
+.seller-record-tags {
+  margin: 0;
+}
+
+.seller-record-cta {
+  min-height: 42px;
+}
+
+.billing-summary-metrics,
+.admin-summary-metrics {
+  gap: 12px;
+}
+
+.billing-metric-card,
+.admin-metric-card {
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+.billing-metric-card strong,
+.admin-metric-card strong {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 1.52rem;
+}
+
+.billing-action-grid {
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+}
+
+.billing-action-card,
+.billing-notes-panel {
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(36, 28, 18, 0.08);
+}
+
+.billing-status-card h3 {
+  font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 1.18rem;
+}
+
+.billing-invoice-list {
+  margin-top: 18px;
+}
+
+.billing-invoice-card .seller-card-grid > div,
+.admin-detail-grid > div {
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(26, 29, 31, 0.04);
+}
+
+.billing-export-preview {
+  max-height: 260px;
+}
+
+.admin-review-card {
+  gap: 14px;
+}
+
+.admin-detail-grid strong {
+  overflow-wrap: anywhere;
+}
+
+.admin-decision-row {
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.admin-decision-row .button {
+  min-height: 42px;
+}
+
+.admin-secondary-decision-row {
+  padding-top: 0;
+}
+
+.admin-action-note {
+  margin-top: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(26, 29, 31, 0.04);
+}
+
+.admin-helper-line {
+  font-size: 0.86rem;
+}
+
+.admin-dispute-card .admin-review-strip {
+  border-color: rgba(181, 107, 45, 0.14);
+  background: rgba(181, 107, 45, 0.06);
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -1878,5 +2041,23 @@ h3 {
   .pickup-detail-panel {
     padding: 16px;
     border-radius: 10px;
+  }
+
+  .seller-record-summary,
+  .admin-review-strip,
+  .billing-action-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .seller-record-value {
+    min-width: 0;
+    padding-left: 0;
+    padding-top: 12px;
+    border-left: 0;
+    border-top: 1px solid rgba(15, 93, 75, 0.14);
+  }
+
+  .seller-card-actions {
+    align-items: stretch;
   }
 }

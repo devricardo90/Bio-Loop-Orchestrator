@@ -291,16 +291,29 @@ function SellerRecordCard({
   const runtime = getAuctionRuntime(record, now);
 
   return (
-    <article className="seller-card">
-      <div className="seller-card-top">
+    <article className="seller-card seller-record-card">
+      <div className="seller-card-top seller-record-head">
         <div>
           <p className="eyebrow">{record.categoryName}</p>
           <h3>{record.storeName}</h3>
+          <p className="muted seller-record-id">{record.id}</p>
         </div>
         <span className={`status-badge status-${getSellerTone(record)}`}>{record.lot.status}</span>
       </div>
 
-      <p className="muted">{record.summary}</p>
+      <div className="seller-record-summary">
+        <div>
+          <span className="label">Seller outcome</span>
+          <strong>{getSellerOutcomeLabel(record)}</strong>
+          <p className="muted">{formatSellerStatusLine(record)}</p>
+        </div>
+        <div className="seller-record-value">
+          <span className="label">Projected value</span>
+          <strong>{formatSellerRevenue(record)}</strong>
+        </div>
+      </div>
+
+      <p className="muted seller-record-copy">{record.summary}</p>
 
       <div className="seller-card-grid">
         <div>
@@ -316,8 +329,8 @@ function SellerRecordCard({
           <strong>{formatSek(record.auction.reservePriceSekPerKg)}</strong>
         </div>
         <div>
-          <span className="label">Outcome</span>
-          <strong>{getSellerOutcomeLabel(record)}</strong>
+          <span className="label">Lifecycle</span>
+          <strong>{record.lot.status}</strong>
         </div>
       </div>
 
@@ -340,17 +353,19 @@ function SellerRecordCard({
         </div>
       </div>
 
-      <div className="tag-row">
-        {record.tags.map((tag) => (
-          <span key={tag} className="chip chip-muted">
-            {tag}
-          </span>
-        ))}
-      </div>
+      <div className="seller-card-actions">
+        <div className="tag-row seller-record-tags">
+          {record.tags.map((tag) => (
+            <span key={tag} className="chip chip-muted">
+              {tag}
+            </span>
+          ))}
+        </div>
 
-      <Link href={`/seller/lots/${record.id}`} className="button button-secondary">
-        {mode === "lots" ? "Open lot detail" : "Open outcome detail"}
-      </Link>
+        <Link href={`/seller/lots/${record.id}`} className="button button-secondary seller-record-cta">
+          {mode === "lots" ? "Open lot detail" : "Open outcome detail"}
+        </Link>
+      </div>
     </article>
   );
 }

@@ -261,14 +261,14 @@ export function AdminDisputesDashboard() {
         </div>
       </section>
 
-      <section className="metrics">
+      <section className="metrics admin-summary-metrics">
         {[
           ["Open", counts.OPEN],
           ["Resolved", counts.RESOLVED],
           ["Cancelled", counts.CANCELLED],
           ["Source", "API"]
         ].map(([label, value]) => (
-          <article key={String(label)} className="metric-card">
+          <article key={String(label)} className="metric-card admin-metric-card">
             <span className="label">{label}</span>
             <strong>{value}</strong>
           </article>
@@ -296,8 +296,8 @@ export function AdminDisputesDashboard() {
             />
           ) : (
             visibleDisputes.map((dispute) => (
-              <article key={dispute.id} className="seller-card admin-card">
-                <div className="seller-card-top">
+              <article key={dispute.id} className="seller-card admin-card admin-review-card admin-dispute-card">
+                <div className="seller-card-top admin-review-head">
                   <div>
                     <p className="eyebrow">{dispute.orderId}</p>
                     <h3>{dispute.reason.replace("_", " ").toLowerCase()}</h3>
@@ -309,7 +309,22 @@ export function AdminDisputesDashboard() {
                   </span>
                 </div>
 
-                <div className="admin-action-row">
+                <div className="admin-review-strip">
+                  <div>
+                    <span className="label">Priority</span>
+                    <strong>{dispute.status === "OPEN" ? "Needs review" : "Closed"}</strong>
+                  </div>
+                  <div>
+                    <span className="label">Resolution</span>
+                    <strong>{formatDateSafe(dispute.resolvedAt, "Still open")}</strong>
+                  </div>
+                  <div>
+                    <span className="label">Source</span>
+                    <strong>{dispute.catalog.source}</strong>
+                  </div>
+                </div>
+
+                <div className="admin-action-row admin-decision-row">
                   <button
                     className="button button-primary"
                     onClick={() => handleResolution(dispute, "CANCEL_ORDER")}
@@ -327,11 +342,11 @@ export function AdminDisputesDashboard() {
                     {loadingDisputeId === dispute.id ? "Processing..." : "Award Seller"}
                   </button>
                 </div>
-                <p className="muted small" style={{ marginTop: "12px" }}>
+                <p className="muted small admin-action-note">
                   Resolving a dispute is final. Both parties will be notified via the live API events.
                 </p>
 
-                <div className="seller-card-grid">
+                <div className="seller-card-grid admin-detail-grid">
                   <div>
                     <span className="label">Status</span>
                     <strong>{dispute.status}</strong>
@@ -357,12 +372,12 @@ export function AdminDisputesDashboard() {
                   </span>
 
                   <p className="muted catalog-context">
-                    Source: {dispute.catalog.source} ·{" "}
+                    Source: {dispute.catalog.source} -{" "}
                     {dispute.catalog.visibleByDefault ? "Visible by default" : "Visible when catalogScope matches"}
                   </p>
                 </div>
 
-                <div className="admin-action-row">
+                <div className="admin-action-row admin-decision-row admin-secondary-decision-row">
                   {actions.map((action) => (
                     <button
                       key={action.decision}
@@ -380,7 +395,7 @@ export function AdminDisputesDashboard() {
                   ))}
                 </div>
 
-                <p className="muted">{actions.map((action) => `${action.label}: ${action.helper}`).join(" | ")}</p>
+                <p className="muted admin-helper-line">{actions.map((action) => `${action.label}: ${action.helper}`).join(" | ")}</p>
               </article>
             ))
           )}

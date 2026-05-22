@@ -122,12 +122,15 @@ export function SellerReports() {
   }
 
   return (
-    <main className="app-shell">
-      <section className="hero">
+    <main className="app-shell seller-reports-shell">
+      <section className="hero seller-reports-hero">
         <div className="hero-copy">
           <p className="eyebrow">Seller billing</p>
           <h1>Invoices, fees, and export for settled orders.</h1>
-          <p className="lead">The billing surface mirrors the live API summary and export endpoints.</p>
+          <p className="lead">
+            The billing surface mirrors the live API summary and export endpoints with a clear readout of invoices,
+            fees, totals, and export readiness.
+          </p>
           <div className="hero-meta">
             <span className="chip chip-accent">{session ? session.roleLabel : "Seller session"}</span>
             <span className="chip">{rangeLabel}</span>
@@ -183,7 +186,7 @@ export function SellerReports() {
         </div>
       </section>
 
-      <section className="metrics">
+      <section className="metrics billing-summary-metrics">
         {summary
           ? [
               ["Invoices", summary.invoiceCount],
@@ -191,7 +194,7 @@ export function SellerReports() {
               ["Fees", formatSek(summary.feeTotalSek)],
               ["Total", formatSek(summary.totalSek)]
             ].map(([label, value]) => (
-              <article key={label as string} className="metric-card">
+              <article key={label as string} className="metric-card billing-metric-card">
                 <span className="label">{label as string}</span>
                 <strong>{value as string | number}</strong>
               </article>
@@ -199,7 +202,7 @@ export function SellerReports() {
           : null}
       </section>
 
-      <section className="seller-layout">
+      <section className="seller-layout billing-layout">
         <div className="panel seller-list-panel">
           <div className="panel-head">
             <div>
@@ -208,8 +211,8 @@ export function SellerReports() {
             </div>
           </div>
 
-          <div className="pickup-action-grid">
-            <div className="pickup-action-card">
+          <div className="pickup-action-grid billing-action-grid">
+            <div className="pickup-action-card billing-action-card">
               <p className="label">Export format</p>
               <div className="filter-row">
                 {(["CSV", "JSON"] as const).map((item) => (
@@ -238,7 +241,7 @@ export function SellerReports() {
               </p>
             </div>
 
-            <div className="pickup-action-card">
+            <div className="pickup-action-card billing-action-card billing-status-card">
               <p className="label">Current status</p>
               <h3>{loading ? "Loading billing snapshot..." : summary ? `${summary.invoiceCount} invoices` : "Waiting for data"}</h3>
               <p className="muted">
@@ -251,10 +254,10 @@ export function SellerReports() {
             </div>
           </div>
 
-          <div className="compact-list" style={{ marginTop: "18px" }}>
+          <div className="compact-list billing-invoice-list">
             {exportSnapshot ? (
               exportSnapshot.invoices.map((invoice) => (
-                <article key={invoice.id} className="seller-card">
+                <article key={invoice.id} className="seller-card billing-invoice-card">
                   <div className="seller-card-top">
                     <div>
                       <p className="eyebrow">{invoice.status}</p>
@@ -292,7 +295,7 @@ export function SellerReports() {
                 secondaryAction={{ label: "Refresh reports", onClick: () => void refreshReports(range), disabled: loading }}
               />
             ) : summary ? (
-              <article className="seller-card">
+              <article className="seller-card billing-invoice-card">
                 <div className="seller-card-top">
                   <div>
                     <p className="eyebrow">Summary</p>
@@ -331,7 +334,7 @@ export function SellerReports() {
           </div>
         </div>
 
-        <aside className="panel seller-spotlight">
+        <aside className="panel seller-spotlight billing-notes-panel">
           <p className="eyebrow">Billing notes</p>
           <h2>What the export includes</h2>
           <div className="status-timeline">
