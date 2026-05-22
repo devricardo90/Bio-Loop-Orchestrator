@@ -33,6 +33,9 @@ const personaActions: Array<{
   }
 ];
 
+const getPersonaColor = (p: WebAuthPersona): string =>
+  p === "buyer" ? "var(--accent)" : p === "seller" ? "var(--gold)" : "var(--muted)";
+
 export function LoginPanel() {
   const router = useRouter();
   const pathname = usePathname();
@@ -84,55 +87,42 @@ export function LoginPanel() {
 
   return (
     <main className="app-shell login-shell">
-      <section className="login-grid">
-        <div className="login-copy">
-          <p className="eyebrow">Access control</p>
-          <h1>Sign in to the operational area that matches your role.</h1>
-          <p className="lead">
-            The browser keeps only httpOnly cookies. This page requests a CSRF token first, posts your role-specific
-            credentials to the API, and returns you to the correct operational route.
-          </p>
-          <div className="login-bridge">
-            <span className="status-badge status-live">Buyer-first demo flow</span>
-            <p className="muted">
-              Use buyer as the default handoff, then move through seller and admin only after the API-backed flow is
-              clear.
-            </p>
-          </div>
-
-          <div className="persona-stack">
-            {personaActions.map((action) => (
-              <button
-                key={action.persona}
-                type="button"
-                className={`persona-card ${persona === action.persona ? "persona-card-active" : ""}`}
-                onClick={() => {
-                  setPersona(action.persona);
-                  setEmail(
-                    action.persona === "buyer"
-                      ? "buyer.admin@bioloop.dev"
-                      : action.persona === "seller"
-                        ? "seller.admin@bioloop.dev"
-                        : "platform.admin@bioloop.dev"
-                  );
-                  setMessage("");
-                }}
-              >
-                <span className="persona-card-title">{action.title}</span>
-                <span className="persona-card-subtitle">{action.subtitle}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="login-notes">
-            <span className="chip chip-accent">CSRF protected</span>
-            <span className="chip">httpOnly cookies</span>
-            <span className="chip">credentials include</span>
-          </div>
+      <div className="login-center">
+        {/* Card header */}
+        <div className="login-card-header">
+          <p className="eyebrow">Bio Loop</p>
+          <h2>Sign in</h2>
+          <p className="login-card-sub">Select workspace and enter credentials</p>
         </div>
 
+        {/* Role segmented control */}
+        <div className="role-tabs">
+          {personaActions.map((action) => (
+            <button
+              key={action.persona}
+              type="button"
+              className={`role-tab ${persona === action.persona ? "role-tab-active" : ""}`}
+              style={persona === action.persona ? { color: getPersonaColor(action.persona) } : undefined}
+              onClick={() => {
+                setPersona(action.persona);
+                setEmail(
+                  action.persona === "buyer"
+                    ? "buyer.admin@bioloop.dev"
+                    : action.persona === "seller"
+                      ? "seller.admin@bioloop.dev"
+                      : "platform.admin@bioloop.dev"
+                );
+                setMessage("");
+              }}
+            >
+              {action.persona}
+            </button>
+          ))}
+        </div>
+
+        {/* Login form card */}
         <form
-          className="panel login-panel"
+          className="login-form-card"
           onSubmit={(event) => {
             event.preventDefault();
 
@@ -150,18 +140,6 @@ export function LoginPanel() {
             });
           }}
         >
-          <div className="panel-head">
-            <div>
-              <p className="eyebrow">Login</p>
-              <h2>{activeAction.title}</h2>
-            </div>
-            <span className={`status-badge status-${persona === "buyer" ? "live" : "scheduled"}`}>{persona}</span>
-          </div>
-          <div className="login-route-note">
-            <span className="label">Next route</span>
-            <strong>{nextRoute || activeAction.route}</strong>
-          </div>
-
           <label className="field">
             <span>Email</span>
             <input
@@ -186,23 +164,33 @@ export function LoginPanel() {
             />
           </label>
 
-          <div className="login-actions">
-            <button className="button button-primary" type="submit" disabled={isPending}>
-              {isPending ? "Signing in..." : `Sign in as ${persona}`}
-            </button>
-            <Link className="button button-secondary" href={activeAction.route}>
-              Open {activeAction.persona} area
-            </Link>
-          </div>
+          <button
+            className="button button-primary"
+            type="submit"
+            disabled={isPending}
+            style={{ width: "100%" }}
+          >
+            {isPending ? "Signing in..." : `Sign in as ${persona}`}
+          </button>
 
-          <p className={`message ${message ? "message-visible" : ""}`} aria-live="polite">
+          <p
+            className={`message ${message ? "message-visible" : ""}`}
+            aria-live="polite"
+          >
             {message ||
               (session
                 ? `You are already signed in as ${session.roleLabel}.`
-                : "Use one of the seeded persona emails with the shared seeded password to establish the API-backed session.")}
+                : "Use the seeded demo credentials to establish an API-backed session.")}
           </p>
         </form>
-      </section>
+
+        {/* Skip link */}
+        <div className="login-footer-links">
+          <Link className="button button-secondary" href={activeAction.route}>
+            Skip - open {activeAction.persona} workspace
+          </Link>
+        </div>
+      </div>
     </main>
   );
 }

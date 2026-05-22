@@ -94,7 +94,7 @@
 
 ## M10 Public Presentation & Documentation
 
-- [DONE] (DOCS-01) Developer quickstart — original task, closed. See docs/ops/done/DOCS-01.done.md.
+- [DONE] (DOCS-01) Developer quickstart - original task, closed. See docs/ops/done/DOCS-01.done.md.
 - [REVIEW] (DOCS-01B) README Product Clarity and Screenshot Polish
   - objective: revise README for public presentation with validated production claims, real screenshot, and product section
   - deps: DOCS-01
@@ -103,6 +103,13 @@
   - objective: establish official visual direction, mini design system decisions, and per-screen quality criteria before screenshots and README final
   - deps: B6-08 (design layer), PORTFOLIO-01 (evidence pack)
   - evidence: docs/design/bio-loop-visual-baseline.md
+- [DONE] (UI-01B1) Landing + Login Visual Redesign (Claude Designer)
+  - objective: apply approved visual design from Claude Designer (bio-loop-screens-v2.jsx) to Landing and Login screens, preserving all auth logic
+  - deps: UI-01A, explicit Trigger authorization
+  - evidence: docs/ops/done/UI-01B1.done.md
+  - files: apps/web/app/globals.css (+474/-1), apps/web/app/page.tsx (+148/-102), apps/web/components/login-panel.tsx (+75/-53)
+  - gates: typecheck PASS, build PASS (14 static routes), test PASS
+  - note: commit pending authorization - final screenshots not yet captured
 - [BLOCKED] (UI-01B) Apply Visual Baseline to Priority 1 and Priority 2 Screens
   - objective: apply typography scale, card/table treatment, and status badge polish to landing, login, and buyer screens; capture screenshots
   - deps: UI-01A, explicit Trigger authorization
