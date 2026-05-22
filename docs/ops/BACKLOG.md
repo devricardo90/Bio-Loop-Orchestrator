@@ -115,11 +115,16 @@
   - deps: UI-01B1, explicit Trigger authorization
   - evidence: docs/ops/done/UI-01B2.done.md
   - note: remote DONE at ed284bd
-- [REVIEW] (UI-01B3) Seller/Admin/Billing Screens Visual Baseline
+- [DONE] (UI-01B3) Seller/Admin/Billing Screens Visual Baseline
   - objective: apply the approved UI-01B1/UI-01B2 visual direction to remaining seller, admin, and billing screens while preserving existing API/auth behavior
   - deps: UI-01B2, explicit Trigger authorization
   - evidence: docs/ops/done/UI-01B3.done.md
-  - note: local REVIEW pending Trigger browser checkpoint and commit authorization
+  - note: remote DONE at 5b9a1f2
+- [DONE] (UI-01C) Visual Smoke and Production Browser Review
+  - objective: validate all 12 required routes in production after UI-01B visual baseline; confirm CSS, auth gating, API health, and no gross regression
+  - deps: UI-01B1, UI-01B2, UI-01B3
+  - evidence: docs/ops/done/UI-01C.done.md
+  - result: 11 PASS, 1 WARN (admin/buyers title), 0 FAIL; API health/readiness clean; README unblocked
 - [BLOCKED] (UI-01B) Apply Visual Baseline to Priority 1 and Priority 2 Screens
   - objective: apply typography scale, card/table treatment, and status badge polish to landing, login, and buyer screens; capture screenshots
   - deps: UI-01A, explicit Trigger authorization
