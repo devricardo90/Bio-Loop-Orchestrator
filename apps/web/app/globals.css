@@ -1641,6 +1641,138 @@ h3 {
   margin-top: 14px;
 }
 
+.buyer-priority-shell {
+  display: grid;
+  gap: 22px;
+}
+
+.buyer-priority-hero {
+  padding: 28px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(15, 93, 75, 0.07) 0%, rgba(255, 250, 243, 0) 100%);
+  border: 1px solid rgba(15, 93, 75, 0.12);
+}
+
+.buyer-priority-hero-copy {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+  animation: none;
+}
+
+.buyer-proof-row {
+  align-items: center;
+}
+
+.buyer-priority-switcher {
+  border-radius: 12px;
+  padding: 18px;
+  gap: 14px;
+}
+
+.buyer-switcher-head,
+.pickup-status-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.buyer-metric-card {
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+.buyer-metric-card strong {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 1.55rem;
+}
+
+.buyer-feed-panel,
+.buyer-auction-detail-panel,
+.pickup-queue-panel,
+.pickup-detail-panel {
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.buyer-auction-card {
+  border-radius: 10px;
+  padding: 18px;
+  gap: 14px;
+  box-shadow: 0 16px 40px rgba(36, 28, 18, 0.08);
+}
+
+.buyer-auction-card:hover {
+  border-color: rgba(15, 93, 75, 0.2);
+}
+
+.buyer-card-summary {
+  margin: 0;
+}
+
+.buyer-card-grid,
+.buyer-detail-grid,
+.pickup-detail-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.buyer-card-grid > div,
+.buyer-detail-grid > div,
+.pickup-detail-grid > div {
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(26, 29, 31, 0.04);
+}
+
+.buyer-card-cta {
+  justify-self: start;
+  min-height: 40px;
+}
+
+.buyer-spotlight-panel,
+.pickup-spotlight-panel,
+.buyer-next-card,
+.buyer-related-panel,
+.pickup-detail-sidebar {
+  border-radius: 12px;
+}
+
+.buyer-detail-head h2 {
+  font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 1.35rem;
+}
+
+.buyer-auction-timeline {
+  border-radius: 12px;
+  background: rgba(15, 93, 75, 0.06);
+}
+
+.pickup-status-group {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.pickup-status-group-head strong {
+  font-family: "Courier New", Courier, monospace;
+  color: var(--accent);
+}
+
+.pickup-status-group .seller-card {
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.pickup-journey-detail-strip {
+  border-radius: 12px;
+  background: rgba(15, 93, 75, 0.06);
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -1675,6 +1807,11 @@ h3 {
 
   .hero-zone {
     padding: 24px 20px 20px;
+    border-radius: 14px;
+  }
+
+  .buyer-priority-hero {
+    padding: 22px;
     border-radius: 14px;
   }
 
@@ -1733,5 +1870,13 @@ h3 {
     padding: 20px 16px 18px;
     border-radius: 10px;
     margin-bottom: 16px;
+  }
+
+  .buyer-feed-panel,
+  .buyer-auction-detail-panel,
+  .pickup-queue-panel,
+  .pickup-detail-panel {
+    padding: 16px;
+    border-radius: 10px;
   }
 }

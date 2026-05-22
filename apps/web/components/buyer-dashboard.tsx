@@ -229,9 +229,9 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
   }
 
   return (
-    <main className="app-shell">
-      <section className="hero">
-        <div className="hero-copy">
+    <main className="app-shell buyer-priority-shell">
+      <section className="hero buyer-priority-hero">
+        <div className="hero-copy buyer-priority-hero-copy">
           <p className="eyebrow">Buyer operations</p>
           <h1>{mode === "feed" ? "A feed built for industrial buyers." : "Auction view with contract-safe bidding."}</h1>
           <p className="lead">
@@ -254,7 +254,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
               <span className="journey-step">3. Pickup</span>
             </div>
           </div>
-          <div className="hero-meta">
+          <div className="hero-meta buyer-proof-row">
             <span className="chip chip-accent">{formatSyncTime(workspace.lastSyncedAt)}</span>
             <span className="chip">{workspace.auctions.length} auctions tracked</span>
             <span className="chip">{activeBuyerApproved ? "Buyer approved" : "Buyer pending"}</span>
@@ -271,8 +271,13 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
         </div>
 
         <div className="hero-side">
-          <div className="panel buyer-switcher">
-            <p className="label">Active buyer</p>
+          <div className="panel buyer-switcher buyer-priority-switcher">
+            <div className="buyer-switcher-head">
+              <p className="label">Active buyer</p>
+              <span className={`status-badge status-${activeBuyerApproved ? "approved" : "scheduled"}`}>
+                {activeBuyerApproved ? "Approved" : "Pending"}
+              </span>
+            </div>
             <div className="buyer-list">
               {workspace.buyers.map((buyer) => (
                 <button
@@ -301,7 +306,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
           ["Won", workspace.auctions.filter((auction) => auction.lot.status === "PICKUP_SCHEDULED").length],
           ["Void", workspace.auctions.filter((auction) => getAuctionRuntime(auction, now).statusLabel === "VOID").length]
         ].map(([label, value]) => (
-          <article key={label as string} className="metric-card">
+          <article key={label as string} className="metric-card buyer-metric-card">
             <span className="label">{label as string}</span>
             <strong>{value as number}</strong>
           </article>
@@ -330,12 +335,13 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
 
       {mode === "feed" ? (
         <section className="feed-layout">
-          <div className="panel">
+          <div className="panel buyer-feed-panel">
             <div className="panel-head">
               <div>
                 <p className="eyebrow">Buyer feed</p>
                 <h2>Available lots and auctions</h2>
               </div>
+              <span className="status-badge status-live">{feedItems.length} visible</span>
             </div>
             <div className="filter-row">
               {filters.map((value) => (
@@ -351,13 +357,22 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
             </div>
 
             <div className="auction-list">
-              {feedItems.map((auction) => (
-                <AuctionCard key={auction.id} auction={auction} now={now} />
-              ))}
+              {feedItems.length > 0 ? (
+                feedItems.map((auction) => <AuctionCard key={auction.id} auction={auction} now={now} />)
+              ) : (
+                <WorkspaceState
+                  eyebrow="No matching auctions"
+                  title="No auctions match this filter."
+                  description="Switch filters or reload the workspace to inspect the current buyer feed from the API."
+                  tone="empty"
+                  statusLabel="Filter empty"
+                  secondaryAction={{ label: "Show all", onClick: () => setFilter("ALL") }}
+                />
+              )}
             </div>
           </div>
 
-          <aside className="panel spotlight-panel">
+          <aside className="panel spotlight-panel buyer-spotlight-panel">
             <p className="eyebrow">Spotlight</p>
             <h2>{featuredAuction?.storeName}</h2>
             <p className="muted">{featuredAuction?.summary}</p>
@@ -390,7 +405,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
         </section>
       ) : (
         <section className="detail-layout">
-          <div className="panel detail-panel">
+          <div className="panel detail-panel buyer-auction-detail-panel">
             <div className="journey-banner">
               <div className="journey-banner-copy">
                 <span className="journey-badge">Buyer continuity</span>
@@ -407,7 +422,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
               </div>
             </div>
 
-            <div className="panel-head">
+            <div className="panel-head buyer-detail-head">
               <div>
                 <p className="eyebrow">Auction view</p>
                 <h2>{spotlight.categoryName}</h2>
@@ -419,7 +434,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
 
             <p className="lead compact">{spotlight.summary}</p>
 
-            <div className="detail-grid">
+            <div className="detail-grid buyer-detail-grid">
               <div>
                 <span className="label">Store</span>
                 <strong>{spotlight.storeName}</strong>
@@ -436,9 +451,17 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
                 <span className="label">Estimated weight</span>
                 <strong>{spotlight.lot.estimatedWeightKg} kg</strong>
               </div>
+              <div>
+                <span className="label">Distance</span>
+                <strong>{spotlight.distanceKm.toFixed(1)} km</strong>
+              </div>
+              <div>
+                <span className="label">Bids</span>
+                <strong>{spotlight.bids.length}</strong>
+              </div>
             </div>
 
-            <div className="timeline">
+            <div className="timeline buyer-auction-timeline">
               <div>
                 <span className="label">Auction end</span>
                 <strong>{formatCountdown(getAuctionRuntime(spotlight, now).countdownMs)}</strong>
@@ -457,7 +480,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
           <div className="detail-sidebar">
             <BidPanel auction={spotlight} buyer={activeBuyer} now={now} onSubmit={submitBid} />
 
-            <div className="panel journey-next-card">
+            <div className="panel journey-next-card buyer-next-card">
               <p className="eyebrow">Next operational step</p>
               <h3>{spotlight.order ? "This auction is already connected to pickup." : "Pickup becomes the next step after award."}</h3>
               <p className="muted">
@@ -475,7 +498,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
               </div>
             </div>
 
-            <div className="panel">
+            <div className="panel buyer-related-panel">
               <p className="eyebrow">Other auctions</p>
               <div className="compact-list">
                 {workspace.auctions
@@ -507,7 +530,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
 function AuctionCard({ auction, now }: { auction: DemoAuctionRecord; now: number }) {
   const runtime = getAuctionRuntime(auction, now);
   return (
-    <article className="auction-card">
+    <article className="auction-card buyer-auction-card">
       <div className="auction-card-top">
         <div>
           <p className="eyebrow">{auction.categoryName}</p>
@@ -516,9 +539,9 @@ function AuctionCard({ auction, now }: { auction: DemoAuctionRecord; now: number
         <span className={`status-badge status-${runtime.statusTone.toLowerCase()}`}>{runtime.statusLabel}</span>
       </div>
 
-      <p className="muted">{auction.summary}</p>
+      <p className="muted buyer-card-summary">{auction.summary}</p>
 
-      <div className="auction-card-grid">
+      <div className="auction-card-grid buyer-card-grid">
         <div>
           <span className="label">Reserve</span>
           <strong>{formatSek(auction.auction.reservePriceSekPerKg)}</strong>
@@ -535,6 +558,14 @@ function AuctionCard({ auction, now }: { auction: DemoAuctionRecord; now: number
           <span className="label">Bids</span>
           <strong>{auction.bids.length}</strong>
         </div>
+        <div>
+          <span className="label">Volume</span>
+          <strong>{auction.lot.estimatedWeightKg} kg</strong>
+        </div>
+        <div>
+          <span className="label">Time left</span>
+          <strong>{formatCountdown(runtime.countdownMs)}</strong>
+        </div>
       </div>
 
       <div className="tag-row">
@@ -545,7 +576,7 @@ function AuctionCard({ auction, now }: { auction: DemoAuctionRecord; now: number
         ))}
       </div>
 
-      <Link href={`/buyer/auctions/${auction.id}`} className="button button-secondary">
+      <Link href={`/buyer/auctions/${auction.id}`} className="button button-secondary buyer-card-cta">
         Open auction
       </Link>
     </article>

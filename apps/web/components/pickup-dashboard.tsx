@@ -211,17 +211,31 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
   const scheduleWindowValid = isScheduleWindowValid(scheduleStart, scheduleEnd);
   const scheduleDisabled = !spotlight || !canSchedule || !scheduleWindowValid || schedulePending;
   const podDisabled = !spotlight || !canSubmitPod || !podUrl.trim() || podPending;
+  const orderGroups = [
+    {
+      label: "Needs action",
+      records: orders.filter((record) => record.order.pickupStatus === "PENDING")
+    },
+    {
+      label: "Scheduled",
+      records: orders.filter((record) => record.order.pickupStatus === "SCHEDULED")
+    },
+    {
+      label: "Closed or exception",
+      records: orders.filter((record) => !["PENDING", "READY", "SCHEDULED"].includes(record.order.pickupStatus))
+    }
+  ].filter((group) => group.records.length > 0);
 
   return (
-    <main className="app-shell pickup-shell">
-      <section className="hero">
-        <div className="hero-copy">
+    <main className="app-shell pickup-shell buyer-priority-shell">
+      <section className="hero buyer-priority-hero">
+        <div className="hero-copy buyer-priority-hero-copy">
           <p className="eyebrow">Pick-up operations</p>
           <h1>{mode === "list" ? "Schedule pick-ups and keep PODs moving." : "Pick-up detail with proof upload and dispute state."}</h1>
           <p className="lead">
             Manage your pick-up queue, schedule windows, and submit proof of delivery (POD) to finalize awards.
           </p>
-          <div className="hero-meta">
+          <div className="hero-meta buyer-proof-row">
             <span className="chip chip-accent">{formatSyncTime(workspace.lastSyncedAt)}</span>
             <span className="chip">{summary.scheduled} scheduled</span>
             <span className="chip">{summary.completed} completed</span>
@@ -255,8 +269,13 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
         </div>
 
         <div className="hero-side">
-          <div className="panel buyer-switcher">
-            <p className="label">Active buyer</p>
+          <div className="panel buyer-switcher buyer-priority-switcher">
+            <div className="buyer-switcher-head">
+              <p className="label">Active buyer</p>
+              <span className={`status-badge status-${activeBuyerApproved ? "approved" : "scheduled"}`}>
+                {activeBuyerApproved ? "Approved" : "Pending"}
+              </span>
+            </div>
             <div className="buyer-list">
               {workspace.buyers.map((buyer) => (
                 <button
@@ -284,7 +303,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
           ["Completed", summary.completed],
           ["No-show", summary.noShow]
         ].map(([label, value]) => (
-          <article key={label as string} className="metric-card">
+          <article key={label as string} className="metric-card buyer-metric-card">
             <span className="label">{label as string}</span>
             <strong>{value as number}</strong>
           </article>
@@ -293,17 +312,28 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
 
       {mode === "list" ? (
         <section className="pickup-layout">
-          <div className="panel">
+          <div className="panel pickup-queue-panel">
             <div className="panel-head">
               <div>
                 <p className="eyebrow">Pick-up queue</p>
                 <h2>Orders ready for scheduling and POD</h2>
               </div>
+              <span className="status-badge status-live">{orders.length} orders</span>
             </div>
 
             <div className="pickup-list">
               {orders.length > 0 ? (
-                orders.map((record) => <PickupOrderCard key={record.order.id} record={record} now={now} />)
+                orderGroups.map((group) => (
+                  <section key={group.label} className="pickup-status-group" aria-label={group.label}>
+                    <div className="pickup-status-group-head">
+                      <span className="label">{group.label}</span>
+                      <strong>{group.records.length}</strong>
+                    </div>
+                    {group.records.map((record) => (
+                      <PickupOrderCard key={record.order.id} record={record} now={now} />
+                    ))}
+                  </section>
+                ))
               ) : (
                 <WorkspaceState
                   eyebrow="No orders"
@@ -317,7 +347,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
             </div>
           </div>
 
-          <aside className="panel spotlight-panel">
+          <aside className="panel spotlight-panel pickup-spotlight-panel">
             <p className="eyebrow">Pick-up status</p>
             <h2>{spotlight ? spotlight.categoryName : "No active pick-up"}</h2>
             <p className="muted">{spotlight ? getPickupStatusLine(spotlight, now) : "Open an order to schedule pick-up."}</p>
@@ -353,10 +383,10 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
         </section>
       ) : (
         <section className="pickup-layout">
-          <div className="panel detail-panel">
+          <div className="panel detail-panel pickup-detail-panel">
             {spotlight ? (
               <>
-                <div className="panel-head">
+                <div className="panel-head buyer-detail-head">
                   <div>
                     <p className="eyebrow">Order detail</p>
                     <h2>{spotlight.categoryName}</h2>
@@ -366,7 +396,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
 
                 <p className="lead compact">{spotlight.summary}</p>
 
-                <div className="detail-grid">
+                <div className="detail-grid pickup-detail-grid">
                   <div>
                     <span className="label">Store</span>
                     <strong>{spotlight.storeName}</strong>
@@ -383,9 +413,17 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                     <span className="label">Pick-up status</span>
                     <strong>{spotlight.order.pickupStatus}</strong>
                   </div>
+                  <div>
+                    <span className="label">Order value</span>
+                    <strong>{formatPickupRevenue(spotlight)}</strong>
+                  </div>
+                  <div>
+                    <span className="label">Auction</span>
+                    <strong>{spotlight.auction.status}</strong>
+                  </div>
                 </div>
 
-                <div className="journey-detail-strip">
+                <div className="journey-detail-strip pickup-journey-detail-strip">
                   <div>
                     <span className="label">Journey continuity</span>
                     <strong>Buyer feed to auction detail to pick-up closeout</strong>
@@ -537,7 +575,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
           </div>
 
           {spotlight ? (
-            <aside className="panel detail-sidebar">
+            <aside className="panel detail-sidebar pickup-detail-sidebar">
               <p className="eyebrow">Pickup timeline</p>
               <div className="status-timeline">
                 {getPickupTimeline(spotlight).map((step) => (
