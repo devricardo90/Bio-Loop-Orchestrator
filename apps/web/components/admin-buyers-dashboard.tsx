@@ -4,6 +4,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import { formatAuthRoleLabel } from "../lib/auth-api";
 import { useAuthSession } from "./auth-session";
 import {
   approveBuyerOnApi,
@@ -13,7 +14,7 @@ import {
   type BuyerRecordDto,
   type CatalogScope
 } from "../lib/admin-api";
-import { formatDateSafe } from "../lib/demo-auctions";
+import { formatDateSafe, formatEnumLabel } from "../lib/demo-auctions";
 import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
 
@@ -126,7 +127,7 @@ export function AdminBuyersDashboard() {
         <WorkspaceState
           eyebrow="Admin buyers"
           title="Loading admin buyers workspace."
-          description="The buyer registry is loading from the admin API."
+          description="The buyer registry is loading from the admin workspace."
           tone="loading"
         />
       </main>
@@ -169,7 +170,7 @@ export function AdminBuyersDashboard() {
             : entry
         )
       );
-      setMessage(`Buyer ${buyer.name} updated through the admin API.`);
+      setMessage(`Buyer ${buyer.name} updated in the admin workspace.`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Buyer approval request failed.");
     } finally {
@@ -185,11 +186,11 @@ export function AdminBuyersDashboard() {
           <p className="eyebrow">Admin buyers</p>
           <h1>Approve and review buyers before they hit the trade surface.</h1>
           <p className="lead">
-            The buyer registry is loaded from the admin API and can surface both seeded demo records and the imported Sweden
+            The buyer registry is loaded from the admin workspace and can surface both seeded demo records and the imported Sweden
             Supermarkets dataset when you choose.
           </p>
           <div className="hero-meta">
-            <span className="chip chip-accent">{session ? session.roleLabel : "Admin session"}</span>
+            <span className="chip chip-accent">{session ? formatAuthRoleLabel(session.roleLabel) : "Admin session"}</span>
             <span className="chip">{loading ? "Loading buyers..." : `${buyers.length} buyers loaded`}</span>
             <span className="chip">{buyers.length} buyers tracked</span>
             <span className="chip">Reviewer: {reviewerId}</span>
@@ -280,9 +281,9 @@ export function AdminBuyersDashboard() {
             <WorkspaceState
               eyebrow="No buyers"
               title="No buyer records available."
-              description="The admin API returned no buyers for the current workspace."
+              description="No buyer records are available for the current workspace."
               tone={error ? "error" : "empty"}
-              statusLabel={error ? "Admin API error" : "Buyer registry empty"}
+              statusLabel={error ? "Admin unavailable" : "Buyer registry empty"}
               primaryAction={{ label: "Admin hub", href: "/admin" }}
               secondaryAction={{ label: "Retry", onClick: () => void refreshBuyers(), disabled: loading }}
             />
@@ -295,7 +296,7 @@ export function AdminBuyersDashboard() {
                     <h3>{buyer.name}</h3>
                     <p className="muted admin-review-subtitle">{buyer.riskLabel}</p>
                   </div>
-                  <span className={`status-badge status-${buyer.status.toLowerCase()}`}>{buyer.status}</span>
+                  <span className={`status-badge status-${buyer.status.toLowerCase()}`}>{formatEnumLabel(buyer.status)}</span>
                 </div>
 
 
@@ -306,7 +307,7 @@ export function AdminBuyersDashboard() {
                   </div>
                   <div>
                     <span className="label">Access state</span>
-                    <strong>{buyer.status}</strong>
+                    <strong>{formatEnumLabel(buyer.status)}</strong>
                   </div>
                   <div>
                     <span className="label">Last update</span>
@@ -341,7 +342,7 @@ export function AdminBuyersDashboard() {
                     <small>{buyer.catalog.dataset}</small>
                   </span>
                   <p className="muted catalog-context">
-                    Source: {buyer.catalog.source} - {buyer.catalog.visibleByDefault ? "Visible by default" : "Visible when catalogScope matches"}
+                    {buyer.catalog.visibleByDefault ? "Visible in default review" : "Visible when this catalog is selected"}
                   </p>
                 </div>
 
@@ -349,7 +350,8 @@ export function AdminBuyersDashboard() {
                 {buyer.approval ? (
                   <div className="admin-note">
                     <strong>
-                      {buyer.approval.decision} via {buyer.approval.reason}
+                      {buyer.approval.decision ? formatEnumLabel(buyer.approval.decision) : "Reviewed"} via{" "}
+                      {buyer.approval.reason ? formatEnumLabel(buyer.approval.reason) : "Manual review"}
                     </strong>
                     <p className="muted">
                       Reviewed by {buyer.approval.reviewerId ?? "Unknown"} on{" "}
@@ -379,7 +381,7 @@ export function AdminBuyersDashboard() {
                   ))}
                 </div>
                 <p className="muted small admin-action-note">
-                  Status changes are live. System will update reputation scores and verify credentials via the Bio-Loop Orchestrator.
+                  Status changes are live. The workspace will update reputation scores and credentials after review.
                 </p>
               </article>
             ))
@@ -388,10 +390,10 @@ export function AdminBuyersDashboard() {
 
 
         <p className={`message status-message status-message-error ${error ? "message-visible" : ""}`} aria-live="polite">
-          {error ? `API unavailable: ${error}` : ""}
+          {error ? `Workspace unavailable: ${error}` : ""}
         </p>
         <p className={`message status-message status-message-loading ${loading ? "message-visible" : ""}`} aria-live="polite">
-          {loading ? "Loading buyer registry from the API..." : ""}
+          {loading ? "Loading buyer registry..." : ""}
         </p>
         <p className={`message status-message status-message-success ${message ? "message-visible" : ""}`} aria-live="polite">
           {message}
@@ -401,10 +403,9 @@ export function AdminBuyersDashboard() {
 
       <ApiReferencePanel
         workspace="admin-buyers"
-        title="Verify buyer approval contracts"
-        description="Use the live API reference to inspect the buyers listing and approval mutation while reviewing admin decisions."
+        title="Verify buyer approval workflow"
+        description="Open the product reference when you need to inspect buyer listing and approval behavior while reviewing admin decisions."
       />
     </main>
   );
 }
-

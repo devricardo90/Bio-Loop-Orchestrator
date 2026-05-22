@@ -5,8 +5,11 @@ import { useMemo, useState } from "react";
 import { useAuctionStore } from "./auction-store";
 import {
   formatDistance,
+  formatAuctionStatusLabel,
+  formatEnumLabel,
   formatSek,
   formatSyncTime,
+  formatTagLabel,
   formatTimeWindow,
   getAuctionRuntime
 } from "../lib/demo-auctions";
@@ -93,7 +96,7 @@ export function SellerDashboard({ mode, lotId }: SellerDashboardProps) {
           <h1>{mode === "lots" ? "Manage active lots and auction lifecycle." : "Review outcomes and settlement states."}</h1>
           <p className="lead">
             The seller surface mirrors the trade pipeline with live statuses, compact timelines, and result cards
-            that stay aligned with the domain contracts.
+            that stay aligned with the operating rules.
           </p>
           <div className="journey-banner seller-journey-banner">
             <div className="journey-banner-copy">
@@ -265,11 +268,11 @@ export function SellerDashboard({ mode, lotId }: SellerDashboardProps) {
               </div>
               <div>
                 <span className="label">Auction</span>
-                <strong>{getAuctionRuntime(spotlight, now).statusLabel}</strong>
+                <strong>{formatAuctionStatusLabel(getAuctionRuntime(spotlight, now).statusLabel)}</strong>
               </div>
               <div>
                 <span className="label">Status</span>
-                <strong>{spotlight.lot.status}</strong>
+                <strong>{formatEnumLabel(spotlight.lot.status)}</strong>
               </div>
             </div>
           </aside>
@@ -298,7 +301,7 @@ function SellerRecordCard({
           <h3>{record.storeName}</h3>
           <p className="muted seller-record-id">{record.id}</p>
         </div>
-        <span className={`status-badge status-${getSellerTone(record)}`}>{record.lot.status}</span>
+        <span className={`status-badge status-${getSellerTone(record)}`}>{formatEnumLabel(record.lot.status)}</span>
       </div>
 
       <div className="seller-record-summary">
@@ -318,7 +321,7 @@ function SellerRecordCard({
       <div className="seller-card-grid">
         <div>
           <span className="label">Auction</span>
-          <strong>{runtime.statusLabel}</strong>
+          <strong>{formatAuctionStatusLabel(runtime.statusLabel)}</strong>
         </div>
         <div>
           <span className="label">Highest bid</span>
@@ -330,7 +333,7 @@ function SellerRecordCard({
         </div>
         <div>
           <span className="label">Lifecycle</span>
-          <strong>{record.lot.status}</strong>
+          <strong>{formatEnumLabel(record.lot.status)}</strong>
         </div>
       </div>
 
@@ -357,7 +360,7 @@ function SellerRecordCard({
         <div className="tag-row seller-record-tags">
           {record.tags.map((tag) => (
             <span key={tag} className="chip chip-muted">
-              {tag}
+              {formatTagLabel(tag)}
             </span>
           ))}
         </div>

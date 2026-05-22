@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { loginAs } from "./helpers";
 
-test("admin can approve a buyer through the live API", async ({ page }) => {
+test("admin can approve a buyer through the live workspace", async ({ page }) => {
   await loginAs(page, "admin");
 
   await page.goto("/admin/buyers");
@@ -12,21 +12,21 @@ test("admin can approve a buyer through the live API", async ({ page }) => {
 
   await freshMartCard.getByRole("button", { name: "Approve" }).click();
 
-  await expect(page.getByText("Buyer FreshMart Logistics updated through the admin API.")).toBeVisible();
+  await expect(page.getByText("Buyer FreshMart Logistics updated in the admin workspace.")).toBeVisible();
   await expect(freshMartCard).toContainText("APPROVED");
 });
 
-test("admin can resolve an open dispute through the live API", async ({ page }) => {
+test("admin can resolve an open dispute through the live workspace", async ({ page }) => {
   await loginAs(page, "admin");
 
   await page.goto("/admin/disputes");
   await page.getByLabel("Reviewer ID").fill("user_platform_admin");
 
-  const disputeCard = page.locator("article").filter({ hasText: "NO_SHOW" });
+  const disputeCard = page.locator("article").filter({ hasText: "No Show" });
   await expect(disputeCard).toContainText("OPEN");
 
   await disputeCard.getByRole("button", { name: "Settle" }).click();
 
-  await expect(page.getByText(/updated through the admin API/)).toBeVisible();
+  await expect(page.getByText(/updated in the admin workspace/)).toBeVisible();
   await expect(disputeCard).toContainText("RESOLVED");
 });

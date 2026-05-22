@@ -3,7 +3,15 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { fetchBuyerFeed } from "../lib/buyer-api";
-import { formatSyncTime, formatTimeWindow, type DemoAuctionRecord, type DemoBuyer } from "../lib/demo-auctions";
+import {
+  formatAuctionStatusLabel,
+  formatEnumLabel,
+  formatSyncTime,
+  formatTagLabel,
+  formatTimeWindow,
+  type DemoAuctionRecord,
+  type DemoBuyer
+} from "../lib/demo-auctions";
 import { schedulePickupToApi, submitPodToApi } from "../lib/pickup-api";
 import {
   formatPickupRevenue,
@@ -162,9 +170,9 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
     return (
       <main className="app-shell">
         <WorkspaceState
-          eyebrow="Pickup API"
+          eyebrow="Pickup workspace"
           title="Loading pickup workspace."
-          description="The buyer pickup queue and order detail are loading from the live API."
+          description="The buyer pickup queue and order detail are loading from the product workspace."
           tone="loading"
           statusLabel="Pickup sync"
         />
@@ -176,11 +184,11 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
     return (
       <main className="app-shell">
         <WorkspaceState
-          eyebrow="Pickup API"
+          eyebrow="Pickup workspace"
           title="Unable to load the pickup workspace."
           description={error}
           tone="error"
-          statusLabel="Pickup API error"
+          statusLabel="Pickup unavailable"
           primaryAction={{ label: "Buyer feed", href: "/buyer/feed" }}
           secondaryAction={{ label: "Retry", onClick: () => void reloadWorkspace() }}
         />
@@ -194,7 +202,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
         <WorkspaceState
           eyebrow="Pickup workspace"
           title="No pickup data available."
-          description="The live buyer API returned no pickup-ready orders for the current workspace."
+          description="No pickup-ready orders are available for the current workspace."
           tone="empty"
           statusLabel="No pickup orders"
           primaryAction={{ label: "Buyer feed", href: "/buyer/feed" }}
@@ -240,7 +248,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
             <span className="chip">{summary.scheduled} scheduled</span>
             <span className="chip">{summary.completed} completed</span>
             <span className="chip">{summary.disputed} disputed</span>
-            <span className="chip">source=api</span>
+            <span className="chip">Live data</span>
           </div>
           <div className="journey-banner pickup-journey-banner">
             <div className="journey-banner-copy">
@@ -377,8 +385,8 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
 
           <ApiReferencePanel
             workspace="pickup"
-            title="Trace pick-up API behavior"
-            description="Use the live API reference to inspect the scheduling and POD endpoints while validating buyer pick-up operations."
+            title="Trace pick-up workflow"
+            description="Open the product reference when you need to inspect scheduling and POD behavior while validating buyer pick-up operations."
           />
         </section>
       ) : (
@@ -407,11 +415,11 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                   </div>
                   <div>
                     <span className="label">Order status</span>
-                    <strong>{spotlight.order.status}</strong>
+                    <strong>{formatEnumLabel(spotlight.order.status)}</strong>
                   </div>
                   <div>
                     <span className="label">Pick-up status</span>
-                    <strong>{spotlight.order.pickupStatus}</strong>
+                    <strong>{formatEnumLabel(spotlight.order.pickupStatus)}</strong>
                   </div>
                   <div>
                     <span className="label">Order value</span>
@@ -419,7 +427,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                   </div>
                   <div>
                     <span className="label">Auction</span>
-                    <strong>{spotlight.auction.status}</strong>
+                    <strong>{formatAuctionStatusLabel(spotlight.auction.status)}</strong>
                   </div>
                 </div>
 
@@ -485,7 +493,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                       className="button button-primary" 
                       type="submit" 
                       disabled={scheduleDisabled}
-                      title={scheduleDisabled ? (spotlight ? "Scheduling is only available for active, non-settled orders with a future window." : "Select an order to schedule pick-up.") : "Submit pick-up window to the live API"}
+                      title={scheduleDisabled ? (spotlight ? "Scheduling is only available for active, non-settled orders with a future window." : "Select an order to schedule pick-up.") : "Submit pick-up window"}
                     >
                       {schedulePending ? "Scheduling..." : "Schedule pick-up"}
                     </button>
@@ -493,7 +501,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                       {scheduleMessage ||
                         (canSchedule
                           ? scheduleWindowValid
-                            ? "The pick-up window will be sent directly to the live API."
+                            ? "The pick-up window will be saved to the live workspace."
                             : "The window must be in the future and end after the start."
                           : "This order cannot be rescheduled in its current state.")}
                     </p>
@@ -549,14 +557,14 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                       className="button button-primary" 
                       type="submit" 
                       disabled={podDisabled}
-                      title={podDisabled ? "POD submission requires a scheduled pick-up and a valid proof URL." : "Submit proof of delivery to the live API"}
+                      title={podDisabled ? "POD submission requires a scheduled pick-up and a valid proof URL." : "Submit proof of delivery"}
                     >
                       {podPending ? "Uploading..." : "Submit POD"}
                     </button>
                     <p className={`message ${podMessage ? "message-visible" : ""}`} aria-live="polite">
                       {podMessage ||
                         (canSubmitPod
-                          ? "Submitting POD will send proof data to the live API."
+                          ? "Submitting POD will save proof data to the live workspace."
                           : "POD is only available after pick-up has been scheduled.")}
                     </p>
                   </form>
@@ -608,7 +616,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                 </div>
                 <div>
                   <span className="label">Auction status</span>
-                  <strong>{spotlight.auction.status}</strong>
+                  <strong>{formatAuctionStatusLabel(spotlight.auction.status)}</strong>
                 </div>
                 <div>
                   <span className="label">Order id</span>
@@ -616,7 +624,7 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
                 </div>
                 <div>
                   <span className="label">Pickup status</span>
-                  <strong>{spotlight.order.pickupStatus}</strong>
+                  <strong>{formatEnumLabel(spotlight.order.pickupStatus)}</strong>
                 </div>
               </div>
             </aside>
@@ -624,8 +632,8 @@ export function PickupDashboard({ mode, orderId }: PickupDashboardProps) {
 
           <ApiReferencePanel
             workspace="pickup"
-            title="Verify pick-up mutations"
-            description="Open the API reference to confirm the schedule-pick-up and POD contracts when troubleshooting state transitions."
+            title="Verify pick-up workflow"
+            description="Open the product reference to confirm schedule and POD behavior when troubleshooting state transitions."
           />
         </section>
       )}
@@ -653,11 +661,11 @@ function PickupOrderCard({ record, now }: { record: PickupOrderRecord; now: numb
         </div>
         <div>
           <span className="label">Status</span>
-          <strong>{record.order.status}</strong>
+          <strong>{formatEnumLabel(record.order.status)}</strong>
         </div>
         <div>
           <span className="label">Pickup</span>
-          <strong>{record.order.pickupStatus}</strong>
+          <strong>{formatEnumLabel(record.order.pickupStatus)}</strong>
         </div>
         <div>
           <span className="label">Value</span>
@@ -668,7 +676,7 @@ function PickupOrderCard({ record, now }: { record: PickupOrderRecord; now: numb
       <div className="tag-row">
         {record.tags.map((tag) => (
           <span key={tag} className="chip chip-muted">
-            {tag}
+            {formatTagLabel(tag)}
           </span>
         ))}
       </div>
@@ -710,7 +718,7 @@ async function handleSchedule({
     })
       .then(async () => {
         await reloadWorkspace();
-        setScheduleMessage("Pickup scheduled by the API.");
+        setScheduleMessage("Pickup scheduled in the workspace.");
       })
       .catch((error: unknown) => {
         setScheduleMessage(error instanceof Error ? error.message : "Unable to schedule pickup.");
@@ -746,7 +754,7 @@ async function handlePod({
     })
       .then(async (result) => {
         await reloadWorkspace();
-        setPodMessage(result.dispute ? "POD request opened or updated a dispute through the API." : "POD accepted by the API.");
+        setPodMessage(result.dispute ? "POD request opened or updated a dispute in the workspace." : "POD accepted in the workspace.");
       })
       .catch((error: unknown) => {
         setPodMessage(error instanceof Error ? error.message : "Unable to submit POD.");

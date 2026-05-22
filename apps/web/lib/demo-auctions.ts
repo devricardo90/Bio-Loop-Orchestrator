@@ -117,6 +117,82 @@ export function formatDateSafe(iso: string | null | undefined, fallback = "N/A")
   return date.toLocaleString("en-GB");
 }
 
+export function formatAuctionStatusLabel(status: AuctionRuntime["statusLabel"] | string) {
+  if (status === "LIVE") {
+    return "Live";
+  }
+
+  if (status === "SCHEDULED") {
+    return "Scheduled";
+  }
+
+  if (status === "ENDED") {
+    return "Closed";
+  }
+
+  if (status === "VOID") {
+    return "Void";
+  }
+
+  return formatEnumLabel(status);
+}
+
+export function formatEnumLabel(value: string) {
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+export function formatStorageLabel(value: string) {
+  if (value === "DRY") {
+    return "Dry storage";
+  }
+
+  if (value === "COLD") {
+    return "Cold storage";
+  }
+
+  if (value === "FROZEN") {
+    return "Frozen storage";
+  }
+
+  return formatEnumLabel(value);
+}
+
+export function formatTagLabel(value: string) {
+  if (value === "DRY") {
+    return "Dry storage";
+  }
+
+  if (value === "COLD") {
+    return "Cold storage";
+  }
+
+  if (value === "FROZEN") {
+    return "Frozen storage";
+  }
+
+  if (value === "ENDED") {
+    return "Closed";
+  }
+
+  if (value === "LIVE") {
+    return "Live";
+  }
+
+  if (value === "SCHEDULED") {
+    return "Scheduled";
+  }
+
+  if (value === "NO_SHOW") {
+    return "Missed pickup";
+  }
+
+  return value.includes("_") ? formatEnumLabel(value) : value;
+}
+
 export function createDemoState(): DemoState {
   const now = new Date();
   const inMinutes = (minutes: number) => new Date(now.getTime() + minutes * 60_000).toISOString();
@@ -362,7 +438,7 @@ export function getAuctionRuntime(record: DemoAuctionRecord, now: number): Aucti
     return {
       statusLabel: "ENDED",
       statusTone: record.auction.highestBid ? "awarded" : "ended",
-      timeLabel: record.auction.highestBid ? "Winning bid locked" : "Ended without reserve",
+      timeLabel: record.auction.highestBid ? "Winning bid locked" : "Closed without reserve",
       canBid: false,
       bidFloor: minimumBid,
       countdownMs

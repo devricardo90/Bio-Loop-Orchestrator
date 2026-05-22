@@ -6,8 +6,11 @@ import { submitBidToApi } from "../lib/bid-api";
 import { fetchBuyerAuctionDetail, fetchBuyerFeed, type BuyerBidSubmitResult } from "../lib/buyer-api";
 import {
   formatCountdown,
+  formatAuctionStatusLabel,
+  formatStorageLabel,
   formatSek,
   formatSyncTime,
+  formatTagLabel,
   formatTimeWindow,
   getAuctionRuntime,
   getFeaturedAuction,
@@ -189,9 +192,9 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
     return (
       <main className="app-shell">
         <WorkspaceState
-          eyebrow="Buyer API"
+          eyebrow="Buyer workspace"
           title="Loading buyer workspace."
-          description="The live buyer feed and auction detail are loading from the API."
+          description="The buyer feed and auction detail are loading from the product workspace."
           tone="loading"
         />
       </main>
@@ -202,7 +205,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
     return (
       <main className="app-shell">
         <WorkspaceState
-          eyebrow="Buyer API"
+          eyebrow="Buyer workspace"
           title="Unable to load the buyer workspace."
           description={error}
           tone="error"
@@ -219,7 +222,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
         <WorkspaceState
           eyebrow="Buyer workspace"
           title="No buyer data available."
-          description="The live API returned no buyer workspace records for the current session."
+          description="No buyer workspace records are available for the current session."
           tone="empty"
           primaryAction={{ label: "Back to login", href: "/login" }}
           secondaryAction={{ label: "Reload workspace", onClick: () => void reloadWorkspace() }}
@@ -235,7 +238,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
           <p className="eyebrow">Buyer operations</p>
           <h1>{mode === "feed" ? "A feed built for industrial buyers." : "Auction view with contract-safe bidding."}</h1>
           <p className="lead">
-            The buyer feed and auction detail are loaded from the live API. Bids stay disabled until the auction is
+            The buyer feed and auction detail use live product data. Bids stay disabled until the auction is
             live and the active buyer is approved.
           </p>
           <div className="journey-banner">
@@ -244,7 +247,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
               <strong>{mode === "feed" ? "Feed -> live auction -> pickup" : "Auction detail inside the buyer path"}</strong>
               <p>
                 {mode === "feed"
-                  ? "Use this workspace first in the demo. It shows where buyers discover lots, verify source=api, and continue into pickup."
+                  ? "Use this workspace first in the demo. It shows where buyers discover lots, confirm live product data, and continue into pickup."
                   : "This detail view is where the buyer path proves contract-safe bidding without leaving the validated runtime."}
               </p>
             </div>
@@ -258,7 +261,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
             <span className="chip chip-accent">{formatSyncTime(workspace.lastSyncedAt)}</span>
             <span className="chip">{workspace.auctions.length} auctions tracked</span>
             <span className="chip">{activeBuyerApproved ? "Buyer approved" : "Buyer pending"}</span>
-            <span className="chip">source=api</span>
+            <span className="chip">Live data</span>
           </div>
           <div className="hero-meta">
             <Link href="/buyer/orders" className="button button-secondary">
@@ -325,7 +328,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
           <article className="panel context-card">
             <p className="eyebrow">What to verify</p>
             <ul className="feature-list">
-              <li>Confirm `source=api` before discussing the rest of the demo</li>
+              <li>Confirm live product data before discussing the rest of the demo</li>
               <li>Open a live auction from the spotlight or feed list</li>
               <li>Use pick-up queue as the operational continuation after award</li>
             </ul>
@@ -351,7 +354,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
                   className={`filter-chip ${filter === value ? "filter-chip-active" : ""}`}
                   onClick={() => setFilter(value)}
                 >
-                  {value}
+                  {formatAuctionStatusLabel(value)}
                 </button>
               ))}
             </div>
@@ -363,7 +366,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
                 <WorkspaceState
                   eyebrow="No matching auctions"
                   title="No auctions match this filter."
-                  description="Switch filters or reload the workspace to inspect the current buyer feed from the API."
+                  description="Switch filters or reload the workspace to inspect the current buyer feed."
                   tone="empty"
                   statusLabel="Filter empty"
                   secondaryAction={{ label: "Show all", onClick: () => setFilter("ALL") }}
@@ -399,8 +402,8 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
 
           <ApiReferencePanel
             workspace="buyer"
-            title="Trace buyer API behavior"
-            description="Use the live API reference to inspect the feed, auction detail, and bid contract while validating buyer operations."
+            title="Trace buyer workflow"
+            description="Open the product reference when you need to inspect feed, auction detail, or bid behavior while validating buyer operations."
           />
         </section>
       ) : (
@@ -428,7 +431,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
                 <h2>{spotlight.categoryName}</h2>
               </div>
               <span className={`status-badge status-${getAuctionRuntime(spotlight, now).statusTone.toLowerCase()}`}>
-                {getAuctionRuntime(spotlight, now).statusLabel}
+                {formatAuctionStatusLabel(getAuctionRuntime(spotlight, now).statusLabel)}
               </span>
             </div>
 
@@ -441,7 +444,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
               </div>
               <div>
                 <span className="label">Storage</span>
-                <strong>{spotlight.lot.storageCondition}</strong>
+                <strong>{formatStorageLabel(spotlight.lot.storageCondition)}</strong>
               </div>
               <div>
                 <span className="label">Pickup window</span>
@@ -509,7 +512,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
                         <strong>{auction.categoryName}</strong>
                         <small>{auction.storeName}</small>
                       </span>
-                      <span>{getAuctionRuntime(auction, now).statusLabel}</span>
+                      <span>{formatAuctionStatusLabel(getAuctionRuntime(auction, now).statusLabel)}</span>
                     </Link>
                 ))}
               </div>
@@ -517,8 +520,8 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
 
             <ApiReferencePanel
               workspace="buyer"
-              title="Cross-check the auction contract"
-              description="Open the API reference when you need to verify bid validation, payload shapes, or the live buyer read-model."
+              title="Cross-check the auction flow"
+              description="Open the product reference when you need to verify bid validation or the live buyer read-model."
             />
           </div>
         </section>
@@ -536,7 +539,7 @@ function AuctionCard({ auction, now }: { auction: DemoAuctionRecord; now: number
           <p className="eyebrow">{auction.categoryName}</p>
           <h3>{auction.storeName}</h3>
         </div>
-        <span className={`status-badge status-${runtime.statusTone.toLowerCase()}`}>{runtime.statusLabel}</span>
+        <span className={`status-badge status-${runtime.statusTone.toLowerCase()}`}>{formatAuctionStatusLabel(runtime.statusLabel)}</span>
       </div>
 
       <p className="muted buyer-card-summary">{auction.summary}</p>
@@ -571,7 +574,7 @@ function AuctionCard({ auction, now }: { auction: DemoAuctionRecord; now: number
       <div className="tag-row">
         {auction.tags.map((tag) => (
           <span key={tag} className="chip chip-muted">
-            {tag}
+            {formatTagLabel(tag)}
           </span>
         ))}
       </div>

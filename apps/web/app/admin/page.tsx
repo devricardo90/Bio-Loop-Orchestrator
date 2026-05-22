@@ -63,14 +63,14 @@ export default function AdminHomePage() {
               </li>
               <li>
                 <strong>Finish with dataset clarity</strong>
-                <span>Use `catalogScope` and badges to explain demo versus real records clearly.</span>
+                <span>Use catalog filters and badges to explain demo versus real records clearly.</span>
               </li>
             </ol>
             <ul className="feature-list">
               <li>Open buyers first to show approvals on the live admin surface</li>
-              <li>Use `catalogScope` and dataset badges to explain real versus demo records</li>
+              <li>Use catalog filters and dataset badges to explain real versus demo records</li>
               <li>Move to disputes to show the operational loop closing without dead-ends</li>
-              <li>Jump to `/reference` whenever the audience asks for contract-level confirmation</li>
+              <li>Open system docs whenever the audience asks for workflow-level confirmation</li>
             </ul>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function AdminHomePage() {
           <ul className="feature-list">
             <li>Use buyer approvals to frame operational access and control</li>
             <li>Use disputes as the proof that the loop can close without dead-ends</li>
-            <li>Keep `catalogScope` and dataset badges visible when discussing real versus demo</li>
+            <li>Keep catalog filters and dataset badges visible when discussing real versus demo</li>
           </ul>
         </article>
       </section>

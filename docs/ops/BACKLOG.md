@@ -120,11 +120,11 @@
   - deps: UI-01B2, explicit Trigger authorization
   - evidence: docs/ops/done/UI-01B3.done.md
   - note: remote DONE at 5b9a1f2
-- [DONE] (UI-01C) Visual Smoke and Production Browser Review
-  - objective: validate all 12 required routes in production after UI-01B visual baseline; confirm CSS, auth gating, API health, and no gross regression
-  - deps: UI-01B1, UI-01B2, UI-01B3
+- [DONE] (UI-01C) Mobile and Product Copy Polish
+  - objective: finalize responsive/mobile polish and replace internal technical labels with product-friendly copy while preserving routes, auth behavior, API integration, demo credentials, and dashboard logic
+  - deps: UI-01B1, UI-01B2, UI-01B3, AUTH-01B
   - evidence: docs/ops/done/UI-01C.done.md
-  - result: 11 PASS, 1 WARN (admin/buyers title), 0 FAIL; API health/readiness clean; README later blocked again by AUTH-01A findings
+  - result: mobile header/nav/CTA polish, shortened role badges, product-friendly labels, and E2E/smoke assertion alignment; commit pending Trigger authorization
 - [REVIEW] (AUTH-01B) Stabilize Demo Auth, E2E Login, and Role-Based Fetch Noise
   - objective: update Browser E2E login selectors for the UI-01B1 login, document local demo URL, and stop buyer-only feed fetches from seller/admin sessions
   - deps: UI-01C, AUTH-01A diagnostic

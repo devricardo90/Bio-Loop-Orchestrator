@@ -57,7 +57,7 @@ export default function SellerHomePage() {
               </li>
             </ol>
             <ul className="feature-list">
-              <li>Review listed lots after the buyer path has already proved source=api</li>
+              <li>Review listed lots after the buyer path has already confirmed live product data</li>
               <li>Inspect results and settlement-ready outcomes as the seller-side continuation of the story</li>
               <li>Open reports to show export-ready operational evidence</li>
               <li>Use lot and result detail pages to answer follow-up questions without leaving the seller flow</li>

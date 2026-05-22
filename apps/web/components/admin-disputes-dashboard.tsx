@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import { formatAuthRoleLabel } from "../lib/auth-api";
 import { useAuthSession } from "./auth-session";
 import {
   listAdminDisputes,
@@ -11,7 +12,7 @@ import {
   type DisputeResolutionDecision,
   type DisputeStatus
 } from "../lib/admin-api";
-import { formatDateSafe } from "../lib/demo-auctions";
+import { formatDateSafe, formatEnumLabel } from "../lib/demo-auctions";
 import { ApiReferencePanel } from "./api-reference-panel";
 import { WorkspaceState } from "./workspace-state";
 
@@ -72,7 +73,7 @@ export function AdminDisputesDashboard() {
         setDisputes(
           payload.disputes.map((item) => ({
             ...item,
-            note: item.status === "OPEN" ? "Live admin dispute from API." : "Resolved or cancelled on the API."
+            note: item.status === "OPEN" ? "Open admin dispute." : "Resolved or cancelled."
           }))
         );
       } catch (err) {
@@ -145,7 +146,7 @@ export function AdminDisputesDashboard() {
                 ...entry,
                 status: result.dispute.status,
                 resolvedAt: result.dispute.resolvedAt,
-                note: decision === "ESCALATE" ? "Escalated via the live API." : "Resolved via the live API."
+                note: decision === "ESCALATE" ? "Escalated for follow-up." : "Resolved in the workspace."
               }
             : entry
         )
@@ -153,8 +154,8 @@ export function AdminDisputesDashboard() {
 
       setMessage(
         decision === "ESCALATE"
-          ? "Dispute escalated. The API keeps it open for follow-up."
-          : `Dispute ${dispute.id} updated through the admin API.`
+          ? "Dispute escalated and kept open for follow-up."
+          : `Dispute ${dispute.id} updated in the admin workspace.`
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to update dispute.");
@@ -169,7 +170,7 @@ export function AdminDisputesDashboard() {
         <WorkspaceState
           eyebrow="Admin disputes"
           title="Loading admin disputes workspace."
-          description="The dispute queue is loading from the admin API."
+          description="The dispute queue is loading from the admin workspace."
           tone="loading"
         />
       </main>
@@ -183,14 +184,14 @@ export function AdminDisputesDashboard() {
           <p className="eyebrow">Admin disputes</p>
           <h1>Resolve and monitor disputes without leaving the cockpit.</h1>
           <p className="lead">
-            The disputes panel uses the live admin API and can reveal both seeded disputes and the imported queue from the
+            The disputes panel uses the live admin workspace and can reveal both seeded disputes and the imported queue from the
             Sweden Supermarkets dataset.
           </p>
 
           <div className="hero-meta">
-            <span className="chip chip-accent">{session ? session.roleLabel : "Admin session"}</span>
+            <span className="chip chip-accent">{session ? formatAuthRoleLabel(session.roleLabel) : "Admin session"}</span>
             <span className="chip">{visibleDisputes.length} visible</span>
-            <span className="chip">{loading ? "Loading disputes..." : "Live API"}</span>
+            <span className="chip">{loading ? "Loading disputes..." : "Live data"}</span>
             <span className="chip chip-muted">{scopeCounts.demo} demo</span>
             <span className="chip chip-muted">{scopeCounts.real} real</span>
           </div>
@@ -266,7 +267,7 @@ export function AdminDisputesDashboard() {
           ["Open", counts.OPEN],
           ["Resolved", counts.RESOLVED],
           ["Cancelled", counts.CANCELLED],
-          ["Source", "API"]
+          ["Data", "Live"]
         ].map(([label, value]) => (
           <article key={String(label)} className="metric-card admin-metric-card">
             <span className="label">{label}</span>
@@ -288,9 +289,9 @@ export function AdminDisputesDashboard() {
             <WorkspaceState
               eyebrow="No disputes"
               title="No disputes match the current filter."
-              description="Switch filters or create a new dispute in the API."
+              description="Switch filters or create a new dispute from the workspace flow."
               tone={error ? "error" : "empty"}
-              statusLabel={error ? "Dispute API error" : "Dispute queue empty"}
+              statusLabel={error ? "Dispute workspace error" : "Dispute queue empty"}
               primaryAction={{ label: "Admin hub", href: "/admin" }}
               secondaryAction={{ label: "Retry", onClick: () => void refreshDisputes(filter), disabled: loading }}
             />
@@ -300,12 +301,12 @@ export function AdminDisputesDashboard() {
                 <div className="seller-card-top admin-review-head">
                   <div>
                     <p className="eyebrow">{dispute.orderId}</p>
-                    <h3>{dispute.reason.replace("_", " ").toLowerCase()}</h3>
+                    <h3>{formatEnumLabel(dispute.reason)}</h3>
                     <p className="muted">Opened {formatDateSafe(dispute.openedAt)}</p>
                   </div>
 
                   <span className={`status-badge status-${dispute.status.toLowerCase()}`}>
-                    {dispute.status}
+                    {formatEnumLabel(dispute.status)}
                   </span>
                 </div>
 
@@ -319,8 +320,8 @@ export function AdminDisputesDashboard() {
                     <strong>{formatDateSafe(dispute.resolvedAt, "Still open")}</strong>
                   </div>
                   <div>
-                    <span className="label">Source</span>
-                    <strong>{dispute.catalog.source}</strong>
+                    <span className="label">Catalog</span>
+                    <strong>{dispute.catalog.dataset}</strong>
                   </div>
                 </div>
 
@@ -343,13 +344,13 @@ export function AdminDisputesDashboard() {
                   </button>
                 </div>
                 <p className="muted small admin-action-note">
-                  Resolving a dispute is final. Both parties will be notified via the live API events.
+                  Resolving a dispute is final. Both parties will be notified by the workspace events.
                 </p>
 
                 <div className="seller-card-grid admin-detail-grid">
                   <div>
                     <span className="label">Status</span>
-                    <strong>{dispute.status}</strong>
+                    <strong>{formatEnumLabel(dispute.status)}</strong>
                   </div>
                   <div>
                     <span className="label">Resolved at</span>
@@ -357,7 +358,7 @@ export function AdminDisputesDashboard() {
                   </div>
                   <div>
                     <span className="label">Reason</span>
-                    <strong>{dispute.reason}</strong>
+                    <strong>{formatEnumLabel(dispute.reason)}</strong>
                   </div>
                   <div>
                     <span className="label">Note</span>
@@ -372,8 +373,7 @@ export function AdminDisputesDashboard() {
                   </span>
 
                   <p className="muted catalog-context">
-                    Source: {dispute.catalog.source} -{" "}
-                    {dispute.catalog.visibleByDefault ? "Visible by default" : "Visible when catalogScope matches"}
+                    {dispute.catalog.visibleByDefault ? "Visible in default review" : "Visible when this catalog is selected"}
                   </p>
                 </div>
 
@@ -402,11 +402,11 @@ export function AdminDisputesDashboard() {
         </div>
 
         <p className={`message status-message status-message-error ${error ? "message-visible" : ""}`} aria-live="polite">
-          {error ? `API unavailable: ${error}` : ""}
+          {error ? `Workspace unavailable: ${error}` : ""}
         </p>
 
         <p className={`message status-message status-message-loading ${loading ? "message-visible" : ""}`} aria-live="polite">
-          {loading ? "Loading disputes from the API..." : ""}
+          {loading ? "Loading disputes..." : ""}
         </p>
 
         <p className={`message status-message status-message-success ${message ? "message-visible" : ""}`} aria-live="polite">
@@ -416,8 +416,8 @@ export function AdminDisputesDashboard() {
 
       <ApiReferencePanel
         workspace="admin-disputes"
-        title="Verify dispute resolution contracts"
-        description="Use the live API reference to inspect the dispute list and resolution endpoints while validating admin actions."
+        title="Verify dispute workflow"
+        description="Open the product reference when you need to inspect dispute list and resolution behavior while validating admin actions."
       />
     </main>
   );

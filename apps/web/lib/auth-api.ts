@@ -57,6 +57,18 @@ function mapRoleToPersona(role: WebAuthRole): WebAuthPersona {
   return "admin";
 }
 
+export function formatAuthRoleLabel(role: WebAuthRole) {
+  if (role.startsWith("BUYER")) {
+    return "Buyer workspace";
+  }
+
+  if (role.startsWith("SELLER")) {
+    return "Seller workspace";
+  }
+
+  return "Admin workspace";
+}
+
 function createWebSession(payload: LoginResponse, authenticatedAt: string) {
   return {
     userId: payload.user.id,

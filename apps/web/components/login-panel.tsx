@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { loginWithPersona, type WebAuthPersona } from "../lib/auth-api";
+import { formatAuthRoleLabel, loginWithPersona, type WebAuthPersona } from "../lib/auth-api";
 import { getWorkspaceHomeRoute } from "../lib/route-access";
 import { useAuthSession } from "./auth-session";
 
@@ -130,7 +130,7 @@ export function LoginPanel() {
               void loginWithPersona({ email, password, persona })
                 .then((nextSession) => {
                   signIn(nextSession);
-                  setMessage(`Signed in as ${nextSession.roleLabel}. Redirecting...`);
+                  setMessage(`Signed in to ${formatAuthRoleLabel(nextSession.roleLabel)}. Redirecting...`);
                   router.replace(nextRoute || getWorkspaceHomeRoute(nextSession.role));
                   router.refresh();
                 })
@@ -179,8 +179,8 @@ export function LoginPanel() {
           >
             {message ||
               (session
-                ? `You are already signed in as ${session.roleLabel}.`
-                : "Use the seeded demo credentials to establish an API-backed session.")}
+                ? `You are already signed in to ${formatAuthRoleLabel(session.roleLabel)}.`
+                : "Use the seeded demo credentials to start a live product session.")}
           </p>
         </form>
 

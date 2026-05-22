@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { getAuctionRuntime, formatSek, type DemoAuctionRecord, type DemoBuyer } from "../lib/demo-auctions";
+import { formatAuctionStatusLabel, getAuctionRuntime, formatSek, type DemoAuctionRecord, type DemoBuyer } from "../lib/demo-auctions";
 import type { BuyerBidSubmitResult } from "../lib/buyer-api";
 
 type BidPanelProps = {
@@ -30,9 +30,10 @@ export function BidPanel({ auction, buyer, now, onSubmit }: BidPanelProps) {
   const numericPrice = Number(price);
   const priceIsValid = Number.isFinite(numericPrice) && numericPrice >= runtime.bidFloor;
   const actionDisabled = !runtime.canBid || !buyer.approved || !priceIsValid || isPending;
+  const runtimeLabel = formatAuctionStatusLabel(runtime.statusLabel);
 
   const disabledReason = !runtime.canBid
-    ? `Bidding closed because the auction is ${runtime.statusLabel}.`
+    ? `Bidding closed because the auction is ${runtimeLabel}.`
     : !buyer.approved
       ? "This buyer profile is pending approval."
       : !priceIsValid
@@ -48,7 +49,7 @@ export function BidPanel({ auction, buyer, now, onSubmit }: BidPanelProps) {
     startTransition(() => {
       void onSubmit(numericPrice).then((result) => {
         if (result.ok) {
-          setMessage(`Bid accepted by the API at ${formatSek(result.bid.priceSekPerKg)}.`);
+          setMessage(`Bid accepted at ${formatSek(result.bid.priceSekPerKg)}.`);
           return;
         }
 
@@ -64,7 +65,7 @@ export function BidPanel({ auction, buyer, now, onSubmit }: BidPanelProps) {
           <p className="eyebrow">Bid panel</p>
           <h2>Place a live bid</h2>
         </div>
-        <span className={`status-badge status-${runtime.statusTone.toLowerCase()}`}>{runtime.statusLabel}</span>
+        <span className={`status-badge status-${runtime.statusTone.toLowerCase()}`}>{runtimeLabel}</span>
       </div>
 
       <div className="info-grid">
@@ -98,7 +99,7 @@ export function BidPanel({ auction, buyer, now, onSubmit }: BidPanelProps) {
       </button>
 
       <p className={`message ${message ? "message-visible" : ""}`} aria-live="polite">
-        {message || disabledReason || "Bids are validated locally before the API call is sent to the live backend."}
+        {message || disabledReason || "Bids are checked before they are submitted to the live workspace."}
       </p>
     </section>
   );

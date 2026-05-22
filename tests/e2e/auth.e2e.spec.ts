@@ -5,15 +5,15 @@ test("buyer can log in and open the live auction surface", async ({ page }) => {
   await loginAs(page, "buyer");
 
   await expect(page.getByRole("heading", { name: "A feed built for industrial buyers." })).toBeVisible();
-  await expect(page.locator("span.chip").filter({ hasText: "source=api" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "API reference" })).toBeVisible();
+  await expect(page.locator("span.chip").filter({ hasText: "Live data" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "System docs" })).toBeVisible();
 
   await page.goto("/buyer/auctions/auction-husks-01");
 
   await expect(page.getByRole("heading", { name: "Auction view with contract-safe bidding." })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Place a live bid" })).toBeVisible();
   await expect(page.getByText("Approved buyer")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Open /reference" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Open system reference" })).toBeVisible();
 });
 
 test("seller is redirected away from the admin workspace by the route guard", async ({ page }) => {

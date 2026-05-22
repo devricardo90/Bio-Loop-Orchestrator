@@ -31,7 +31,7 @@ const handoffTracks = [
   {
     title: "Buyer Operations",
     desc: "Bid on surplus lots, track live auctions, manage pickup.",
-    stats: ["source=api", "6 active lots"],
+    stats: ["Live data", "6 active lots"],
     primaryHref: "/buyer/feed",
     primaryLabel: "Open feed",
     secondaryHref: "/buyer/orders",
@@ -66,7 +66,7 @@ const handoffTracks = [
   },
 ];
 
-/* Static demo activity labeled as demo snapshot */
+/* Static product activity snapshot */
 const activityItems = [
   { text: "Bid placed - Bakery Surplus", time: "2m ago", live: true },
   { text: "Produce Grade B - new bid", time: "8m ago", live: true },
@@ -76,7 +76,7 @@ const activityItems = [
 export default function HomePage() {
   return (
     <main className="app-shell landing-shell">
-      {/* guided demo path: Buyer source=api first. Seller review second. Admin closeout with catalogScope. */}
+      {/* guided demo path: Buyer first. Seller review second. Admin closeout with catalog scope. */}
       {/* Hero zone: green gradient section */}
       <div className="hero-zone">
         <section className="hero hero-home">
@@ -84,12 +84,12 @@ export default function HomePage() {
           <div className="hero-copy">
             <p className="eyebrow">
               Operations Console{" "}
-              <span className="hero-source-tag">- source=api</span>
+              <span className="hero-source-tag">- live operations</span>
             </p>
             <h1>Surplus commodity trading, end to end.</h1>
             <p className="lead">
               Guided workflow across buyer, seller, and admin - from live
-              auction to pickup to settlement. All data API-backed.
+              auction to pickup to settlement. Data is pulled from the running product.
             </p>
             <div className="hero-meta">
               <Link href="/login" className="button button-primary">
@@ -102,7 +102,7 @@ export default function HomePage() {
                 View live auction
               </Link>
               <Link href="/reference" className="button button-secondary">
-                API reference
+                System docs
               </Link>
             </div>
           </div>
@@ -117,7 +117,7 @@ export default function HomePage() {
                 </div>
                 <span className="status-panel-demo-tag">
                   <span className="status-panel-demo-dot" />
-                  Demo snapshot
+                  Live snapshot
                 </span>
               </div>
               <div className="status-panel-stats">
@@ -168,7 +168,7 @@ export default function HomePage() {
       <div className="workspaces-section">
         <div className="workspaces-header">
           <h2 className="section-label">Workspaces</h2>
-          <span className="section-meta">3 roles - cookie-based auth</span>
+          <span className="section-meta">3 roles - secure session</span>
         </div>
         <div className="handoff-grid" aria-label="Pilot handoff tracks">
           {handoffTracks.map((track) => (

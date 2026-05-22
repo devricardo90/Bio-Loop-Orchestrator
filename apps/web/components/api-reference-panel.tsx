@@ -13,17 +13,17 @@ export function ApiReferencePanel({ workspace, title, description }: ApiReferenc
 
   return (
     <aside className="panel api-reference-panel">
-      <p className="eyebrow">API reference</p>
+      <p className="eyebrow">System reference</p>
       <h2>{title}</h2>
       <p className="muted">{description}</p>
 
       <div className="status-timeline">
         {topics.map((topic) => (
-          <div key={topic.endpoint} className="timeline-step timeline-step-complete">
+          <div key={topic.label} className="timeline-step timeline-step-complete">
             <span className="timeline-step-marker" />
             <div>
               <strong>{topic.label}</strong>
-              <p className="muted">{topic.endpoint}</p>
+              <p className="muted">{topic.detail}</p>
             </div>
           </div>
         ))}
@@ -31,10 +31,10 @@ export function ApiReferencePanel({ workspace, title, description }: ApiReferenc
 
       <div className="login-actions">
         <a className="button button-secondary" href={getApiReferenceHref()} target="_blank" rel="noreferrer">
-          Open /reference
+          Open system reference
         </a>
         <a className="button button-secondary" href={getOpenApiJsonHref()} target="_blank" rel="noreferrer">
-          Open openapi.json
+          Open schema
         </a>
       </div>
     </aside>

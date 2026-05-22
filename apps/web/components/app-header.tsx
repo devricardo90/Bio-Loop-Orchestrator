@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { logoutFromApi } from "../lib/auth-api";
+import { formatAuthRoleLabel, logoutFromApi } from "../lib/auth-api";
 import { getApiReferenceHref } from "../lib/api-reference";
 import { getWorkspaceNavigation } from "../lib/route-access";
 import { useAuthSession } from "./auth-session";
@@ -15,7 +15,7 @@ export function AppHeader() {
   const navigation = getWorkspaceNavigation(session?.role ?? null);
 
   const signedInLabel = session
-    ? `${session.roleLabel} | ${session.email}`
+    ? `${formatAuthRoleLabel(session.roleLabel)} | ${session.email}`
     : sessionExpired
       ? "Session expired"
     : hydrated
@@ -29,7 +29,7 @@ export function AppHeader() {
           <p className="eyebrow">Bio Loop</p>
           <strong>Operations console</strong>
         </div>
-        <span className={`chip ${session ? "chip-accent" : ""}`}>{signedInLabel}</span>
+        <span className={`chip app-header-session-chip ${session ? "chip-accent" : ""}`}>{signedInLabel}</span>
       </div>
 
       <nav className="app-header-nav" aria-label="Primary">
@@ -39,7 +39,7 @@ export function AppHeader() {
           </Link>
         ))}
         <a href={getApiReferenceHref()} target="_blank" rel="noreferrer">
-          API reference
+          System docs
         </a>
       </nav>
 

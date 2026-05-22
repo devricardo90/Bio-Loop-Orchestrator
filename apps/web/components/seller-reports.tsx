@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useAuthSession } from "./auth-session";
+import { formatAuthRoleLabel } from "../lib/auth-api";
 import {
   fetchBillingExport,
   fetchBillingSummary,
@@ -74,7 +75,7 @@ export function SellerReports() {
       setState({ summary, exportSnapshot: null });
     } catch (err) {
       setState(null);
-      setError(err instanceof Error ? err.message : "Billing API unavailable.");
+      setError(err instanceof Error ? err.message : "Billing workspace unavailable.");
     } finally {
       setLoading(false);
     }
@@ -114,7 +115,7 @@ export function SellerReports() {
         <WorkspaceState
           eyebrow="Seller billing"
           title="Loading billing workspace."
-          description="The summary snapshot and export surface are loading from the live API."
+          description="The summary snapshot and export surface are loading from the product workspace."
           tone="loading"
         />
       </main>
@@ -128,13 +129,13 @@ export function SellerReports() {
           <p className="eyebrow">Seller billing</p>
           <h1>Invoices, fees, and export for settled orders.</h1>
           <p className="lead">
-            The billing surface mirrors the live API summary and export endpoints with a clear readout of invoices,
+            The billing surface mirrors the live reporting workspace with a clear readout of invoices,
             fees, totals, and export readiness.
           </p>
           <div className="hero-meta">
-            <span className="chip chip-accent">{session ? session.roleLabel : "Seller session"}</span>
+            <span className="chip chip-accent">{session ? formatAuthRoleLabel(session.roleLabel) : "Seller session"}</span>
             <span className="chip">{rangeLabel}</span>
-            <span className="chip">{loading ? "Loading billing..." : "Live API"}</span>
+            <span className="chip">{loading ? "Loading billing..." : "Live data"}</span>
           </div>
           <div className="hero-meta">
             <Link href="/seller" className="button button-secondary">
@@ -236,8 +237,8 @@ export function SellerReports() {
               ) : null}
               <p className="muted">
                 {canUseSellerSession
-                  ? "The export uses the live API and reflects the seeded billing data."
-                  : "Sign in as seller to use the httpOnly auth flow."}
+                  ? "The export uses live report data for the selected billing window."
+                  : "Sign in as seller to use the secure session flow."}
               </p>
             </div>
 
@@ -245,7 +246,7 @@ export function SellerReports() {
               <p className="label">Current status</p>
               <h3>{loading ? "Loading billing snapshot..." : summary ? `${summary.invoiceCount} invoices` : "Waiting for data"}</h3>
               <p className="muted">
-                {state ? "Live report data loaded from the API." : "Refresh the window to load the current billing report."}
+                {state ? "Live report data loaded." : "Refresh the window to load the current billing report."}
               </p>
               <p className={`message ${error ? "message-visible" : ""}`}>{error}</p>
               <p className={`message ${message ? "message-visible" : ""}`} aria-live="polite">
@@ -326,7 +327,7 @@ export function SellerReports() {
               <WorkspaceState
                 eyebrow="No data"
                 title="No billing report is loaded yet."
-                description="Use the selected date range and refresh the reports against the live API."
+                description="Use the selected date range and refresh the reports."
                 tone={error ? "error" : "empty"}
                 secondaryAction={{ label: "Refresh reports", onClick: () => void refreshReports(range), disabled: loading }}
               />
@@ -341,7 +342,7 @@ export function SellerReports() {
             {[
               ["Invoice summary", "Invoice count, subtotal, fees, and total for the selected window."],
               ["CSV/JSON export", "A direct export snapshot that can be downloaded or piped into reporting."],
-              ["Live API", "The surface now reads only from the seeded API data."]
+              ["Live data", "The surface reads from the current billing workspace."]
             ].map(([label, description]) => (
               <div key={label} className="timeline-step timeline-step-complete">
                 <span className="timeline-step-marker" />
@@ -356,8 +357,8 @@ export function SellerReports() {
 
         <ApiReferencePanel
           workspace="seller-billing"
-          title="Verify billing contracts"
-          description="Use the live API reference to inspect the summary and export endpoints while checking seller billing output."
+          title="Verify billing workflow"
+          description="Open the product reference when you need to inspect summary and export behavior while checking seller billing output."
         />
       </section>
     </main>
