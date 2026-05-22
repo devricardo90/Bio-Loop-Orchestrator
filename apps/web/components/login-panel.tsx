@@ -88,108 +88,130 @@ export function LoginPanel() {
   return (
     <main className="app-shell login-shell">
       <div className="login-center">
-        {/* Card header */}
-        <div className="login-card-header">
-          <p className="eyebrow">Bio Loop</p>
-          <h2>Sign in</h2>
-          <p className="login-card-sub">Select workspace and enter credentials</p>
-        </div>
+        <aside className="login-support-panel" aria-label="Workspace access summary">
+          <div>
+            <p className="eyebrow">Bio Loop access</p>
+            <h2>One entry point for every operating lane.</h2>
+            <p className="login-support-copy">
+              Sign in to review the live demo workspace with demo credentials, role-aware routing,
+              and session handling already wired into the product flow.
+            </p>
+          </div>
 
-        {/* Role segmented control */}
-        <div className="role-tabs">
-          {personaActions.map((action) => (
+          <div className="login-persona-preview">
+            <span className="login-preview-kicker">Selected workspace</span>
+            <strong>{activeAction.title}</strong>
+            <p>{activeAction.subtitle}</p>
+          </div>
+
+          <div className="login-support-steps" aria-label="Login flow summary">
+            <span>Choose workspace</span>
+            <span>Use demo credentials</span>
+            <span>Enter live session</span>
+          </div>
+        </aside>
+
+        <section className="login-auth-panel" aria-label="Sign in">
+          <div className="login-card-header">
+            <p className="eyebrow">Bio Loop</p>
+            <h2>Sign in</h2>
+            <p className="login-card-sub">Select workspace and enter credentials</p>
+          </div>
+
+          <div className="role-tabs">
+            {personaActions.map((action) => (
+              <button
+                key={action.persona}
+                type="button"
+                className={`role-tab ${persona === action.persona ? "role-tab-active" : ""}`}
+                style={persona === action.persona ? { color: getPersonaColor(action.persona) } : undefined}
+                onClick={() => {
+                  setPersona(action.persona);
+                  setEmail(
+                    action.persona === "buyer"
+                      ? "buyer.admin@bioloop.dev"
+                      : action.persona === "seller"
+                        ? "seller.admin@bioloop.dev"
+                        : "platform.admin@bioloop.dev"
+                  );
+                  setMessage("");
+                }}
+              >
+                {action.persona}
+              </button>
+            ))}
+          </div>
+
+          <form
+            className="login-form-card"
+            onSubmit={(event) => {
+              event.preventDefault();
+
+              startTransition(() => {
+                void loginWithPersona({ email, password, persona })
+                  .then((nextSession) => {
+                    signIn(nextSession);
+                    setMessage(`Signed in to ${formatAuthRoleLabel(nextSession.roleLabel)}. Redirecting...`);
+                    router.replace(nextRoute || getWorkspaceHomeRoute(nextSession.role));
+                    router.refresh();
+                  })
+                  .catch((error: unknown) => {
+                    setMessage(error instanceof Error ? error.message : "Unable to sign in.");
+                  });
+              });
+            }}
+          >
+            <label className="field">
+              <span>Email</span>
+              <input
+                className="input"
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                autoComplete="email"
+                placeholder="buyer.admin@bioloop.dev"
+              />
+            </label>
+
+            <label className="field">
+              <span>Password</span>
+              <input
+                className="input"
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                autoComplete="current-password"
+                placeholder="demo-password"
+              />
+            </label>
+
             <button
-              key={action.persona}
-              type="button"
-              className={`role-tab ${persona === action.persona ? "role-tab-active" : ""}`}
-              style={persona === action.persona ? { color: getPersonaColor(action.persona) } : undefined}
-              onClick={() => {
-                setPersona(action.persona);
-                setEmail(
-                  action.persona === "buyer"
-                    ? "buyer.admin@bioloop.dev"
-                    : action.persona === "seller"
-                      ? "seller.admin@bioloop.dev"
-                      : "platform.admin@bioloop.dev"
-                );
-                setMessage("");
-              }}
+              className="button button-primary"
+              type="submit"
+              disabled={isPending}
+              style={{ width: "100%" }}
             >
-              {action.persona}
+              {isPending ? "Signing in..." : `Sign in as ${persona}`}
             </button>
-          ))}
-        </div>
 
-        {/* Login form card */}
-        <form
-          className="login-form-card"
-          onSubmit={(event) => {
-            event.preventDefault();
+            <p
+              className={`message ${message ? "message-visible" : ""}`}
+              aria-live="polite"
+            >
+              {message ||
+                (session
+                  ? `You are already signed in to ${formatAuthRoleLabel(session.roleLabel)}.`
+                  : "Use the seeded demo credentials to start a live product session.")}
+            </p>
+          </form>
 
-            startTransition(() => {
-              void loginWithPersona({ email, password, persona })
-                .then((nextSession) => {
-                  signIn(nextSession);
-                  setMessage(`Signed in to ${formatAuthRoleLabel(nextSession.roleLabel)}. Redirecting...`);
-                  router.replace(nextRoute || getWorkspaceHomeRoute(nextSession.role));
-                  router.refresh();
-                })
-                .catch((error: unknown) => {
-                  setMessage(error instanceof Error ? error.message : "Unable to sign in.");
-                });
-            });
-          }}
-        >
-          <label className="field">
-            <span>Email</span>
-            <input
-              className="input"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              autoComplete="email"
-              placeholder="buyer.admin@bioloop.dev"
-            />
-          </label>
-
-          <label className="field">
-            <span>Password</span>
-            <input
-              className="input"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="current-password"
-              placeholder="demo-password"
-            />
-          </label>
-
-          <button
-            className="button button-primary"
-            type="submit"
-            disabled={isPending}
-            style={{ width: "100%" }}
-          >
-            {isPending ? "Signing in..." : `Sign in as ${persona}`}
-          </button>
-
-          <p
-            className={`message ${message ? "message-visible" : ""}`}
-            aria-live="polite"
-          >
-            {message ||
-              (session
-                ? `You are already signed in to ${formatAuthRoleLabel(session.roleLabel)}.`
-                : "Use the seeded demo credentials to start a live product session.")}
-          </p>
-        </form>
-
-        {/* Skip link */}
-        <div className="login-footer-links">
-          <Link className="button button-secondary" href={activeAction.route}>
-            Skip - open {activeAction.persona} workspace
-          </Link>
-        </div>
+          <div className="login-footer-links">
+            <span>Need a quick look?</span>
+            <Link className="login-skip-link" href={activeAction.route}>
+              Preview {activeAction.persona} workspace
+            </Link>
+          </div>
+        </section>
       </div>
     </main>
   );

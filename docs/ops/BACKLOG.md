@@ -125,6 +125,12 @@
   - deps: UI-01B1, UI-01B2, UI-01B3, AUTH-01B
   - evidence: docs/ops/done/UI-01C.done.md
   - result: mobile header/nav/CTA polish, shortened role badges, product-friendly labels, and E2E/smoke assertion alignment; commit pending Trigger authorization
+- [REVIEW] (UI-01D) Login Desktop Layout Polish
+  - objective: make the shared login surface feel intentional on desktop while preserving mobile behavior, tabs, demo credentials, and auth/session flow
+  - deps: UI-01C
+  - evidence: docs/ops/done/UI-01D.done.md
+  - files: apps/web/components/login-panel.tsx, apps/web/app/globals.css
+  - note: local REVIEW pending Trigger commit authorization
 - [REVIEW] (CI-01D) Stabilize Browser E2E after UI-01C Copy Polish
   - objective: update stale E2E assertions that broke after UI-01C humanized enum labels in pickup and admin dashboards
   - deps: UI-01C (commit db626b0)
