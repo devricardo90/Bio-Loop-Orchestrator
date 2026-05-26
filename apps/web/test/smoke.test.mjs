@@ -34,7 +34,7 @@ const adminDisputesDashboard = readFileSync(new URL("../components/admin-dispute
 const sellerView = readFileSync(new URL("../lib/seller-view.ts", import.meta.url), "utf8");
 const pickupView = readFileSync(new URL("../lib/pickup-view.ts", import.meta.url), "utf8");
 
-assert.match(page, /guided demo path/i);
+assert.match(page, /Guided product path/i);
 assert.match(page, /buyer operations/i);
 assert.match(page, /seller operations/i);
 assert.match(page, /admin operations/i);
@@ -51,7 +51,7 @@ assert.match(dashboard, /Live data/);
 assert.match(dashboard, /ApiReferencePanel/);
 assert.match(bidPanel, /Bid panel/i);
 assert.match(sellerHome, /seller overview/i);
-assert.match(sellerHome, /guided demo/i);
+assert.match(sellerHome, /product walkthrough/i);
 assert.match(sellerLotsPage, /SellerDashboard/);
 assert.match(sellerLotDetail, /SellerDashboard/);
 assert.match(sellerResultsPage, /SellerDashboard/);

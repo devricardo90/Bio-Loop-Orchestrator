@@ -93,7 +93,7 @@ export function LoginPanel() {
             <p className="eyebrow">Bio Loop access</p>
             <h2>One entry point for every operating lane.</h2>
             <p className="login-support-copy">
-              Sign in to review the live demo workspace with demo credentials, role-aware routing,
+              Sign in to review the live workspace with role-based credentials, role-aware routing,
               and session handling already wired into the product flow.
             </p>
           </div>
@@ -106,7 +106,7 @@ export function LoginPanel() {
 
           <div className="login-support-steps" aria-label="Login flow summary">
             <span>Choose workspace</span>
-            <span>Use demo credentials</span>
+            <span>Enter credentials</span>
             <span>Enter live session</span>
           </div>
         </aside>
@@ -181,7 +181,7 @@ export function LoginPanel() {
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 autoComplete="current-password"
-                placeholder="demo-password"
+                placeholder="Password"
               />
             </label>
 
@@ -201,7 +201,7 @@ export function LoginPanel() {
               {message ||
                 (session
                   ? `You are already signed in to ${formatAuthRoleLabel(session.roleLabel)}.`
-                  : "Use the seeded demo credentials to start a live product session.")}
+                  : "Enter workspace credentials to start a live product session.")}
             </p>
           </form>
 

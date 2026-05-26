@@ -54,12 +54,12 @@ export function createDemoAdminState(): AdminDemoState {
         status: "APPROVED",
         reputationScore: 92,
         riskLabel: "Low risk",
-        notes: "Approved seed buyer for live auction and pickup scenarios.",
+        notes: "Approved buyer for live auction and pickup workflows.",
         approval: {
           decision: "APPROVE",
           reason: "MANUAL_REVIEW",
           reviewerId: "user_platform_admin",
-          notes: "Approved seed buyer for live auction and pickup scenarios.",
+          notes: "Approved buyer for live auction and pickup workflows.",
           reviewedAt: now
         },
         updatedAt: now

@@ -13,7 +13,7 @@ export default function SellerHomePage() {
           <p className="eyebrow">Seller overview</p>
           <h1>Seller review for lots, outcomes, and reports.</h1>
           <p className="lead">
-            Use seller as the second step of the guided demo. This workspace shows how the same validated baseline
+            Use seller as the second step of the product walkthrough. This workspace shows how the same validated workflow
             supports listed lots, terminal states, and report-ready outputs from the supply side.
           </p>
           <div className="seller-bridge">
@@ -22,7 +22,7 @@ export default function SellerHomePage() {
               <strong>Move here after buyer proves the live path.</strong>
               <p>
                 Seller is where the story shifts from discovery to operational control: listed lots, outcomes, and
-                export-ready evidence on the same baseline.
+                export-ready evidence in the same workflow.
               </p>
             </div>
           </div>

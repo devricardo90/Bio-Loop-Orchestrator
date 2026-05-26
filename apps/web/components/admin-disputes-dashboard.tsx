@@ -34,7 +34,7 @@ const actions: DisputeAction[] = [
 
 const scopeFilters: Array<{ value: CatalogScope; label: string }> = [
   { value: "all", label: "All catalogs" },
-  { value: "demo", label: "Demo only" },
+  { value: "demo", label: "Sample only" },
   { value: "real", label: "Real data only" }
 ];
 
@@ -184,7 +184,7 @@ export function AdminDisputesDashboard() {
           <p className="eyebrow">Admin disputes</p>
           <h1>Resolve and monitor disputes without leaving the cockpit.</h1>
           <p className="lead">
-            The disputes panel uses the live admin workspace and can reveal both seeded disputes and the imported queue from the
+            The disputes panel uses the live admin workspace and can reveal both sample catalog disputes and the imported queue from the
             Sweden Supermarkets dataset.
           </p>
 
@@ -192,7 +192,7 @@ export function AdminDisputesDashboard() {
             <span className="chip chip-accent">{session ? formatAuthRoleLabel(session.roleLabel) : "Admin session"}</span>
             <span className="chip">{visibleDisputes.length} visible</span>
             <span className="chip">{loading ? "Loading disputes..." : "Live data"}</span>
-            <span className="chip chip-muted">{scopeCounts.demo} demo</span>
+            <span className="chip chip-muted">{scopeCounts.demo} sample</span>
             <span className="chip chip-muted">{scopeCounts.real} real</span>
           </div>
 
@@ -213,8 +213,8 @@ export function AdminDisputesDashboard() {
             {catalogScope === "real"
               ? "Showing disputes tied to the real Sweden Supermarkets catalog."
               : catalogScope === "demo"
-                ? "Showing disputes that originate from the seeded demo catalog."
-                : "Showing both demo and real disputes so you can compare how each catalog behaves."}
+                ? "Showing disputes from the sample catalog."
+                : "Showing both sample and real disputes so you can compare how each catalog behaves."}
           </p>
 
           <div className="hero-meta">
@@ -368,7 +368,7 @@ export function AdminDisputesDashboard() {
 
                 <div className="catalog-row">
                   <span className={`catalog-chip catalog-chip-${dispute.catalog.scope}`}>
-                    {dispute.catalog.scope === "real" ? "Real data" : "Demo data"}
+                    {dispute.catalog.scope === "real" ? "Real data" : "Sample data"}
                     <small>{dispute.catalog.dataset}</small>
                   </span>
 

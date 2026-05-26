@@ -76,7 +76,7 @@ const activityItems = [
 export default function HomePage() {
   return (
     <main className="app-shell landing-shell">
-      {/* guided demo path: Buyer first. Seller review second. Admin closeout with catalog scope. */}
+      {/* Guided product path: Buyer first. Seller review second. Admin closeout with catalog scope. */}
       {/* Hero zone: green gradient section */}
       <div className="hero-zone">
         <section className="hero hero-home">
@@ -117,7 +117,7 @@ export default function HomePage() {
                 </div>
                 <span className="status-panel-demo-tag">
                   <span className="status-panel-demo-dot" />
-                  Live snapshot
+                  Live status
                 </span>
               </div>
               <div className="status-panel-stats">

@@ -8,8 +8,8 @@ export default function AdminHomePage() {
           <p className="eyebrow">Admin overview</p>
           <h1>Admin closeout for approvals, disputes, and dataset clarity.</h1>
           <p className="lead">
-            Use admin as the final step of the guided demo. This workspace closes the loop with buyer approvals,
-            dispute handling, and clear separation between demo and real catalog records.
+            Use admin as the final step of the product walkthrough. This workspace closes the loop with buyer approvals,
+            dispute handling, and clear separation between sample and real catalog records.
           </p>
           <div className="admin-bridge">
             <span className="status-badge status-ended">Step 3</span>
@@ -27,7 +27,7 @@ export default function AdminHomePage() {
               <strong>Approvals {"->"} disputes {"->"} dataset clarity</strong>
               <p>
                 Admin should read like the closing layer of the product: who gets access, how exceptions are handled,
-                and how real versus demo data stays explicit.
+                and how sample versus real data stays explicit.
               </p>
             </div>
             <div className="journey-banner-steps">
@@ -63,12 +63,12 @@ export default function AdminHomePage() {
               </li>
               <li>
                 <strong>Finish with dataset clarity</strong>
-                <span>Use catalog filters and badges to explain demo versus real records clearly.</span>
+                <span>Use catalog filters and badges to explain sample versus real records clearly.</span>
               </li>
             </ol>
             <ul className="feature-list">
               <li>Open buyers first to show approvals on the live admin surface</li>
-              <li>Use catalog filters and dataset badges to explain real versus demo records</li>
+              <li>Use catalog filters and dataset badges to explain sample versus real records</li>
               <li>Move to disputes to show the operational loop closing without dead-ends</li>
               <li>Open system docs whenever the audience asks for workflow-level confirmation</li>
             </ul>
@@ -81,7 +81,7 @@ export default function AdminHomePage() {
           <h2>Admin turns the product story into controlled operations.</h2>
           <p className="muted">
             After buyer proves demand and seller proves inventory control, admin explains governance, exception
-            handling, and the visible boundary between demo and real data.
+            handling, and the visible boundary between sample and real data.
           </p>
         </article>
         <article className="panel context-card">
@@ -89,7 +89,7 @@ export default function AdminHomePage() {
           <ul className="feature-list">
             <li>Use buyer approvals to frame operational access and control</li>
             <li>Use disputes as the proof that the loop can close without dead-ends</li>
-            <li>Keep catalog filters and dataset badges visible when discussing real versus demo</li>
+            <li>Keep catalog filters and dataset badges visible when discussing sample versus real</li>
           </ul>
         </article>
       </section>

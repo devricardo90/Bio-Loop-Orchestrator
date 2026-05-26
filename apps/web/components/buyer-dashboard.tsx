@@ -247,7 +247,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
               <strong>{mode === "feed" ? "Feed -> live auction -> pickup" : "Auction detail inside the buyer path"}</strong>
               <p>
                 {mode === "feed"
-                  ? "Use this workspace first in the demo. It shows where buyers discover lots, confirm live product data, and continue into pickup."
+                  ? "Use this workspace first in the product walkthrough. It shows where buyers discover lots, confirm live product data, and continue into pickup."
                   : "This detail view is where the buyer path proves contract-safe bidding without leaving the validated runtime."}
               </p>
             </div>
@@ -328,7 +328,7 @@ export function BuyerDashboard({ mode, auctionId }: BuyerDashboardProps) {
           <article className="panel context-card">
             <p className="eyebrow">What to verify</p>
             <ul className="feature-list">
-              <li>Confirm live product data before discussing the rest of the demo</li>
+              <li>Confirm live product data before discussing the rest of the workflow</li>
               <li>Open a live auction from the spotlight or feed list</li>
               <li>Use pick-up queue as the operational continuation after award</li>
             </ul>

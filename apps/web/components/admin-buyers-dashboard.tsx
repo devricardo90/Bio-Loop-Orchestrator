@@ -35,7 +35,7 @@ const actions: BuyerAction[] = [
 
 const scopeFilters: Array<{ value: CatalogScope; label: string }> = [
   { value: "all", label: "All catalogs" },
-  { value: "demo", label: "Demo only" },
+  { value: "demo", label: "Sample only" },
   { value: "real", label: "Real data only" }
 ];
 
@@ -186,7 +186,7 @@ export function AdminBuyersDashboard() {
           <p className="eyebrow">Admin buyers</p>
           <h1>Approve and review buyers before they hit the trade surface.</h1>
           <p className="lead">
-            The buyer registry is loaded from the admin workspace and can surface both seeded demo records and the imported Sweden
+            The buyer registry is loaded from the admin workspace and can surface both sample catalog records and the imported Sweden
             Supermarkets dataset when you choose.
           </p>
           <div className="hero-meta">
@@ -194,7 +194,7 @@ export function AdminBuyersDashboard() {
             <span className="chip">{loading ? "Loading buyers..." : `${buyers.length} buyers loaded`}</span>
             <span className="chip">{buyers.length} buyers tracked</span>
             <span className="chip">Reviewer: {reviewerId}</span>
-            <span className="chip chip-muted">{scopeCounts.demo} demo</span>
+            <span className="chip chip-muted">{scopeCounts.demo} sample</span>
             <span className="chip chip-muted">{scopeCounts.real} real</span>
           </div>
           <div className="filter-row">
@@ -213,8 +213,8 @@ export function AdminBuyersDashboard() {
             {catalogScope === "real"
               ? "Showing buyers flagged as real data by the Sweden Supermarkets import."
               : catalogScope === "demo"
-              ? "Showing seeded demo buyers only."
-              : "Showing demo and real buyers together; use the filters to focus on one catalog."}
+              ? "Showing buyers from the sample catalog only."
+              : "Showing sample and real buyers together; use the filters to focus on one catalog."}
           </p>
           <div className="hero-meta">
             <Link href="/admin" className="button button-secondary">
@@ -338,7 +338,7 @@ export function AdminBuyersDashboard() {
 
                 <div className="catalog-row">
                   <span className={`catalog-chip catalog-chip-${buyer.catalog.scope}`}>
-                    {buyer.catalog.scope === "real" ? "Real data" : "Demo data"}
+                    {buyer.catalog.scope === "real" ? "Real data" : "Sample data"}
                     <small>{buyer.catalog.dataset}</small>
                   </span>
                   <p className="muted catalog-context">

@@ -14,13 +14,11 @@ export function AppHeader() {
   const [isPending, startTransition] = useTransition();
   const navigation = getWorkspaceNavigation(session?.role ?? null);
 
-  const signedInLabel = session
+  const sessionLabel = session
     ? `${formatAuthRoleLabel(session.roleLabel)} | ${session.email}`
     : sessionExpired
       ? "Session expired"
-    : hydrated
-      ? "Demo mode"
-      : "Loading session...";
+      : null;
 
   return (
     <header className="app-header">
@@ -29,7 +27,9 @@ export function AppHeader() {
           <p className="eyebrow">Bio Loop</p>
           <strong>Operations console</strong>
         </div>
-        <span className={`chip app-header-session-chip ${session ? "chip-accent" : ""}`}>{signedInLabel}</span>
+        {sessionLabel ? (
+          <span className={`chip app-header-session-chip ${session ? "chip-accent" : ""}`}>{sessionLabel}</span>
+        ) : null}
       </div>
 
       <nav className="app-header-nav" aria-label="Primary">

@@ -131,7 +131,7 @@ export function AuctionStoreProvider({
 
         setState(feed);
       } catch {
-        // keep demo state when API is unavailable
+        // Keep local workspace state when API is unavailable.
       }
     }
 
@@ -291,7 +291,7 @@ export function AuctionStoreProvider({
         } catch {
           const fallbackOrder = state.auctions.find((auction) => auction.order?.id === orderId)?.order;
           if (!fallbackOrder) {
-            return { ok: false, error: "Pickup order not found in demo state." };
+            return { ok: false, error: "Pickup order not found in the workspace state." };
           }
 
           const nextOrder = {
@@ -315,7 +315,7 @@ export function AuctionStoreProvider({
         const targetOrder = state.auctions.find((auction) => auction.order?.id === orderId)?.order;
 
         if (!targetOrder) {
-          return { ok: false, error: "Pickup order not found in demo state." };
+          return { ok: false, error: "Pickup order not found in the workspace state." };
         }
 
         const scheduledWindow = targetOrder.pickupWindow ?? state.auctions.find((auction) => auction.order?.id === orderId)?.lot.pickupWindow;
