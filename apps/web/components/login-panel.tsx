@@ -93,8 +93,8 @@ export function LoginPanel() {
             <p className="eyebrow">Bio Loop access</p>
             <h2>One entry point for every operating lane.</h2>
             <p className="login-support-copy">
-              Sign in to review the live workspace with role-based credentials, role-aware routing,
-              and session handling already wired into the product flow.
+              Sign in to access the workspace for your role, continue to the right operating area,
+              and pick up work where your team left off.
             </p>
           </div>
 
@@ -107,7 +107,7 @@ export function LoginPanel() {
           <div className="login-support-steps" aria-label="Login flow summary">
             <span>Choose workspace</span>
             <span>Enter credentials</span>
-            <span>Enter live session</span>
+            <span>Open workspace</span>
           </div>
         </aside>
 
@@ -115,7 +115,7 @@ export function LoginPanel() {
           <div className="login-card-header">
             <p className="eyebrow">Bio Loop</p>
             <h2>Sign in</h2>
-            <p className="login-card-sub">Select workspace and enter credentials</p>
+            <p className="login-card-sub">Select your workspace and sign in securely</p>
           </div>
 
           <div className="role-tabs">
@@ -201,14 +201,14 @@ export function LoginPanel() {
               {message ||
                 (session
                   ? `You are already signed in to ${formatAuthRoleLabel(session.roleLabel)}.`
-                  : "Enter workspace credentials to start a live product session.")}
+                  : "Enter workspace credentials to continue.")}
             </p>
           </form>
 
           <div className="login-footer-links">
-            <span>Need a quick look?</span>
+            <span>Already know where to go?</span>
             <Link className="login-skip-link" href={activeAction.route}>
-              Preview {activeAction.persona} workspace
+              Continue to {activeAction.persona} workspace
             </Link>
           </div>
         </section>
